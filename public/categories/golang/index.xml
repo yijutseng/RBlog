@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Golang on 有完沒完RRR</title>
+    <link>/categories/golang/</link>
+    <description>Recent content in Golang on 有完沒完RRR</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-tw</language>
+    <lastBuildDate>Thu, 17 Aug 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>開始用rblogdown寫blog啦</title>
+      <link>/post/rblogdown/</link>
+      <pubDate>Thu, 17 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/rblogdown/</guid>
+      <description>想了很久，終於開始，不知道會持續多久&amp;hellip;..</description>
+    </item>
+    
+  </channel>
+</rss>

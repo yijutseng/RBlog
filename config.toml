@@ -1,0 +1,23 @@
+theme = "hugo-theme-minos"
+
+baseURL = "http://127.0.0.1:4321"
+
+languageCode = "zh-tw"
+title = "有完沒完RRR"
+enableEmoji = true
+
+
+[[menu.main]]
+    name = "Categories"
+    url= "/Categories/"
+[[menu.main]]
+    name = "Tags"
+    url="/Tags/"
+    
+[params]
+    smartToc = true
+    author = "Yi-Ju Tseng"
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"

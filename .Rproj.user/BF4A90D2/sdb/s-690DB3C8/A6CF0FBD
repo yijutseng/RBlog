@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "{{ partial \"head.html\" . }}\n<body>\n<div id=\"container\">\n    {{ partial \"header.html\" . }}\n    <section id=\"main\" class=\"outer\">\n        {{ range .Paginator.Pages }}\n        <article class=\"article article-type-post\" itemscope itemprop=\"blogPost\">\n            <div class=\"article-inner\">\n                <!--<%- partial('post/gallery') %>-->\n                {{ if .Title }}\n                <header class=\"article-header\">\n                    <h1 itemprop=\"name\"><a class=\"article-title\" href=\"{{ .RelPermalink }}\">{{ .Title }}</a></h1>\n                </header>\n                {{ end }}\n                <div class=\"article-meta\">\n                    <a href=\"{{ .RelPermalink }}\" class=\"article-date\">\n                        <time datetime='{{ .Date.Format \"2006-01-02T15:04:05.000-07:00\" }}' itemprop=\"datePublished\">{{ .Date.Format \"2006-01-02\" }}</time>\n                    </a>\n                    {{ $Site := .Site }}\n                    {{ if .Params.categories }}\n                    <div class=\"post-categories\">\n                        <div class=\"article-category\">\n                            {{ range $i, $e := .Params.categories }}\n                            {{ if gt $i 0 }}\n                            <span>&gt;</span>\n                            {{ end }}\n                            <a class=\"article-category-link\" href=\"categories/{{ $e | urlize }}\">{{ $e }}</a>\n                            {{ end }}\n                        </div>\n                    </div>\n                    {{ end }}\n                    {{ if .Site.Params.disqusShortname }}\n                    <div class=\"article-comment-link-wrap\">\n                        <a href=\"{{ .RelPermalink }}#disqus_thread\" class=\"article-comment-link\">Comments</a>\n                    </div>\n                    {{ end }}\n                </div>\n                <div class=\"article-entry\" itemprop=\"articleBody\">\n                    <p>\n                        {{ if .Params.featuredImage }}<img src=\"{{.Params.featuredImage}}\"><br>{{ end }}\n                    {{ .Summary }}\n                    </p>\n                    <p class=\"article-more-link\">\n                        <a href=\"{{ .RelPermalink }}\">Read More</a>\n                    </p>\n                </div>\n\n                {{ if .Params.tags }}\n                <footer class=\"article-footer\">\n                    <ul class=\"article-tag-list\">\n                        {{ range .Params.tags }}\n                        <li class=\"article-tag-list-item\">\n                            <a class=\"article-tag-list-link\" href=\"tags/{{ . | urlize }}\">{{ . }}\n                            </a>\n                        </li>\n                        {{ end }}\n                    </ul>\n                </footer>\n                {{ end }}\n            </div>\n        </article>\n        {{ end }}\n\n        {{ partial \"pagination.html\" . }}\n    </section>\n    {{ partial \"footer.html\" . }}\n</div>\n</body>\n</html>",
+    "created" : 1502973701431.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1603697004",
+    "id" : "A6CF0FBD",
+    "lastKnownWriteTime" : 1502972771,
+    "last_content_update" : 1502972771,
+    "path" : "~/GitHub/RBlog/themes/hugo-theme-minos/layouts/index.html",
+    "project_path" : "themes/hugo-theme-minos/layouts/index.html",
+    "properties" : {
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "html"
+}
