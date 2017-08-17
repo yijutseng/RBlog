@@ -1,6 +1,6 @@
 theme = "hugo-theme-minos"
 
-baseURL = "http://127.0.0.1:4321/"
+baseURL = "https://purchasing-officer-daisy-14376.netlify.com/"
 
 languageCode = "zh-tw"
 title = "有完沒完RRR"
