@@ -5,7 +5,7 @@ baseURL = "https://purchasing-officer-daisy-14376.netlify.com/"
 languageCode = "zh-tw"
 title = "有完沒完RRR"
 enableEmoji = true
-
+hasCJKLanguage = true
 
 [[menu.main]]
     name = "Categories"
