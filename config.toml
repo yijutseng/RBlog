@@ -6,6 +6,7 @@ languageCode = "zh-tw"
 title = "有完沒完RRR"
 enableEmoji = true
 hasCJKLanguage = true
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [[menu.main]]
     name = "Categories"
@@ -13,11 +14,16 @@ hasCJKLanguage = true
 [[menu.main]]
     name = "Tags"
     url="/Tags/index.html"
+[[menu.main]]
+    name = "About"
+    url = "/page/about/index.html"
+    weight = 1
     
 [params]
     smartToc = true
     author = "Yi-Ju Tseng"
     disqusShortname = "rrrblog"
+    googleAnalytics = "UA-2407708-4"
 
 [taxonomies]
   category = "categories"

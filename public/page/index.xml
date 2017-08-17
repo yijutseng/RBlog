@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>有完沒完RRR</title>
-    <link>/</link>
-    <description>Recent content on 有完沒完RRR</description>
+    <title>Pages on 有完沒完RRR</title>
+    <link>/page/</link>
+    <description>Recent content in Pages on 有完沒完RRR</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
     <lastBuildDate>Fri, 18 Aug 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/page/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -18,15 +18,6 @@
       
       <guid>/page/about/</guid>
       <description>個人網站 數位健康實驗室 R語言電子書: 資料科學與R語言</description>
-    </item>
-    
-    <item>
-      <title>開始用blogdown寫blog啦</title>
-      <link>/post/rblogdown/</link>
-      <pubDate>Thu, 17 Aug 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/post/rblogdown/</guid>
-      <description>忙一忙突然又想起blogdown這個packages，今天終於下定決心開始，不知道會持續多久&amp;hellip;.. blogdown blogdown是基於R M</description>
     </item>
     
   </channel>
