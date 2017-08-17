@@ -9,10 +9,10 @@ enableEmoji = true
 
 [[menu.main]]
     name = "Categories"
-    url= "/Categories/"
+    url= "/Categories/index.html"
 [[menu.main]]
     name = "Tags"
-    url="/Tags/"
+    url="/Tags/index.html"
     
 [params]
     smartToc = true
