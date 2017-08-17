@@ -17,6 +17,7 @@ hasCJKLanguage = true
 [params]
     smartToc = true
     author = "Yi-Ju Tseng"
+    disqusShortname = "rrrblog"
 
 [taxonomies]
   category = "categories"

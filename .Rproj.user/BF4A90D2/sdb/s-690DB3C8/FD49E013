@@ -1,14 +1,14 @@
 {
     "collab_server" : "",
-    "contents" : "theme = \"hugo-theme-minos\"\n\nbaseURL = \"https://purchasing-officer-daisy-14376.netlify.com/\"\n\nlanguageCode = \"zh-tw\"\ntitle = \"有完沒完RRR\"\nenableEmoji = true\nhasCJKLanguage = true\n\n[[menu.main]]\n    name = \"Categories\"\n    url= \"/Categories/index.html\"\n[[menu.main]]\n    name = \"Tags\"\n    url=\"/Tags/index.html\"\n    \n[params]\n    smartToc = true\n    author = \"Yi-Ju Tseng\"\n\n[taxonomies]\n  category = \"categories\"\n  tag = \"tags\"",
+    "contents" : "theme = \"hugo-theme-minos\"\n\nbaseURL = \"https://purchasing-officer-daisy-14376.netlify.com/\"\n\nlanguageCode = \"zh-tw\"\ntitle = \"有完沒完RRR\"\nenableEmoji = true\nhasCJKLanguage = true\n\n[[menu.main]]\n    name = \"Categories\"\n    url= \"/Categories/index.html\"\n[[menu.main]]\n    name = \"Tags\"\n    url=\"/Tags/index.html\"\n    \n[params]\n    smartToc = true\n    author = \"Yi-Ju Tseng\"\n    disqusShortname = \"rrrblog\"\n\n[taxonomies]\n  category = \"categories\"\n  tag = \"tags\"",
     "created" : 1502973566738.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "1469708415",
+    "hash" : "2090641190",
     "id" : "FD49E013",
-    "lastKnownWriteTime" : 1502986028,
-    "last_content_update" : 1502986028377,
+    "lastKnownWriteTime" : 1502986470,
+    "last_content_update" : 1502986470148,
     "path" : "~/GitHub/RBlog/config.toml",
     "project_path" : "config.toml",
     "properties" : {
