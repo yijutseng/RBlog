@@ -1,6 +1,6 @@
 theme = "hugo-theme-minos"
 
-baseURL = "http://127.0.0.1:4321"
+baseURL = "http://127.0.0.1:4321/"
 
 languageCode = "zh-tw"
 title = "有完沒完RRR"
