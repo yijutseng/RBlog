@@ -11,13 +11,15 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 [[menu.main]]
     name = "Categories"
     url= "/Categories/index.html"
+    weight = 1
 [[menu.main]]
     name = "Tags"
     url="/Tags/index.html"
+    weight = 2
 [[menu.main]]
     name = "About"
-    url = "/page/about/index.html"
-    weight = 1
+    url = "https://blog.yjtseng.info/"
+    weight = 3
     
 [params]
     smartToc = true
