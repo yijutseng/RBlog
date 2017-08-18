@@ -1,6 +1,6 @@
 theme = "hugo-theme-minos"
 
-baseURL = "http://blog.yjtseng.info/"
+baseURL = "https://blog.yjtseng.info/"
 
 languageCode = "zh-tw"
 title = "有完沒完RRR"
