@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Text Mining on 有完沒完RRR</title>
+    <link>/categories/text-mining/</link>
+    <description>Recent content in Text Mining on 有完沒完RRR</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-tw</language>
+    <lastBuildDate>Mon, 21 Aug 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/text-mining/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>在R中使用結巴分詞</title>
+      <link>/post/jiebar/</link>
+      <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/jiebar/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

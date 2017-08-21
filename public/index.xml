@@ -6,18 +6,27 @@
     <description>Recent content on 有完沒完RRR</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
-    <lastBuildDate>Fri, 18 Aug 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 21 Aug 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>關於</title>
-      <link>/page/about/</link>
-      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
+      <title>在R中使用結巴分詞</title>
+      <link>/post/jiebar/</link>
+      <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>/page/about/</guid>
-      <description>個人網站 數位健康實驗室 R語言電子書: 資料科學與R語言</description>
+      <guid>/post/jiebar/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>用blogdown建立個人網頁</title>
+      <link>/post/website/</link>
+      <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/website/</guid>
+      <description>除了前篇提到的Blog外，也一口氣更新了原有的個人網頁 (兩年過去，看膩了&amp;hellip;.)。新版網頁使用的一樣是blogdown packa</description>
     </item>
     
     <item>

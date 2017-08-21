@@ -21,9 +21,27 @@
     </item>
     
     <item>
+      <title>Blogdown</title>
+      <link>/tags/blogdown/</link>
+      <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/blogdown/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Jiebar</title>
+      <link>/tags/jiebar/</link>
+      <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/jiebar/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Packages</title>
       <link>/tags/packages/</link>
-      <pubDate>Thu, 17 Aug 2017 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
       <guid>/tags/packages/</guid>
       <description></description>
@@ -32,7 +50,7 @@
     <item>
       <title>R</title>
       <link>/tags/r/</link>
-      <pubDate>Thu, 17 Aug 2017 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
       <guid>/tags/r/</guid>
       <description></description>

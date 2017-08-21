@@ -4,7 +4,7 @@ author: Yi-Ju Tseng
 date: '2017-08-17'
 slug: rblogdown
 categories:
-  - Blog
+  - Website
 tags:
   - R
   - Blog
