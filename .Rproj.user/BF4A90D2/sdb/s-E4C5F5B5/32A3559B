@@ -1,14 +1,14 @@
 {
     "collab_server" : "",
-    "contents" : "---\ntitle: 在R中使用結巴分詞\nauthor: Yi-Ju Tseng\ndate: '2017-08-21'\nslug: jiebaR\ncategories: [Text Mining]\ntags:\n  - jiebaR\n  - R\n---\n\n\n## 有關結巴\n\n[“结巴”中文分词：做最好的 Python 中文分词组件](https://github.com/fxsjy/jieba)\n\n## 在R內使用結巴分詞\n\n### 安裝載入套件\n安裝套件\n```{r eval=F}\ninstall.packages(\"jiebaR\")\n```\n\n載入套件\n```{r}\nlibrary(jiebaR) #載入jiebaR package\n```\n\n### 斷詞\n新增斷詞工具\n```{r}\ncutter <- worker()\ncutter \n```\n\n斷詞實作\n```{r}\ncutter[\"這是一段測試用文字，請不要再戰長庚資管了\"]\n```\n\n### 詞性判別\n```{r}\ntagger <- worker(\"tag\")\ntagger[\"這是一段測試用文字，請不要再戰長庚資管了\"]\n```\n\n### 新增自訂詞彙\n```{r}\nnew_user_word(cutter,'長庚資管',\"n\")\ncutter[\"這是一段測試用文字，請不要再戰長庚資管了\"]\n```\n\n\n### 自訂停止詞\n\n[停止詞範例檔下載](https://blog.yjtseng.info/file/stop.txt)\n\n```{r}\ncutter = worker(stop_word =\"stop.txt\")\ncutter[\"這是一段測試用文字，請不要再戰長庚資管了\"]\n```\n\n\n## 操作範例\n\n### 載入需要做分詞的資料\n\n```{r}\nlibrary(rvest)\nPTTNBA<-\"http://www.ptt.cc/bbs/NBA/index.html\"\npttContent <- read_html(PTTNBA)\npost_title <- pttContent %>% html_nodes(\".title\") %>% html_text()\npost_title\n```\n\n### 斷詞\n```{r}\ncutter <- worker()\ncutter[post_title] ## 不分行輸出\ncutter$bylines<-T\ncutter[post_title] ## 分行輸出\n```\n\n### 分析斷詞後最常出現的詞彙\n```{r}\ncutter <- worker()\nsort(table(cutter[post_title]),decreasing = T)\n```\n\n## 參考資料\n- [jiebaR GitHub](https://github.com/qinwf/jiebaR)\n- [jiebaR 使用指南](http://qinwenfeng.com/jiebaR/)\n- [用結巴斷詞實作文字視覺化 — 以 2016 總統就職演講為例](http://blog.infographics.tw/2016/05/text-visualization-with-jieba/)",
+    "contents" : "---\ntitle: 在R中使用結巴分詞\nauthor: Yi-Ju Tseng\ndate: '2017-08-21'\nslug: jiebaR\ncategories: [Text Mining]\ntags:\n  - jiebaR\n  - R\n---\n\n\n## 有關結巴\n\n[“结巴”中文分词：做最好的 Python 中文分词组件](https://github.com/fxsjy/jieba)\n\n## 在R內使用結巴分詞\n\n### 安裝載入套件\n安裝套件\n```{r eval=F}\ninstall.packages(\"jiebaR\")\n```\n\n載入套件\n```{r}\nlibrary(jiebaR) #載入jiebaR package\n```\n\n### 斷詞\n新增斷詞工具\n```{r}\ncutter <- worker()\ncutter \n```\n\n斷詞實作\n```{r}\ncutter[\"這是一段測試用文字，請不要再戰長庚資管了\"]\n```\n\n### 詞性判別\n```{r}\ntagger <- worker(\"tag\")\ntagger[\"這是一段測試用文字，請不要再戰長庚資管了\"]\n```\n\n### 新增自訂詞彙\n```{r}\nnew_user_word(cutter,'長庚資管',\"n\")\ncutter[\"這是一段測試用文字，請不要再戰長庚資管了\"]\n```\n\n\n### 自訂停止詞\n\n[停止詞範例檔下載](https://blog.yjtseng.info/file/stop.txt)\n\n```{r}\ncutter = worker(stop_word =\"stop.txt\")\ncutter[\"這是一段測試用文字，請不要再戰長庚資管了\"]\n```\n\n\n## 操作範例\n\n### 載入需要做分詞的資料\n\n```{r}\nlibrary(rvest)\nPTTNBA <- \"https://www.ptt.cc/bbs/NBA/index.html\"\npttContent <- read_html(PTTNBA)\npost_title <- pttContent %>% html_nodes(\".title\") %>% html_text()\npost_title\n```\n\n### 斷詞\n```{r}\ncutter <- worker()\ncutter[post_title] ## 不分行輸出\ncutter$bylines<-T\ncutter[post_title] ## 分行輸出\n```\n\n### 分析斷詞後最常出現的詞彙\n```{r}\ncutter <- worker()\nsort(table(cutter[post_title]),decreasing = T)\n```\n\n## 參考資料\n- [jiebaR GitHub](https://github.com/qinwf/jiebaR)\n- [jiebaR 使用指南](http://qinwenfeng.com/jiebaR/)\n- [用結巴斷詞實作文字視覺化 — 以 2016 總統就職演講為例](http://blog.infographics.tw/2016/05/text-visualization-with-jieba/)",
     "created" : 1503295374072.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "3091539418",
+    "hash" : "262142840",
     "id" : "32A3559B",
-    "lastKnownWriteTime" : 1503295628,
-    "last_content_update" : 1503295628634,
+    "lastKnownWriteTime" : 1503299661,
+    "last_content_update" : 1503299661823,
     "path" : "~/GitHub/RBlog/content/post/2017-08-21-jiebaR.Rmarkdown",
     "project_path" : "content/post/2017-08-21-jiebaR.Rmarkdown",
     "properties" : {
