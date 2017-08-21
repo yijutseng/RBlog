@@ -54,8 +54,8 @@ cutter["這是一段測試用文字，請不要再戰長庚資管了"]
 
 ### 自訂停止詞
 ```{r}
-readLines("https://blog.yjtseng.info/file/stop.txt")
-cutter = worker(stop_word ="stop.txt")
+#readLines("http://blog.yjtseng.info/file/stop.txt")
+cutter = worker(stop_word ="http://blog.yjtseng.info/file/stop.txt")
 cutter["這是一段測試用文字，請不要再戰長庚資管了"]
 ```
 
