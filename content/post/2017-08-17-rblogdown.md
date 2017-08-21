@@ -19,7 +19,7 @@ menu: ''
 
 ### blogdown
 
-blogdown是基於R Markdown和Hugo開發的R package，簡單來說是讓你可以用R Markdown寫Blog的好幫手。先前用過[bookdown](https://bookdown.org/yihui/bookdown/)寫過[資料科學與R語言](yijutseng.github.io/DataScienceRBook/)電子書，用來介紹R語言的使用非常方便，不用再辛苦的剪下貼上，也不用擔心程式碼沒上色，導致不清不楚讀者沒耐心看(只有我沒耐心)。
+blogdown是基於R Markdown和Hugo開發的R package，簡單來說是讓你可以用R Markdown寫Blog的好幫手。先前用過姊妹套件[bookdown](https://bookdown.org/yihui/bookdown/)寫了[資料科學與R語言](yijutseng.github.io/DataScienceRBook/)電子書，用來介紹R語言的使用非常方便，不用再辛苦的剪下貼上，也不用擔心程式碼沒上色，導致不清不楚讀者沒耐心看(只有我沒耐心)。
 
 ### Hugo
 
@@ -29,7 +29,7 @@ blogdown是基於R Markdown和Hugo開發的R package，簡單來說是讓你可�
 
 ### Netlify
 
-以往都是用GitHub page來存放靜態網頁，這次趁機會試著使用很多人推薦的Netlify(https://www.netlify.com/)，一樣可以跟GitHub做連動，只要Commit & Sync，Netlify會自動部屬網頁，超級方便。
+以往都是用GitHub page來存放靜態網頁，這次趁機會試著使用很多人推薦的[Netlify](https://www.netlify.com/)，一樣可以跟GitHub做連動，只要Commit & Sync，Netlify會自動部屬網頁，超級方便。
 設定的時候有一些參數要注意:
 
 ```
