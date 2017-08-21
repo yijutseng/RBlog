@@ -53,9 +53,11 @@ cutter["這是一段測試用文字，請不要再戰長庚資管了"]
 
 
 ### 自訂停止詞
+
+[停止詞範例檔下載](https://blog.yjtseng.info/file/stop.txt)
+
 ```{r}
-#readLines("http://blog.yjtseng.info/file/stop.txt")
-cutter = worker(stop_word ="http://blog.yjtseng.info/file/stop.txt")
+cutter = worker(stop_word ="stop.txt")
 cutter["這是一段測試用文字，請不要再戰長庚資管了"]
 ```
 
@@ -66,8 +68,8 @@ cutter["這是一段測試用文字，請不要再戰長庚資管了"]
 
 ```{r}
 library(rvest)
-PTTNBA<-"https://www.ptt.cc/bbs/NBA/index4671.html"
-pttContent<-read_html(PTTNBA)
+PTTNBA<-"http://www.ptt.cc/bbs/NBA/index.html"
+pttContent <- read_html(PTTNBA)
 post_title <- pttContent %>% html_nodes(".title") %>% html_text()
 post_title
 ```

@@ -1,0 +1,13 @@
+"0","readLines(""stop.txt"")
+"
+"1","[1]"
+"1"," ""隢\x8b"""
+"1","
+"
+"2","Warning message:
+"
+"2","In strsplit(code, ""\n"", fixed = TRUE) :"
+"2","
+ "
+"2"," input string 1 is invalid in this locale
+"

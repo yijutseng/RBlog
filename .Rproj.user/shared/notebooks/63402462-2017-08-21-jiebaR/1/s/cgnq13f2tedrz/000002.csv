@@ -1,0 +1,13 @@
+"0","readLines(""stop.txt"")
+"
+"2","cannot open file 'stop.txt': No such file or directory"
+"2","Error in file(con, ""r"") : cannot open the connection
+"
+"2","In addition: "
+"2","Warning message:
+"
+"2","In strsplit(code, ""\n"", fixed = TRUE) :"
+"2","
+ "
+"2"," input string 1 is invalid in this locale
+"
