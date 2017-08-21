@@ -9,8 +9,7 @@ tags:
   - R
   - Blog
   - Packages
-Categories:
-  - Others
+  - blogdown
 Description: ''
 menu: ''
 ---
