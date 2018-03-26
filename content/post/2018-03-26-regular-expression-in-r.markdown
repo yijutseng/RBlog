@@ -2,6 +2,8 @@
 title: 正規表示式Regular Expression in R
 author: Yi-Ju Tseng
 date: '2018-03-26'
+slug: RegExpR
+categories: [R language]
 tags:
   - R
 ---
@@ -45,14 +47,54 @@ Regular Expression (正規表示式)是指一組能用來表示字串共同格�
 - `{n,}`: 出現n~無限多次
 - `{n,m}`: 出現n~m次
 
-```{r}
+
+```r
 stringVector<-c("a","abc","ac","abbc","abbbc","abbbbc")
 grep("ab*",stringVector,value=T)
+```
+
+```
+## [1] "a"      "abc"    "ac"     "abbc"   "abbbc"  "abbbbc"
+```
+
+```r
 grep("ab+",stringVector,value=T)
+```
+
+```
+## [1] "abc"    "abbc"   "abbbc"  "abbbbc"
+```
+
+```r
 grep("ab?c",stringVector,value=T)
+```
+
+```
+## [1] "abc" "ac"
+```
+
+```r
 grep("ab{2}c",stringVector,value=T)
+```
+
+```
+## [1] "abbc"
+```
+
+```r
 grep("ab{2,}c",stringVector,value=T)
+```
+
+```
+## [1] "abbc"   "abbbc"  "abbbbc"
+```
+
+```r
 grep("ab{2,3}c",stringVector,value=T)
+```
+
+```
+## [1] "abbc"  "abbbc"
 ```
 
 ### 表示位置的語法
@@ -62,12 +104,38 @@ grep("ab{2,3}c",stringVector,value=T)
 - `\b`: 出現空字串(空白)開始或結束的位置
 - `\B`: 出現非字串開始或結束的位置
 
-```{r}
+
+```r
 stringVector<-c("abc","bcd","cde","def","abc def","bcdefg abc")
 grep("^bc",stringVector,value=T)
+```
+
+```
+## [1] "bcd"        "bcdefg abc"
+```
+
+```r
 grep("bc$",stringVector,value=T)
+```
+
+```
+## [1] "abc"        "bcdefg abc"
+```
+
+```r
 grep("\\bde",stringVector,value=T)
+```
+
+```
+## [1] "def"     "abc def"
+```
+
+```r
 grep("\\Bde",stringVector,value=T)
+```
+
+```
+## [1] "cde"        "bcdefg abc"
 ```
 
 ### 運算子
@@ -78,14 +146,40 @@ grep("\\Bde",stringVector,value=T)
 - `\`: 要搜尋字串中的特殊字元時，前方須加上`\`
 - `|`: 或
 
-```{r}
+
+```r
 stringVector<-c("03-2118800","02-23123456","0988123456",
                 "07-118","0-888","csim@mail.cgu.edu.tw","csim@.","csim@",
                 "http://www.is.cgu.edu.tw/")
 grep("[0-9]{2}-[0-9]{7,8}",stringVector,value=T)
+```
+
+```
+## [1] "03-2118800"  "02-23123456"
+```
+
+```r
 grep("[0-9]{10}",stringVector,value=T)
+```
+
+```
+## [1] "0988123456"
+```
+
+```r
 grep("02|03",stringVector,value=T)
+```
+
+```
+## [1] "03-2118800"  "02-23123456"
+```
+
+```r
 grep("[a-zA-Z0-9_]+@[a-zA-Z0-9._]+",stringVector,value=T)
+```
+
+```
+## [1] "csim@mail.cgu.edu.tw" "csim@."
 ```
 
 ### 特殊符號
@@ -103,12 +197,31 @@ grep("[a-zA-Z0-9_]+@[a-zA-Z0-9._]+",stringVector,value=T)
 - `\S`: 非空白字元
 - `[:punct:]`: 標點符號 ! " # $ % & ’ ( ) * + , - . / : ; < = > ? @ [  ] ^ _ ` { | } ~.
 
-```{r}
+
+```r
 stringVector<-c("03-2118800","02-23123456","0988123456",
                 "07-118","0-888","csim@mail.cgu.edu.tw","http://www.is.cgu.edu.tw/")
 grep("\\d{2}-\\d{7,8}",stringVector,value=T)
+```
+
+```
+## [1] "03-2118800"  "02-23123456"
+```
+
+```r
 grep("\\d{10}",stringVector,value=T)
+```
+
+```
+## [1] "0988123456"
+```
+
+```r
 grep("\\w+@[a-zA-Z0-9._]+",stringVector,value=T)
+```
+
+```
+## [1] "csim@mail.cgu.edu.tw"
 ```
 
 ## 參考資料
