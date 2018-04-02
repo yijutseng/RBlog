@@ -1,0 +1,38 @@
+---
+title: R的arguments出現三個點是...?
+author: Yi-Ju Tseng
+date: '2018-03-27'
+slug: dotdotdot
+categories: [R language]
+tags:
+  - R
+---
+
+## R函數介紹
+
+需要先介紹怎麼在R裡面寫函數
+f <- function(...) { 
+names(list(...)) 
+} 
+f是一個使用者自訂函數，就像java裡面的method，而…的功能讓f函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內
+
+若執行f(a = 1, b = 2)，a和b這兩個參數可以直接傳到list()函數中，變成list(a=1,b=1)
+
+再舉一個範例
+addPercent <- function(x, mult = 100, ...){ 
+percent <- round(x * mult, ...) 
+paste0(percent, "%") 
+}
+addPercent是一個使用者自訂函數，…的功能讓f函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內
+
+addPercent(c(0.5887,0.6925), digits = 2)
+addPercent(c(0.5887,0.6925), digits = 1)
+
+How do you write functions that make use of …? 
+
+HelloWorld <- function(...) {
+arguments <- list(...) 
+paste(arguments)
+} 
+
+HelloWorld("Hello", "World", "!")
