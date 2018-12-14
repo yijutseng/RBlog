@@ -13,20 +13,20 @@
     <meta property="og:description" content="" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:url" content="/post/jiebar/" />
+    <meta property="og:url" content="https://blog.yjtseng.info/post/jiebar/" />
     
 
     <link href="" rel="alternate" type="application/rss+xml" title="有完沒完RRR" />
     <link rel="shortcut icon" href="/favicon.png">
 
-    <link href="/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
-    <link href="/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+    <link href="https://blog.yjtseng.info/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+    <link href="https://blog.yjtseng.info/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://blog.yjtseng.info/css/style.css">
 
     <link href="http://gmpg.org/xfn/11" rel="profile">
     
-    <meta name="generator" content="Hugo 0.26" />
+    <meta name="generator" content="Hugo 0.52" />
 </head>
 
 
@@ -36,7 +36,7 @@
     <div id="header-outer" class="outer">
         <div id="header-inner" class="inner">
             <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
-            <a id="logo" class="logo-text" href="/">有完沒完RRR</a>
+            <a id="logo" class="logo-text" href="https://blog.yjtseng.info/">有完沒完RRR</a>
             <nav id="main-nav">
                 
                 <a class="main-nav-link" href="/categories/index.html">Categories</a>
@@ -84,9 +84,928 @@
         </div>
         <div class="article-entry" itemprop="articleBody">
             
+
+<h2 id="有關結巴">有關結巴</h2>
+
+<p><a href="https://github.com/fxsjy/jieba">“结巴”中文分词：做最好的 Python 中文分词组件</a></p>
+
+<h2 id="在r內使用結巴分詞">在R內使用結巴分詞</h2>
+
+<h3 id="安裝載入套件">安裝載入套件</h3>
+
+<p>安裝套件</p>
+
+<pre><code class="language-r">install.packages(&quot;jiebaR&quot;)
+</code></pre>
+
+<p>載入套件</p>
+
+<pre><code class="language-r">library(jiebaR) #載入jiebaR package
+</code></pre>
+
+<pre><code>## Loading required package: jiebaRD
+</code></pre>
+
+<h3 id="斷詞">斷詞</h3>
+
+<p>新增斷詞工具</p>
+
+<pre><code class="language-r">cutter &lt;- worker()
+cutter 
+</code></pre>
+
+<pre><code>## Worker Type:  Jieba Segment
+## 
+## Default Method  :  mix
+## Detect Encoding :  TRUE
+## Default Encoding:  UTF-8
+## Keep Symbols    :  FALSE
+## Output Path     :  
+## Write File      :  TRUE
+## By Lines        :  FALSE
+## Max Word Length :  20
+## Max Read Lines  :  1e+05
+## 
+## Fixed Model Components:  
+## 
+## $dict
+## [1] &quot;/Library/Frameworks/R.framework/Versions/3.4/Resources/library/jiebaRD/dict/jieba.dict.utf8&quot;
+## 
+## $user
+## [1] &quot;/Library/Frameworks/R.framework/Versions/3.4/Resources/library/jiebaRD/dict/user.dict.utf8&quot;
+## 
+## $hmm
+## [1] &quot;/Library/Frameworks/R.framework/Versions/3.4/Resources/library/jiebaRD/dict/hmm_model.utf8&quot;
+## 
+## $stop_word
+## NULL
+## 
+## $user_weight
+## [1] &quot;max&quot;
+## 
+## $timestamp
+## [1] 1544776619
+## 
+## $default $detect $encoding $symbol $output $write $lines $bylines can be reset.
+</code></pre>
+
+<p>斷詞實作</p>
+
+<pre><code class="language-r">cutter[&quot;這是一段測試用文字，請不要再戰長庚資管了&quot;]
+</code></pre>
+
+<pre><code>##  [1] &quot;U&quot;    &quot;9019&quot; &quot;U&quot;    &quot;662&quot;  &quot;F&quot;    &quot;U&quot;    &quot;4&quot;    &quot;E00&quot;  &quot;U&quot;    &quot;6&quot;   
+## [11] &quot;BB5&quot;  &quot;U&quot;    &quot;6&quot;    &quot;E2C&quot;  &quot;U&quot;    &quot;8&quot;    &quot;A66&quot;  &quot;U&quot;    &quot;7528&quot; &quot;U&quot;   
+## [21] &quot;6587&quot; &quot;U&quot;    &quot;5&quot;    &quot;B57&quot;  &quot;U&quot;    &quot;FF0C&quot; &quot;U&quot;    &quot;8&quot;    &quot;ACB&quot;  &quot;U&quot;   
+## [31] &quot;4&quot;    &quot;E0D&quot;  &quot;U&quot;    &quot;8981&quot; &quot;U&quot;    &quot;518&quot;  &quot;D&quot;    &quot;U&quot;    &quot;6230&quot; &quot;U&quot;   
+## [41] &quot;9577&quot; &quot;U&quot;    &quot;5&quot;    &quot;E9A&quot;  &quot;U&quot;    &quot;8&quot;    &quot;CC7&quot;  &quot;U&quot;    &quot;7&quot;    &quot;BA1&quot; 
+## [51] &quot;U&quot;    &quot;4&quot;    &quot;E86&quot;
+</code></pre>
+
+<h3 id="詞性判別">詞性判別</h3>
+
+<pre><code class="language-r">tagger &lt;- worker(&quot;tag&quot;)
+tagger[&quot;這是一段測試用文字，請不要再戰長庚資管了&quot;]
+</code></pre>
+
+<pre><code>##      x      m      x      m      x      x      x    eng      x      x 
+##    &quot;U&quot; &quot;9019&quot;    &quot;U&quot;  &quot;662&quot;    &quot;F&quot;    &quot;U&quot;    &quot;4&quot;  &quot;E00&quot;    &quot;U&quot;    &quot;6&quot; 
+##    eng      x      x    eng      x      x    eng      x      m      x 
+##  &quot;BB5&quot;    &quot;U&quot;    &quot;6&quot;  &quot;E2C&quot;    &quot;U&quot;    &quot;8&quot;  &quot;A66&quot;    &quot;U&quot; &quot;7528&quot;    &quot;U&quot; 
+##      m      x      x    eng      x    eng      x      x    eng      x 
+## &quot;6587&quot;    &quot;U&quot;    &quot;5&quot;  &quot;B57&quot;    &quot;U&quot; &quot;FF0C&quot;    &quot;U&quot;    &quot;8&quot;  &quot;ACB&quot;    &quot;U&quot; 
+##      x    eng      x      m      x      m      x      x      m      x 
+##    &quot;4&quot;  &quot;E0D&quot;    &quot;U&quot; &quot;8981&quot;    &quot;U&quot;  &quot;518&quot;    &quot;D&quot;    &quot;U&quot; &quot;6230&quot;    &quot;U&quot; 
+##      m      x      x    eng      x      x    eng      x      x    eng 
+## &quot;9577&quot;    &quot;U&quot;    &quot;5&quot;  &quot;E9A&quot;    &quot;U&quot;    &quot;8&quot;  &quot;CC7&quot;    &quot;U&quot;    &quot;7&quot;  &quot;BA1&quot; 
+##      x      x    eng 
+##    &quot;U&quot;    &quot;4&quot;  &quot;E86&quot;
+</code></pre>
+
+<h3 id="新增自訂詞彙">新增自訂詞彙</h3>
+
+<pre><code class="language-r">new_user_word(cutter,'長庚資管',&quot;n&quot;)
+</code></pre>
+
+<pre><code>## [1] TRUE
+</code></pre>
+
+<pre><code class="language-r">cutter[&quot;這是一段測試用文字，請不要再戰長庚資管了&quot;]
+</code></pre>
+
+<pre><code>##  [1] &quot;U&quot;                                &quot;9019&quot;                            
+##  [3] &quot;U&quot;                                &quot;662&quot;                             
+##  [5] &quot;F&quot;                                &quot;U&quot;                               
+##  [7] &quot;4&quot;                                &quot;E00&quot;                             
+##  [9] &quot;U&quot;                                &quot;6&quot;                               
+## [11] &quot;BB5&quot;                              &quot;U&quot;                               
+## [13] &quot;6&quot;                                &quot;E2C&quot;                             
+## [15] &quot;U&quot;                                &quot;8&quot;                               
+## [17] &quot;A66&quot;                              &quot;U&quot;                               
+## [19] &quot;7528&quot;                             &quot;U&quot;                               
+## [21] &quot;6587&quot;                             &quot;U&quot;                               
+## [23] &quot;5&quot;                                &quot;B57&quot;                             
+## [25] &quot;U&quot;                                &quot;FF0C&quot;                            
+## [27] &quot;U&quot;                                &quot;8&quot;                               
+## [29] &quot;ACB&quot;                              &quot;U&quot;                               
+## [31] &quot;4&quot;                                &quot;E0D&quot;                             
+## [33] &quot;U&quot;                                &quot;8981&quot;                            
+## [35] &quot;U&quot;                                &quot;518&quot;                             
+## [37] &quot;D&quot;                                &quot;U&quot;                               
+## [39] &quot;6230&quot;                             &quot;&lt;U+9577&gt;&lt;U+5E9A&gt;&lt;U+8CC7&gt;&lt;U+7BA1&gt;&quot;
+## [41] &quot;U&quot;                                &quot;4&quot;                               
+## [43] &quot;E86&quot;
+</code></pre>
+
+<h3 id="自訂停止詞">自訂停止詞</h3>
+
+<p><a href="https://blog.yjtseng.info/file/stop.txt">停止詞範例檔下載</a></p>
+
+<pre><code class="language-r">cutter = worker(stop_word =&quot;stop.txt&quot;)
+cutter[&quot;這是一段測試用文字，請不要再戰長庚資管了&quot;]
+</code></pre>
+
+<pre><code>##  [1] &quot;U&quot;    &quot;9019&quot; &quot;U&quot;    &quot;662&quot;  &quot;F&quot;    &quot;U&quot;    &quot;4&quot;    &quot;E00&quot;  &quot;U&quot;    &quot;6&quot;   
+## [11] &quot;BB5&quot;  &quot;U&quot;    &quot;6&quot;    &quot;E2C&quot;  &quot;U&quot;    &quot;8&quot;    &quot;A66&quot;  &quot;U&quot;    &quot;7528&quot; &quot;U&quot;   
+## [21] &quot;6587&quot; &quot;U&quot;    &quot;5&quot;    &quot;B57&quot;  &quot;U&quot;    &quot;FF0C&quot; &quot;U&quot;    &quot;8&quot;    &quot;ACB&quot;  &quot;U&quot;   
+## [31] &quot;4&quot;    &quot;E0D&quot;  &quot;U&quot;    &quot;8981&quot; &quot;U&quot;    &quot;518&quot;  &quot;D&quot;    &quot;U&quot;    &quot;6230&quot; &quot;U&quot;   
+## [41] &quot;9577&quot; &quot;U&quot;    &quot;5&quot;    &quot;E9A&quot;  &quot;U&quot;    &quot;8&quot;    &quot;CC7&quot;  &quot;U&quot;    &quot;7&quot;    &quot;BA1&quot; 
+## [51] &quot;U&quot;    &quot;4&quot;    &quot;E86&quot;
+</code></pre>
+
+<h2 id="操作範例">操作範例</h2>
+
+<h3 id="載入需要做分詞的資料">載入需要做分詞的資料</h3>
+
+<pre><code class="language-r">library(rvest)
+</code></pre>
+
+<pre><code>## Loading required package: xml2
+</code></pre>
+
+<pre><code class="language-r">PTTNBA &lt;- &quot;https://www.ptt.cc/bbs/NBA/index.html&quot;
+pttContent &lt;- read_html(PTTNBA)
+post_title &lt;- pttContent %&gt;% html_nodes(&quot;.title&quot;) %&gt;% html_text()
+post_title
+</code></pre>
+
+<pre><code>##  [1] &quot;\n\t\t\t\n\t\t\t\t[BOX ] Bulls 91:97 Magic &lt;U+6578&gt;&lt;U+64DA&gt;\n\t\t\t\n\t\t\t&quot;                                                                                                                         
+##  [2] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+5916&gt;&lt;U+7D6E&gt;] LBJ&lt;U+5FD8&gt;&lt;U+4E0D&gt;&lt;U+4E86&gt;2010&lt;U+5E74&gt;&lt;U+96FB&gt;&lt;U+68AF&gt;&lt;U+9047&gt;&lt;U+5230&gt;&lt;U+7684&gt;&lt;U+4E00&gt;&lt;U+5E55&gt;(&lt;U+7B2C&gt;&lt;U+4E00&gt;&lt;U+6B21&gt;&lt;U+7A7F&gt;&lt;U+71B1&gt;&lt;U+706B&gt;&lt;U+7403&gt;&lt;U+8863&gt;&lt;U+56DE&gt;&lt;U+5230&gt;&lt;U+514B&gt;&lt;U+57CE&gt;)\n\t\t\t\n\t\t\t&quot;
+##  [3] &quot;\n\t\t\t\n\t\t\t\t(&lt;U+5DF2&gt;&lt;U+88AB&gt;namie810303&lt;U+522A&gt;&lt;U+9664&gt;) &lt;cool34&gt;1-5\n\t\t\t\n\t\t\t&quot;                                                                                                         
+##  [4] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+60C5&gt;&lt;U+5831&gt;] James:&lt;U+548C&gt;&lt;U+706B&gt;&lt;U+7BAD&gt;&lt;U+4EA4&gt;&lt;U+624B&gt;&lt;U+8981&gt;&lt;U+7279&gt;&lt;U+5225&gt;&lt;U+6CE8&gt;&lt;U+610F&gt;&lt;U+9632&gt;&lt;U+5B88&gt;&lt;U+6642&gt;&lt;U+5225&gt;&lt;U+72AF&gt;&lt;U+898F&gt;\n\t\t\t\n\t\t\t&quot;         
+##  [5] &quot;\n\t\t\t\n\t\t\t\t[BOX ] Mavericks 89:99 Suns &lt;U+6578&gt;&lt;U+64DA&gt;\n\t\t\t\n\t\t\t&quot;                                                                                                                      
+##  [6] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+82B1&gt;&lt;U+908A&gt;] &lt;U+5927&gt;V&lt;U+906D&gt;&lt;U+683C&gt;&lt;U+6797&gt;&lt;U+6253&gt;&lt;U+5230&gt;&lt;U+812B&gt;&lt;U+81FC&gt; &lt;U+8A18&gt;&lt;U+8005&gt;&lt;U+FF1A&gt;100&lt;U+6A13&gt;&lt;U+90FD&gt;&lt;U+807D&gt;&lt;U+5F97&gt;&lt;U+5230&gt;\n\t\t\t\n\t\t\t&quot;          
+##  [7] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+65B0&gt;&lt;U+805E&gt;] Tucker&lt;U+FF1A&gt;Harden&lt;U+7684&gt;&lt;U+5E6B&gt;&lt;U+52A9&gt;&lt;U+5F88&gt;&lt;U+5927&gt; &lt;U+8D0F&gt;&lt;U+7403&gt;&lt;U+56E0&gt;&lt;U+9632&gt;&lt;U+5B88&gt;\n\t\t\t\n\t\t\t&quot;                                          
+##  [8] &quot;\n\t\t\t\n\t\t\t\t(&lt;U+672C&gt;&lt;U+6587&gt;&lt;U+5DF2&gt;&lt;U+88AB&gt;&lt;U+522A&gt;&lt;U+9664&gt;) [QoGIVoQ]\n\t\t\t\n\t\t\t&quot;                                                                                                      
+##  [9] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+82B1&gt;&lt;U+908A&gt;] Hart&lt;U+62D2&gt;&lt;U+8AC7&gt;&lt;U+5224&gt;&lt;U+7F70&gt;:&lt;U+4E0D&gt;&lt;U+60F3&gt;&lt;U+640D&gt;&lt;U+5931&gt;&lt;U+91D1&gt;&lt;U+9322&gt; &lt;U+6240&gt;&lt;U+4EE5&gt;&lt;U+6C92&gt;&lt;U+5565&gt;&lt;U+53EF&gt;&lt;U+8AAA&gt;\n\t\t\t\n\t\t\t&quot;         
+## [10] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+65B0&gt;&lt;U+805E&gt;] &lt;U+6B50&gt;&lt;U+5C3C&gt;&lt;U+723E&gt;&lt;U+653E&gt;&lt;U+8A71&gt;&lt;U+5FC5&gt;&lt;U+52DD&gt;&lt;U+52C7&gt;&lt;U+58EB&gt; &lt;U+67EF&gt;&lt;U+745E&gt;&lt;U+FF1A&gt;&lt;U+4ED6&gt;&lt;U+932F&gt;&lt;U+5F97&gt;&lt;U+96E2&gt;&lt;U+8B5C&gt;\n\t\t\t\n\t\t\t&quot;      
+## [11] &quot;\n\t\t\t\n\t\t\t\t(&lt;U+672C&gt;&lt;U+6587&gt;&lt;U+5DF2&gt;&lt;U+88AB&gt;&lt;U+522A&gt;&lt;U+9664&gt;) [AhUtopian]\n\t\t\t\n\t\t\t&quot;                                                                                                    
+## [12] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+516C&gt;&lt;U+544A&gt;] NBA &lt;U+677F&gt; &lt;U+958B&gt;&lt;U+59CB&gt;&lt;U+8209&gt;&lt;U+8FA6&gt;&lt;U+6A02&gt;&lt;U+900F&gt;!\n\t\t\t\n\t\t\t&quot;                                                                                 
+## [13] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+82B1&gt;&lt;U+908A&gt;] Gay&lt;U+FF1A&gt;&lt;U+611F&gt;&lt;U+89BA&gt;&lt;U+81EA&gt;&lt;U+5DF1&gt;&lt;U+633D&gt;&lt;U+56DE&gt;&lt;U+4E86&gt;&lt;U+8077&gt;&lt;U+696D&gt;&lt;U+751F&gt;&lt;U+6DAF&gt;&lt;U+FF0C&gt;&lt;U+50CF&gt;&lt;U+904E&gt;&lt;U+53BB&gt;&lt;U+90A3&gt;\n\t\t\t\n\t\t\t&quot;    
+## [14] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+5C08&gt;&lt;U+6B04&gt;] &lt;U+4E0D&gt;&lt;U+60F3&gt;&lt;U+8DDF&gt;&lt;U+516C&gt;&lt;U+5712&gt;&lt;U+4E00&gt;&lt;U+8D77&gt;&lt;U+8D70&gt;-Parker&lt;U+4E8B&gt;&lt;U+4EF6&gt;\n\t\t\t\n\t\t\t&quot;                                                        
+## [15] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+60C5&gt;&lt;U+5831&gt;] &lt;U+54C8&gt;&lt;U+767B&gt;&lt;U+706B&gt;&lt;U+7BAD&gt;&lt;U+751F&gt;&lt;U+6DAF&gt;50&lt;U+5206&gt;&lt;U+4EE5&gt;&lt;U+4E0A&gt;&lt;U+9054&gt;&lt;U+6210&gt;&lt;U+6BD4&gt;&lt;U+968A&gt;&lt;U+53F2&gt;&lt;U+4E0A&gt;&lt;U+6240&gt;&lt;U+6709&gt;&lt;U+524D&gt;&lt;U+8F29&gt;&lt;U+7E3D&gt;&lt;U+548C&gt;&lt;U+9084&gt;&lt;U+591A&gt;\n\t\t\t\n\t\t\t&quot;
+## [16] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+82B1&gt;&lt;U+908A&gt;] KG&lt;U+FF1A&gt;&lt;U+6211&gt;&lt;U+6559&gt;&lt;U+7403&gt;&lt;U+54E1&gt;&lt;U+9996&gt;&lt;U+5148&gt;&lt;U+662F&gt;&lt;U+6559&gt;&lt;U+614B&gt;&lt;U+5EA6&gt; \n\t\t\t\n\t\t\t&quot;                                                    
+## [17] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+65B0&gt;&lt;U+805E&gt;] &lt;U+8A79&gt;&lt;U+7687&gt;&lt;U+300C&gt;&lt;U+82B1&gt;&lt;U+5712&gt;&lt;U+8AD6&gt;&lt;U+300D&gt;&lt;U+6697&gt;&lt;U+793A&gt;&lt;U+53BB&gt;&lt;U+5C3C&gt;&lt;U+514B&gt;&lt;U+7D42&gt;&lt;U+8001&gt;&lt;U+FF1F&gt; \n\t\t\t\n\t\t\t&quot;                      
+## [18] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+65B0&gt;&lt;U+805E&gt;] &lt;U+5927&gt;&lt;U+9B0D&gt;&lt;U+5B50&gt;&lt;U+7684&gt;&lt;U+5E78&gt;&lt;U+904B&gt;&lt;U+661F&gt;&lt;U+FF1F&gt;&lt;U+9019&gt;&lt;U+88C1&gt;&lt;U+5224&gt;&lt;U+57F7&gt;&lt;U+6CD5&gt;&lt;U+706B&gt;&lt;U+7BAD&gt;12&lt;U+9023&gt;&lt;U+52DD&gt;&lt;U+4E2D&gt;\n\t\t\t\n\t\t\t&quot;
+## [19] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+516C&gt;&lt;U+544A&gt;] &lt;U+677F&gt;&lt;U+898F&gt;v6.2\n\t\t\t\n\t\t\t&quot;                                                                                                                           
+## [20] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+60C5&gt;&lt;U+5831&gt;] SEASON Schedule &lt;U+8CFD&gt;&lt;U+7A0B&gt; December 18&lt;U+2013&gt;19\n\t\t\t\n\t\t\t&quot;                                                                                         
+## [21] &quot;\n\t\t\t\n\t\t\t\t[&lt;U+60C5&gt;&lt;U+5831&gt;] NBA Standings (2018.12.12)\n\t\t\t\n\t\t\t&quot;
+</code></pre>
+
+<h3 id="斷詞-1">斷詞</h3>
+
+<pre><code class="language-r">cutter &lt;- worker()
+cutter[post_title] ## 不分行輸出
+</code></pre>
+
+<pre><code>##   [1] &quot;BOX&quot;                                             
+##   [2] &quot;Bulls&quot;                                           
+##   [3] &quot;91&quot;                                              
+##   [4] &quot;97&quot;                                              
+##   [5] &quot;Magic&quot;                                           
+##   [6] &quot;\346\225\270\346\223\232&quot;                        
+##   [7] &quot;\345\244\226\347\265\256&quot;                        
+##   [8] &quot;LBJ&quot;                                             
+##   [9] &quot;\345\277\230\344\270\215\344\272\206&quot;            
+##  [10] &quot;2010&quot;                                            
+##  [11] &quot;\345\271\264&quot;                                    
+##  [12] &quot;\351\233\273\346\242\257&quot;                        
+##  [13] &quot;\351\201\207\345\210\260&quot;                        
+##  [14] &quot;\347\232\204&quot;                                    
+##  [15] &quot;\344\270\200\345\271\225&quot;                        
+##  [16] &quot;\347\254\254\344\270\200\346\254\241&quot;            
+##  [17] &quot;\347\251\277&quot;                                    
+##  [18] &quot;\347\206\261\347\201\253&quot;                        
+##  [19] &quot;\347\220\203\350\241\243&quot;                        
+##  [20] &quot;\345\233\236\345\210\260&quot;                        
+##  [21] &quot;\345\205\213\345\237\216&quot;                        
+##  [22] &quot;\345\267\262&quot;                                    
+##  [23] &quot;\350\242\253&quot;                                    
+##  [24] &quot;namie810303&quot;                                     
+##  [25] &quot;\345\210\252\351\231\244&quot;                        
+##  [26] &quot;cool34&quot;                                          
+##  [27] &quot;1-5&quot;                                             
+##  [28] &quot;\346\203\205\345\240\261&quot;                        
+##  [29] &quot;James&quot;                                           
+##  [30] &quot;\345\222\214&quot;                                    
+##  [31] &quot;\347\201\253\347\256\255&quot;                        
+##  [32] &quot;\344\272\244\346\211\213&quot;                        
+##  [33] &quot;\350\246\201&quot;                                    
+##  [34] &quot;\347\211\271\345\210\245\346\263\250\346\204\217&quot;
+##  [35] &quot;\351\230\262&quot;                                    
+##  [36] &quot;\345\256\210\346\231\202&quot;                        
+##  [37] &quot;\345\210\245&quot;                                    
+##  [38] &quot;\347\212\257\350\246\217&quot;                        
+##  [39] &quot;BOX&quot;                                             
+##  [40] &quot;Mavericks&quot;                                       
+##  [41] &quot;89&quot;                                              
+##  [42] &quot;99&quot;                                              
+##  [43] &quot;Suns&quot;                                            
+##  [44] &quot;\346\225\270\346\223\232&quot;                        
+##  [45] &quot;\350\212\261\351\202\212&quot;                        
+##  [46] &quot;\345\244\247&quot;                                    
+##  [47] &quot;V&quot;                                               
+##  [48] &quot;\351\201\255&quot;                                    
+##  [49] &quot;\346\240\274\346\236\227&quot;                        
+##  [50] &quot;\346\211\223\345\210\260&quot;                        
+##  [51] &quot;\350\204\253\350\207\274&quot;                        
+##  [52] &quot;\350\250\230\350\200\205&quot;                        
+##  [53] &quot;\357\274\232&quot;                                    
+##  [54] &quot;100&quot;                                             
+##  [55] &quot;\346\250\223&quot;                                    
+##  [56] &quot;\351\203\275&quot;                                    
+##  [57] &quot;\350\201\275&quot;                                    
+##  [58] &quot;\345\276\227\345\210\260&quot;                        
+##  [59] &quot;\346\226\260\350\201\236&quot;                        
+##  [60] &quot;Tucker&quot;                                          
+##  [61] &quot;\357\274\232&quot;                                    
+##  [62] &quot;Harden&quot;                                          
+##  [63] &quot;\347\232\204&quot;                                    
+##  [64] &quot;\345\271\253\345\212\251&quot;                        
+##  [65] &quot;\345\276\210\345\244\247&quot;                        
+##  [66] &quot;\350\264\217\347\220\203&quot;                        
+##  [67] &quot;\345\233\240&quot;                                    
+##  [68] &quot;\351\230\262\345\256\210&quot;                        
+##  [69] &quot;\346\234\254\346\226\207&quot;                        
+##  [70] &quot;\345\267\262&quot;                                    
+##  [71] &quot;\350\242\253&quot;                                    
+##  [72] &quot;\345\210\252\351\231\244&quot;                        
+##  [73] &quot;QoGIVoQ&quot;                                         
+##  [74] &quot;\350\212\261\351\202\212&quot;                        
+##  [75] &quot;Hart&quot;                                            
+##  [76] &quot;\346\213\222\350\253\207&quot;                        
+##  [77] &quot;\345\210\244\347\275\260&quot;                        
+##  [78] &quot;\344\270\215\346\203\263&quot;                        
+##  [79] &quot;\346\220\215\345\244\261&quot;                        
+##  [80] &quot;\351\207\221\351\214\242&quot;                        
+##  [81] &quot;\346\211\200\344\273\245&quot;                        
+##  [82] &quot;\346\262\222&quot;                                    
+##  [83] &quot;\345\225\245&quot;                                    
+##  [84] &quot;\345\217\257\350\252\252&quot;                        
+##  [85] &quot;\346\226\260\350\201\236&quot;                        
+##  [86] &quot;\346\255\220\345\260\274\347\210\276&quot;            
+##  [87] &quot;\346\224\276\350\251\261&quot;                        
+##  [88] &quot;\345\277\205\345\213\235&quot;                        
+##  [89] &quot;\345\213\207\345\243\253&quot;                        
+##  [90] &quot;\346\237\257\347\221\236&quot;                        
+##  [91] &quot;\357\274\232&quot;                                    
+##  [92] &quot;\344\273\226&quot;                                    
+##  [93] &quot;\351\214\257&quot;                                    
+##  [94] &quot;\345\276\227&quot;                                    
+##  [95] &quot;\351\233\242\350\255\234&quot;                        
+##  [96] &quot;\346\234\254\346\226\207&quot;                        
+##  [97] &quot;\345\267\262&quot;                                    
+##  [98] &quot;\350\242\253&quot;                                    
+##  [99] &quot;\345\210\252\351\231\244&quot;                        
+## [100] &quot;AhUtopian&quot;                                       
+## [101] &quot;\345\205\254\345\221\212&quot;                        
+## [102] &quot;NBA&quot;                                             
+## [103] &quot;\346\235\277&quot;                                    
+## [104] &quot;\351\226\213\345\247\213&quot;                        
+## [105] &quot;\350\210\211\350\276\246&quot;                        
+## [106] &quot;\346\250\202\351\200\217&quot;                        
+## [107] &quot;\350\212\261\351\202\212&quot;                        
+## [108] &quot;Gay&quot;                                             
+## [109] &quot;\357\274\232&quot;                                    
+## [110] &quot;\346\204\237\350\246\272&quot;                        
+## [111] &quot;\350\207\252\345\267\261&quot;                        
+## [112] &quot;\346\214\275\345\233\236&quot;                        
+## [113] &quot;\344\272\206&quot;                                    
+## [114] &quot;\350\201\267\346\245\255\347\224\237\346\266\257&quot;
+## [115] &quot;\357\274\214&quot;                                    
+## [116] &quot;\345\203\217&quot;                                    
+## [117] &quot;\351\201\216\345\216\273&quot;                        
+## [118] &quot;\351\202\243&quot;                                    
+## [119] &quot;\345\260\210\346\254\204&quot;                        
+## [120] &quot;\344\270\215\346\203\263&quot;                        
+## [121] &quot;\350\267\237&quot;                                    
+## [122] &quot;\345\205\254\345\234\222&quot;                        
+## [123] &quot;\344\270\200\350\265\267&quot;                        
+## [124] &quot;\350\265\260&quot;                                    
+## [125] &quot;Parker&quot;                                          
+## [126] &quot;\344\272\213\344\273\266&quot;                        
+## [127] &quot;\346\203\205\345\240\261&quot;                        
+## [128] &quot;\345\223\210\347\231\273&quot;                        
+## [129] &quot;\347\201\253\347\256\255&quot;                        
+## [130] &quot;\347\224\237\346\266\257&quot;                        
+## [131] &quot;50&quot;                                              
+## [132] &quot;\345\210\206&quot;                                    
+## [133] &quot;\344\273\245\344\270\212&quot;                        
+## [134] &quot;\351\201\224\346\210\220&quot;                        
+## [135] &quot;\346\257\224\351\232\212&quot;                        
+## [136] &quot;\345\217\262\344\270\212&quot;                        
+## [137] &quot;\346\211\200\346\234\211&quot;                        
+## [138] &quot;\345\211\215\350\274\251&quot;                        
+## [139] &quot;\347\270\275\345\222\214&quot;                        
+## [140] &quot;\351\202\204\345\244\232&quot;                        
+## [141] &quot;\350\212\261\351\202\212&quot;                        
+## [142] &quot;KG&quot;                                              
+## [143] &quot;\357\274\232&quot;                                    
+## [144] &quot;\346\210\221&quot;                                    
+## [145] &quot;\346\225\231&quot;                                    
+## [146] &quot;\347\220\203\345\223\241&quot;                        
+## [147] &quot;\351\246\226\345\205\210&quot;                        
+## [148] &quot;\346\230\257&quot;                                    
+## [149] &quot;\346\225\231&quot;                                    
+## [150] &quot;\346\205\213\345\272\246&quot;                        
+## [151] &quot;\346\226\260\350\201\236&quot;                        
+## [152] &quot;\350\251\271\347\232\207&quot;                        
+## [153] &quot;\343\200\214&quot;                                    
+## [154] &quot;\350\212\261\345\234\222&quot;                        
+## [155] &quot;\350\253\226&quot;                                    
+## [156] &quot;\343\200\215&quot;                                    
+## [157] &quot;\346\232\227\347\244\272&quot;                        
+## [158] &quot;\345\216\273&quot;                                    
+## [159] &quot;\345\260\274\345\205\213&quot;                        
+## [160] &quot;\347\265\202\350\200\201&quot;                        
+## [161] &quot;\357\274\237&quot;                                    
+## [162] &quot;\346\226\260\350\201\236&quot;                        
+## [163] &quot;\345\244\247\351\254\215\345\255\220&quot;            
+## [164] &quot;\347\232\204&quot;                                    
+## [165] &quot;\345\271\270\351\201\213\346\230\237&quot;            
+## [166] &quot;\357\274\237&quot;                                    
+## [167] &quot;\351\200\231&quot;                                    
+## [168] &quot;\350\243\201\345\210\244&quot;                        
+## [169] &quot;\345\237\267\346\263\225&quot;                        
+## [170] &quot;\347\201\253\347\256\255&quot;                        
+## [171] &quot;12&quot;                                              
+## [172] &quot;\351\200\243\345\213\235&quot;                        
+## [173] &quot;\344\270\255&quot;                                    
+## [174] &quot;\345\205\254\345\221\212&quot;                        
+## [175] &quot;\346\235\277\350\246\217&quot;                        
+## [176] &quot;v6&quot;                                              
+## [177] &quot;2&quot;                                               
+## [178] &quot;\346\203\205\345\240\261&quot;                        
+## [179] &quot;SEASON&quot;                                          
+## [180] &quot;Schedule&quot;                                        
+## [181] &quot;\350\263\275\347\250\213&quot;                        
+## [182] &quot;December&quot;                                        
+## [183] &quot;18&quot;                                              
+## [184] &quot;\342\200\223&quot;                                    
+## [185] &quot;19&quot;                                              
+## [186] &quot;\346\203\205\345\240\261&quot;                        
+## [187] &quot;NBA&quot;                                             
+## [188] &quot;Standings&quot;                                       
+## [189] &quot;2018.12.12&quot;
+</code></pre>
+
+<pre><code class="language-r">cutter$bylines&lt;-T
+cutter[post_title] ## 分行輸出
+</code></pre>
+
+<pre><code>## [[1]]
+## [1] &quot;BOX&quot;                      &quot;Bulls&quot;                   
+## [3] &quot;91&quot;                       &quot;97&quot;                      
+## [5] &quot;Magic&quot;                    &quot;\346\225\270\346\223\232&quot;
+## 
+## [[2]]
+##  [1] &quot;\345\244\226\347\265\256&quot;            
+##  [2] &quot;LBJ&quot;                                 
+##  [3] &quot;\345\277\230\344\270\215\344\272\206&quot;
+##  [4] &quot;2010&quot;                                
+##  [5] &quot;\345\271\264&quot;                        
+##  [6] &quot;\351\233\273\346\242\257&quot;            
+##  [7] &quot;\351\201\207\345\210\260&quot;            
+##  [8] &quot;\347\232\204&quot;                        
+##  [9] &quot;\344\270\200\345\271\225&quot;            
+## [10] &quot;\347\254\254\344\270\200\346\254\241&quot;
+## [11] &quot;\347\251\277&quot;                        
+## [12] &quot;\347\206\261\347\201\253&quot;            
+## [13] &quot;\347\220\203\350\241\243&quot;            
+## [14] &quot;\345\233\236\345\210\260&quot;            
+## [15] &quot;\345\205\213\345\237\216&quot;            
+## 
+## [[3]]
+## [1] &quot;\345\267\262&quot;             &quot;\350\242\253&quot;            
+## [3] &quot;namie810303&quot;              &quot;\345\210\252\351\231\244&quot;
+## [5] &quot;cool34&quot;                   &quot;1-5&quot;                     
+## 
+## [[4]]
+##  [1] &quot;\346\203\205\345\240\261&quot;                        
+##  [2] &quot;James&quot;                                           
+##  [3] &quot;\345\222\214&quot;                                    
+##  [4] &quot;\347\201\253\347\256\255&quot;                        
+##  [5] &quot;\344\272\244\346\211\213&quot;                        
+##  [6] &quot;\350\246\201&quot;                                    
+##  [7] &quot;\347\211\271\345\210\245\346\263\250\346\204\217&quot;
+##  [8] &quot;\351\230\262&quot;                                    
+##  [9] &quot;\345\256\210\346\231\202&quot;                        
+## [10] &quot;\345\210\245&quot;                                    
+## [11] &quot;\347\212\257\350\246\217&quot;                        
+## 
+## [[5]]
+## [1] &quot;BOX&quot;                      &quot;Mavericks&quot;               
+## [3] &quot;89&quot;                       &quot;99&quot;                      
+## [5] &quot;Suns&quot;                     &quot;\346\225\270\346\223\232&quot;
+## 
+## [[6]]
+##  [1] &quot;\350\212\261\351\202\212&quot; &quot;\345\244\247&quot;            
+##  [3] &quot;V&quot;                        &quot;\351\201\255&quot;            
+##  [5] &quot;\346\240\274\346\236\227&quot; &quot;\346\211\223\345\210\260&quot;
+##  [7] &quot;\350\204\253\350\207\274&quot; &quot;\350\250\230\350\200\205&quot;
+##  [9] &quot;\357\274\232&quot;             &quot;100&quot;                     
+## [11] &quot;\346\250\223&quot;             &quot;\351\203\275&quot;            
+## [13] &quot;\350\201\275&quot;             &quot;\345\276\227\345\210\260&quot;
+## 
+## [[7]]
+##  [1] &quot;\346\226\260\350\201\236&quot; &quot;Tucker&quot;                  
+##  [3] &quot;\357\274\232&quot;             &quot;Harden&quot;                  
+##  [5] &quot;\347\232\204&quot;             &quot;\345\271\253\345\212\251&quot;
+##  [7] &quot;\345\276\210\345\244\247&quot; &quot;\350\264\217\347\220\203&quot;
+##  [9] &quot;\345\233\240&quot;             &quot;\351\230\262\345\256\210&quot;
+## 
+## [[8]]
+## [1] &quot;\346\234\254\346\226\207&quot; &quot;\345\267\262&quot;            
+## [3] &quot;\350\242\253&quot;             &quot;\345\210\252\351\231\244&quot;
+## [5] &quot;QoGIVoQ&quot;                 
+## 
+## [[9]]
+##  [1] &quot;\350\212\261\351\202\212&quot; &quot;Hart&quot;                    
+##  [3] &quot;\346\213\222\350\253\207&quot; &quot;\345\210\244\347\275\260&quot;
+##  [5] &quot;\344\270\215\346\203\263&quot; &quot;\346\220\215\345\244\261&quot;
+##  [7] &quot;\351\207\221\351\214\242&quot; &quot;\346\211\200\344\273\245&quot;
+##  [9] &quot;\346\262\222&quot;             &quot;\345\225\245&quot;            
+## [11] &quot;\345\217\257\350\252\252&quot;
+## 
+## [[10]]
+##  [1] &quot;\346\226\260\350\201\236&quot;            
+##  [2] &quot;\346\255\220\345\260\274\347\210\276&quot;
+##  [3] &quot;\346\224\276\350\251\261&quot;            
+##  [4] &quot;\345\277\205\345\213\235&quot;            
+##  [5] &quot;\345\213\207\345\243\253&quot;            
+##  [6] &quot;\346\237\257\347\221\236&quot;            
+##  [7] &quot;\357\274\232&quot;                        
+##  [8] &quot;\344\273\226&quot;                        
+##  [9] &quot;\351\214\257&quot;                        
+## [10] &quot;\345\276\227&quot;                        
+## [11] &quot;\351\233\242\350\255\234&quot;            
+## 
+## [[11]]
+## [1] &quot;\346\234\254\346\226\207&quot; &quot;\345\267\262&quot;            
+## [3] &quot;\350\242\253&quot;             &quot;\345\210\252\351\231\244&quot;
+## [5] &quot;AhUtopian&quot;               
+## 
+## [[12]]
+## [1] &quot;\345\205\254\345\221\212&quot; &quot;NBA&quot;                     
+## [3] &quot;\346\235\277&quot;             &quot;\351\226\213\345\247\213&quot;
+## [5] &quot;\350\210\211\350\276\246&quot; &quot;\346\250\202\351\200\217&quot;
+## 
+## [[13]]
+##  [1] &quot;\350\212\261\351\202\212&quot;                        
+##  [2] &quot;Gay&quot;                                             
+##  [3] &quot;\357\274\232&quot;                                    
+##  [4] &quot;\346\204\237\350\246\272&quot;                        
+##  [5] &quot;\350\207\252\345\267\261&quot;                        
+##  [6] &quot;\346\214\275\345\233\236&quot;                        
+##  [7] &quot;\344\272\206&quot;                                    
+##  [8] &quot;\350\201\267\346\245\255\347\224\237\346\266\257&quot;
+##  [9] &quot;\357\274\214&quot;                                    
+## [10] &quot;\345\203\217&quot;                                    
+## [11] &quot;\351\201\216\345\216\273&quot;                        
+## [12] &quot;\351\202\243&quot;                                    
+## 
+## [[14]]
+## [1] &quot;\345\260\210\346\254\204&quot; &quot;\344\270\215\346\203\263&quot;
+## [3] &quot;\350\267\237&quot;             &quot;\345\205\254\345\234\222&quot;
+## [5] &quot;\344\270\200\350\265\267&quot; &quot;\350\265\260&quot;            
+## [7] &quot;Parker&quot;                   &quot;\344\272\213\344\273\266&quot;
+## 
+## [[15]]
+##  [1] &quot;\346\203\205\345\240\261&quot; &quot;\345\223\210\347\231\273&quot;
+##  [3] &quot;\347\201\253\347\256\255&quot; &quot;\347\224\237\346\266\257&quot;
+##  [5] &quot;50&quot;                       &quot;\345\210\206&quot;            
+##  [7] &quot;\344\273\245\344\270\212&quot; &quot;\351\201\224\346\210\220&quot;
+##  [9] &quot;\346\257\224\351\232\212&quot; &quot;\345\217\262\344\270\212&quot;
+## [11] &quot;\346\211\200\346\234\211&quot; &quot;\345\211\215\350\274\251&quot;
+## [13] &quot;\347\270\275\345\222\214&quot; &quot;\351\202\204\345\244\232&quot;
+## 
+## [[16]]
+##  [1] &quot;\350\212\261\351\202\212&quot; &quot;KG&quot;                      
+##  [3] &quot;\357\274\232&quot;             &quot;\346\210\221&quot;            
+##  [5] &quot;\346\225\231&quot;             &quot;\347\220\203\345\223\241&quot;
+##  [7] &quot;\351\246\226\345\205\210&quot; &quot;\346\230\257&quot;            
+##  [9] &quot;\346\225\231&quot;             &quot;\346\205\213\345\272\246&quot;
+## 
+## [[17]]
+##  [1] &quot;\346\226\260\350\201\236&quot; &quot;\350\251\271\347\232\207&quot;
+##  [3] &quot;\343\200\214&quot;             &quot;\350\212\261\345\234\222&quot;
+##  [5] &quot;\350\253\226&quot;             &quot;\343\200\215&quot;            
+##  [7] &quot;\346\232\227\347\244\272&quot; &quot;\345\216\273&quot;            
+##  [9] &quot;\345\260\274\345\205\213&quot; &quot;\347\265\202\350\200\201&quot;
+## [11] &quot;\357\274\237&quot;            
+## 
+## [[18]]
+##  [1] &quot;\346\226\260\350\201\236&quot;            
+##  [2] &quot;\345\244\247\351\254\215\345\255\220&quot;
+##  [3] &quot;\347\232\204&quot;                        
+##  [4] &quot;\345\271\270\351\201\213\346\230\237&quot;
+##  [5] &quot;\357\274\237&quot;                        
+##  [6] &quot;\351\200\231&quot;                        
+##  [7] &quot;\350\243\201\345\210\244&quot;            
+##  [8] &quot;\345\237\267\346\263\225&quot;            
+##  [9] &quot;\347\201\253\347\256\255&quot;            
+## [10] &quot;12&quot;                                  
+## [11] &quot;\351\200\243\345\213\235&quot;            
+## [12] &quot;\344\270\255&quot;                        
+## 
+## [[19]]
+## [1] &quot;\345\205\254\345\221\212&quot; &quot;\346\235\277\350\246\217&quot;
+## [3] &quot;v6&quot;                       &quot;2&quot;                       
+## 
+## [[20]]
+## [1] &quot;\346\203\205\345\240\261&quot; &quot;SEASON&quot;                  
+## [3] &quot;Schedule&quot;                 &quot;\350\263\275\347\250\213&quot;
+## [5] &quot;December&quot;                 &quot;18&quot;                      
+## [7] &quot;\342\200\223&quot;             &quot;19&quot;                      
+## 
+## [[21]]
+## [1] &quot;\346\203\205\345\240\261&quot; &quot;NBA&quot;                     
+## [3] &quot;Standings&quot;                &quot;2018.12.12&quot;
+</code></pre>
+
+<h3 id="分析斷詞後最常出現的詞彙">分析斷詞後最常出現的詞彙</h3>
+
+<pre><code class="language-r">cutter &lt;- worker()
+sort(table(cutter[post_title]),decreasing = T)
+</code></pre>
+
+<pre><code>## 
+##                                     \357\274\232 
+##                                                5 
+##                         \346\203\205\345\240\261 
+##                                                4 
+##                         \346\226\260\350\201\236 
+##                                                4 
+##                         \350\212\261\351\202\212 
+##                                                4 
+##                         \345\210\252\351\231\244 
+##                                                3 
+##                                     \345\267\262 
+##                                                3 
+##                         \347\201\253\347\256\255 
+##                                                3 
+##                                     \347\232\204 
+##                                                3 
+##                                     \350\242\253 
+##                                                3 
+##                                              BOX 
+##                                                2 
+##                                              NBA 
+##                                                2 
+##                         \344\270\215\346\203\263 
+##                                                2 
+##                         \345\205\254\345\221\212 
+##                                                2 
+##                                     \346\225\231 
+##                                                2 
+##                         \346\225\270\346\223\232 
+##                                                2 
+##                         \346\234\254\346\226\207 
+##                                                2 
+##                                     \357\274\237 
+##                                                2 
+##                                              1-5 
+##                                                1 
+##                                              100 
+##                                                1 
+##                                               12 
+##                                                1 
+##                                               18 
+##                                                1 
+##                                               19 
+##                                                1 
+##                                                2 
+##                                                1 
+##                                             2010 
+##                                                1 
+##                                       2018.12.12 
+##                                                1 
+##                                               50 
+##                                                1 
+##                                               89 
+##                                                1 
+##                                               91 
+##                                                1 
+##                                               97 
+##                                                1 
+##                                               99 
+##                                                1 
+##                                        AhUtopian 
+##                                                1 
+##                                            Bulls 
+##                                                1 
+##                                         December 
+##                                                1 
+##                                              Gay 
+##                                                1 
+##                                           Harden 
+##                                                1 
+##                                             Hart 
+##                                                1 
+##                                            James 
+##                                                1 
+##                                               KG 
+##                                                1 
+##                                              LBJ 
+##                                                1 
+##                                            Magic 
+##                                                1 
+##                                        Mavericks 
+##                                                1 
+##                                           Parker 
+##                                                1 
+##                                          QoGIVoQ 
+##                                                1 
+##                                           SEASON 
+##                                                1 
+##                                         Schedule 
+##                                                1 
+##                                        Standings 
+##                                                1 
+##                                             Suns 
+##                                                1 
+##                                           Tucker 
+##                                                1 
+##                                                V 
+##                                                1 
+##                                           cool34 
+##                                                1 
+##                                      namie810303 
+##                                                1 
+##                                               v6 
+##                                                1 
+##                                     \342\200\223 
+##                                                1 
+##                                     \343\200\214 
+##                                                1 
+##                                     \343\200\215 
+##                                                1 
+##                         \344\270\200\345\271\225 
+##                                                1 
+##                         \344\270\200\350\265\267 
+##                                                1 
+##                                     \344\270\255 
+##                                                1 
+##                                     \344\272\206 
+##                                                1 
+##                         \344\272\213\344\273\266 
+##                                                1 
+##                         \344\272\244\346\211\213 
+##                                                1 
+##                                     \344\273\226 
+##                                                1 
+##                         \344\273\245\344\270\212 
+##                                                1 
+##                                     \345\203\217 
+##                                                1 
+##                         \345\205\213\345\237\216 
+##                                                1 
+##                         \345\205\254\345\234\222 
+##                                                1 
+##                                     \345\210\206 
+##                                                1 
+##                         \345\210\244\347\275\260 
+##                                                1 
+##                                     \345\210\245 
+##                                                1 
+##                         \345\211\215\350\274\251 
+##                                                1 
+##                         \345\213\207\345\243\253 
+##                                                1 
+##                                     \345\216\273 
+##                                                1 
+##                         \345\217\257\350\252\252 
+##                                                1 
+##                         \345\217\262\344\270\212 
+##                                                1 
+##                                     \345\222\214 
+##                                                1 
+##                         \345\223\210\347\231\273 
+##                                                1 
+##                                     \345\225\245 
+##                                                1 
+##                         \345\233\236\345\210\260 
+##                                                1 
+##                                     \345\233\240 
+##                                                1 
+##                         \345\237\267\346\263\225 
+##                                                1 
+##                         \345\244\226\347\265\256 
+##                                                1 
+##                                     \345\244\247 
+##                                                1 
+##             \345\244\247\351\254\215\345\255\220 
+##                                                1 
+##                         \345\256\210\346\231\202 
+##                                                1 
+##                         \345\260\210\346\254\204 
+##                                                1 
+##                         \345\260\274\345\205\213 
+##                                                1 
+##                         \345\271\253\345\212\251 
+##                                                1 
+##                                     \345\271\264 
+##                                                1 
+##             \345\271\270\351\201\213\346\230\237 
+##                                                1 
+##                         \345\276\210\345\244\247 
+##                                                1 
+##                                     \345\276\227 
+##                                                1 
+##                         \345\276\227\345\210\260 
+##                                                1 
+##                         \345\277\205\345\213\235 
+##                                                1 
+##             \345\277\230\344\270\215\344\272\206 
+##                                                1 
+##                         \346\204\237\350\246\272 
+##                                                1 
+##                         \346\205\213\345\272\246 
+##                                                1 
+##                                     \346\210\221 
+##                                                1 
+##                         \346\211\200\344\273\245 
+##                                                1 
+##                         \346\211\200\346\234\211 
+##                                                1 
+##                         \346\211\223\345\210\260 
+##                                                1 
+##                         \346\213\222\350\253\207 
+##                                                1 
+##                         \346\214\275\345\233\236 
+##                                                1 
+##                         \346\220\215\345\244\261 
+##                                                1 
+##                         \346\224\276\350\251\261 
+##                                                1 
+##                                     \346\230\257 
+##                                                1 
+##                         \346\232\227\347\244\272 
+##                                                1 
+##                                     \346\235\277 
+##                                                1 
+##                         \346\235\277\350\246\217 
+##                                                1 
+##                         \346\237\257\347\221\236 
+##                                                1 
+##                         \346\240\274\346\236\227 
+##                                                1 
+##                         \346\250\202\351\200\217 
+##                                                1 
+##                                     \346\250\223 
+##                                                1 
+##             \346\255\220\345\260\274\347\210\276 
+##                                                1 
+##                         \346\257\224\351\232\212 
+##                                                1 
+##                                     \346\262\222 
+##                                                1 
+##                         \347\206\261\347\201\253 
+##                                                1 
+## \347\211\271\345\210\245\346\263\250\346\204\217 
+##                                                1 
+##                         \347\212\257\350\246\217 
+##                                                1 
+##                         \347\220\203\345\223\241 
+##                                                1 
+##                         \347\220\203\350\241\243 
+##                                                1 
+##                         \347\224\237\346\266\257 
+##                                                1 
+##                                     \347\251\277 
+##                                                1 
+##             \347\254\254\344\270\200\346\254\241 
+##                                                1 
+##                         \347\265\202\350\200\201 
+##                                                1 
+##                         \347\270\275\345\222\214 
+##                                                1 
+## \350\201\267\346\245\255\347\224\237\346\266\257 
+##                                                1 
+##                                     \350\201\275 
+##                                                1 
+##                         \350\204\253\350\207\274 
+##                                                1 
+##                         \350\207\252\345\267\261 
+##                                                1 
+##                         \350\210\211\350\276\246 
+##                                                1 
+##                         \350\212\261\345\234\222 
+##                                                1 
+##                         \350\243\201\345\210\244 
+##                                                1 
+##                                     \350\246\201 
+##                                                1 
+##                         \350\250\230\350\200\205 
+##                                                1 
+##                         \350\251\271\347\232\207 
+##                                                1 
+##                                     \350\253\226 
+##                                                1 
+##                         \350\263\275\347\250\213 
+##                                                1 
+##                         \350\264\217\347\220\203 
+##                                                1 
+##                                     \350\265\260 
+##                                                1 
+##                                     \350\267\237 
+##                                                1 
+##                                     \351\200\231 
+##                                                1 
+##                         \351\200\243\345\213\235 
+##                                                1 
+##                         \351\201\207\345\210\260 
+##                                                1 
+##                         \351\201\216\345\216\273 
+##                                                1 
+##                         \351\201\224\346\210\220 
+##                                                1 
+##                                     \351\201\255 
+##                                                1 
+##                         \351\202\204\345\244\232 
+##                                                1 
+##                                     \351\202\243 
+##                                                1 
+##                                     \351\203\275 
+##                                                1 
+##                         \351\207\221\351\214\242 
+##                                                1 
+##                                     \351\214\257 
+##                                                1 
+##                         \351\226\213\345\247\213 
+##                                                1 
+##                                     \351\230\262 
+##                                                1 
+##                         \351\230\262\345\256\210 
+##                                                1 
+##                         \351\233\242\350\255\234 
+##                                                1 
+##                         \351\233\273\346\242\257 
+##                                                1 
+##                         \351\246\226\345\205\210 
+##                                                1 
+##                                     \357\274\214 
+##                                                1
+</code></pre>
+
+<h2 id="參考資料">參考資料</h2>
+
+<ul>
+<li><a href="https://github.com/qinwf/jiebaR">jiebaR GitHub</a></li>
+<li><a href="http://qinwenfeng.com/jiebaR/">jiebaR 使用指南</a></li>
+<li><a href="http://blog.infographics.tw/2016/05/text-visualization-with-jieba/">用結巴斷詞實作文字視覺化 — 以 2016 總統就職演講為例</a></li>
+</ul>
+
         </div>
 
         
+        
+        <div class="article-toc" style="display:none;">
+            <h3>Contents</h3>
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#有關結巴">有關結巴</a></li>
+<li><a href="#在r內使用結巴分詞">在R內使用結巴分詞</a>
+<ul>
+<li><a href="#安裝載入套件">安裝載入套件</a></li>
+<li><a href="#斷詞">斷詞</a></li>
+<li><a href="#詞性判別">詞性判別</a></li>
+<li><a href="#新增自訂詞彙">新增自訂詞彙</a></li>
+<li><a href="#自訂停止詞">自訂停止詞</a></li>
+</ul></li>
+<li><a href="#操作範例">操作範例</a>
+<ul>
+<li><a href="#載入需要做分詞的資料">載入需要做分詞的資料</a></li>
+<li><a href="#斷詞-1">斷詞</a></li>
+<li><a href="#分析斷詞後最常出現的詞彙">分析斷詞後最常出現的詞彙</a></li>
+</ul></li>
+<li><a href="#參考資料">參考資料</a></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
         
         
 
@@ -151,6 +1070,12 @@
     </div>
     <nav id="article-nav">
     
+    <a href="/post/regexpr/" id="article-nav-newer" class="article-nav-link-wrap">
+        <div class="article-nav-title"><span>&lt;</span>&nbsp;
+            正規表示式Regular Expression in R
+        </div>
+    </a>
+    
     
     <a href="/post/website/" id="article-nav-older" class="article-nav-link-wrap">
         <div class="article-nav-title">用blogdown建立個人網頁&nbsp;<span>&gt;</span></div>
@@ -160,43 +1085,17 @@
 </article>
 
         
-            <div id="disqus_thread"></div>
-<script>
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "rrrblog" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+            
         
     </section>
     <footer id="footer">
     <div class="outer">
         <div id="footer-info" class="inner">
-            &copy; 2017 有完沒完RRR&nbsp;
+            &copy; 2018 有完沒完RRR&nbsp;
             Powered by <a href="https://gohugo.io" target="_blank">Hugo</a> with theme <a href="https://github.com/carsonip/hugo-theme-minos">Minos</a>
         </div>
     </div>
     
-<script>
-window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-2407708-4', 'auto');
-ga('send', 'pageview');
-</script>
-<script async src='//www.google-analytics.com/analytics.js'></script>
-
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/tomorrow-night.min.css" integrity="sha256-2wL88NKUqvJi/ExflDzkzUumjUM73mcK2gBvBBeLvTk=" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js" integrity="sha256-KbfTjB0WZ8vvXngdpJGY3Yp3xKk+tttbqClO11anCIU=" crossorigin="anonymous"></script>

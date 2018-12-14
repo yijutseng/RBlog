@@ -3,82 +3,119 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/post/jiebar/</loc>
+    <loc>https://blog.yjtseng.info/post/jupyternotebook/</loc>
+    <lastmod>2018-12-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/post/dotdotdot/</loc>
+    <lastmod>2018-03-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/post/regexpr/</loc>
+    <lastmod>2018-03-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/post/jiebar/</loc>
     <lastmod>2017-08-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/website/</loc>
+    <loc>https://blog.yjtseng.info/post/website/</loc>
     <lastmod>2017-08-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/rblogdown/</loc>
+    <loc>https://blog.yjtseng.info/post/rblogdown/</loc>
     <lastmod>2017-08-17T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/blog/</loc>
-    <lastmod>2017-08-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
+    <loc>https://blog.yjtseng.info/post/2018-12-14-jupternotebook/</loc>
   </url>
   
   <url>
-    <loc>/tags/blogdown/</loc>
-    <lastmod>2017-08-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/jiebar/</loc>
-    <lastmod>2017-08-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/packages/</loc>
-    <lastmod>2017-08-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/post/</loc>
-    <lastmod>2017-08-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/r/</loc>
-    <lastmod>2017-08-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
+    <loc>https://blog.yjtseng.info/tags/blog/</loc>
     <lastmod>2017-08-17T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/categories/text-mining/</loc>
+    <loc>https://blog.yjtseng.info/tags/blogdown/</loc>
     <lastmod>2017-08-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/categories/website/</loc>
+    <loc>https://blog.yjtseng.info/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/categories/environment/</loc>
+    <lastmod>2018-12-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/tags/jiebar/</loc>
     <lastmod>2017-08-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/</loc>
+    <loc>https://blog.yjtseng.info/tags/packages/</loc>
     <lastmod>2017-08-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/post/</loc>
+    <lastmod>2018-12-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/tags/r/</loc>
+    <lastmod>2018-12-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/categories/r-language/</loc>
+    <lastmod>2018-03-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/tags/server/</loc>
+    <lastmod>2018-12-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/tags/</loc>
+    <lastmod>2017-08-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/categories/text-mining/</loc>
+    <lastmod>2017-08-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/categories/website/</loc>
+    <lastmod>2017-08-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.yjtseng.info/</loc>
+    <lastmod>2018-12-14T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

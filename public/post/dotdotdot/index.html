@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>R的arguments出現三個點是...? // 有完沒完RRR</title>
+
+        <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Yi-Ju Tseng">
+        <meta property="og:title" content="R的arguments出現三個點是...?" />
+    <meta property="og:description" content="" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://blog.yjtseng.info/post/dotdotdot/" />
+    
+
+    <link href="" rel="alternate" type="application/rss+xml" title="有完沒完RRR" />
+    <link rel="shortcut icon" href="/favicon.png">
+
+    <link href="https://blog.yjtseng.info/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+    <link href="https://blog.yjtseng.info/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="https://blog.yjtseng.info/css/style.css">
+
+    <link href="http://gmpg.org/xfn/11" rel="profile">
+    
+    <meta name="generator" content="Hugo 0.52" />
+</head>
+
+
+<body>
+<div id="container">
+    <header id="header">
+    <div id="header-outer" class="outer">
+        <div id="header-inner" class="inner">
+            <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
+            <a id="logo" class="logo-text" href="https://blog.yjtseng.info/">有完沒完RRR</a>
+            <nav id="main-nav">
+                
+                <a class="main-nav-link" href="/categories/index.html">Categories</a>
+                
+                <a class="main-nav-link" href="/tags/index.html">Tags</a>
+                
+                <a class="main-nav-link" href="https://yjtseng.info/">About</a>
+                
+            </nav>
+            <nav id="sub-nav">
+                <div id="search-form-wrap">
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+    <section id="main" class="outer">
+        <article class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        <header class="article-header">
+            <h1 class="article-title" itemprop="name">R的arguments出現三個點是...?</h1>
+        </header>
+        
+        <div class="article-meta">
+            <a href="/post/dotdotdot/" class="article-date">
+                <time datetime='2018-03-27T00:00:00.000&#43;00:00' itemprop="datePublished">2018-03-27</time>
+            </a>
+            
+            
+            <div class="post-categories">
+                <div class="article-category">
+                    
+                    
+                    <a class="article-category-link" href="../../categories/r-language">R language</a>
+                    
+                </div>
+            </div>
+            
+            
+            <div class="article-comment-link-wrap">
+                <a href="/post/dotdotdot/#disqus_thread" class="article-comment-link">Comments</a>
+            </div>
+            
+        </div>
+        <div class="article-entry" itemprop="articleBody">
+            
+
+<h2 id="r函數介紹">R函數介紹</h2>
+
+<p>需要先介紹怎麼在R裡面寫函數</p>
+
+<pre><code class="language-r">f &lt;- function(...) { 
+  names(list(...)) 
+} 
+</code></pre>
+
+<p>上述程式碼中，·<code>f</code>是一個使用者自訂函數，就像java裡面的method，而<strong>…</strong>的功能，則是讓<code>f</code>函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。</p>
+
+<h2 id="使用範例一">&hellip;使用範例一</h2>
+
+<p>舉例來說，若執行<code>f(a = 1, b = 2)</code>，a和b這兩個參數可以直接傳到<code>list()</code>函數中，變成<code>names(list(a=1,b=2))</code>，意即生成一個list，內有兩個元素，a=1以及b=2。</p>
+
+<pre><code class="language-r">f(a = 1, b = 2)
+</code></pre>
+
+<pre><code>## [1] &quot;a&quot; &quot;b&quot;
+</code></pre>
+
+<pre><code class="language-r">names(list(a=1,b=2)) #輸出相同
+</code></pre>
+
+<pre><code>## [1] &quot;a&quot; &quot;b&quot;
+</code></pre>
+
+<h2 id="使用範例二">&hellip;使用範例二</h2>
+
+<pre><code class="language-r">addPercent &lt;- function(x, mult = 100, ...){ 
+  percent &lt;- round(x * mult, ...) 
+  paste0(percent, &quot;%&quot;) 
+}
+</code></pre>
+
+<p>在上述程式碼中，<code>addPercent</code>是一個使用者自訂函數，<strong>…</strong>的功能讓<code>addPercent</code>函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。</p>
+
+<pre><code class="language-r">addPercent(c(0.5887,0.6925), digits = 2)
+</code></pre>
+
+<pre><code>## [1] &quot;58.87%&quot; &quot;69.25%&quot;
+</code></pre>
+
+<pre><code class="language-r">addPercent(c(0.5887,0.6925), digits = 1)
+</code></pre>
+
+<pre><code>## [1] &quot;58.9%&quot; &quot;69.2%&quot;
+</code></pre>
+
+<p>因此在執行<code>addPercent(c(0.5887,0.6925), digits = 2)</code>時，<code>digits</code>參數被傳遞到自定義函數<code>addPercent</code>中的<code>round</code>函數內，變成<code>round</code>函數中的參數。
+在<code>round</code>函數中，<code>digits</code>參數的功能是設定四捨五入的位數，因此<code>digits = 2</code>是指四捨五入到小數點第二位，<code>digits = 1</code>是指四捨五入到小數點第一位。</p>
+
+<h2 id="使用範例三">&hellip;使用範例三</h2>
+
+<pre><code class="language-r">HelloWorld &lt;- function(...) {
+  arguments &lt;- list(...) 
+  paste(arguments)
+} 
+</code></pre>
+
+<pre><code class="language-r">HelloWorld(&quot;Hello&quot;, &quot;World&quot;, &quot;!&quot;,&quot;~&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;Hello&quot; &quot;World&quot; &quot;!&quot;     &quot;~&quot;
+</code></pre>
+
+        </div>
+
+        
+        
+        <div class="article-toc" style="display:none;">
+            <h3>Contents</h3>
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#r函數介紹">R函數介紹</a></li>
+<li><a href="#使用範例一">&hellip;使用範例一</a></li>
+<li><a href="#使用範例二">&hellip;使用範例二</a></li>
+<li><a href="#使用範例三">&hellip;使用範例三</a></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+        
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+        <script>
+            (function() {
+                var $toc = $('#TableOfContents');
+                if ($toc.length > 0) {
+                    var $window = $(window);
+
+                    function onScroll(){
+                        var currentScroll = $window.scrollTop();
+                        var h = $('.article-entry h1, .article-entry h2, .article-entry h3, .article-entry h4, .article-entry h5, .article-entry h6');
+                        var id = "";
+                        h.each(function (i, e) {
+                            e = $(e);
+                            if (e.offset().top - 10 <= currentScroll) {
+                                id = e.attr('id');
+                            }
+                        });
+                        var active = $toc.find('a.active');
+                        if (active.length == 1 && active.eq(0).attr('href') == '#' + id) return true;
+
+                        active.each(function (i, e) {
+                            $(e).removeClass('active').siblings('ul').hide();
+                        });
+                        $toc.find('a[href="#' + id + '"]').parentsUntil('#TableOfContents').each(function (i, e) {
+                            $(e).children('a').addClass('active').siblings('ul').show();
+                        });
+                    }
+
+                    $window.on('scroll', onScroll);
+                    $(document).ready(function() {
+                        $toc.find('a').parent('li').find('ul').hide();
+                        onScroll();
+                        document.getElementsByClassName('article-toc')[0].style.display = '';
+                    });
+                }
+            })();
+        </script>
+        
+
+
+        
+        <footer class="article-footer">
+            <ul class="article-tag-list">
+                
+                <li class="article-tag-list-item">
+                    <a class="article-tag-list-link" href="../../tags/r">R
+                    </a>
+                </li>
+                
+            </ul>
+        </footer>
+        
+    </div>
+    <nav id="article-nav">
+    
+    <a href="/post/jupyternotebook/" id="article-nav-newer" class="article-nav-link-wrap">
+        <div class="article-nav-title"><span>&lt;</span>&nbsp;
+            在Ubuntu伺服器架設Jupyter Notebook
+        </div>
+    </a>
+    
+    
+    <a href="/post/regexpr/" id="article-nav-older" class="article-nav-link-wrap">
+        <div class="article-nav-title">正規表示式Regular Expression in R&nbsp;<span>&gt;</span></div>
+    </a>
+    
+</nav>
+</article>
+
+        
+            
+        
+    </section>
+    <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 有完沒完RRR&nbsp;
+            Powered by <a href="https://gohugo.io" target="_blank">Hugo</a> with theme <a href="https://github.com/carsonip/hugo-theme-minos">Minos</a>
+        </div>
+    </div>
+    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/tomorrow-night.min.css" integrity="sha256-2wL88NKUqvJi/ExflDzkzUumjUM73mcK2gBvBBeLvTk=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js" integrity="sha256-KbfTjB0WZ8vvXngdpJGY3Yp3xKk+tttbqClO11anCIU=" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    <script>
+        document.getElementById('main-nav-toggle').addEventListener('click', function () {
+            var header = document.getElementById('header');
+            if (header.classList.contains('mobile-on')) {
+                header.classList.remove('mobile-on');
+            } else {
+                header.classList.add('mobile-on');
+            }
+        });
+    </script>
+</footer>
+</div>
+</body>
+</html>

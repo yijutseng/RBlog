@@ -2,22 +2,63 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Blog on 有完沒完RRR</title>
-    <link>/tags/blog/</link>
+    <link>https://blog.yjtseng.info/tags/blog/</link>
     <description>Recent content in Blog on 有完沒完RRR</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
     <lastBuildDate>Thu, 17 Aug 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/blog/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="https://blog.yjtseng.info/tags/blog/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>開始用blogdown寫blog啦</title>
-      <link>/post/rblogdown/</link>
+      <link>https://blog.yjtseng.info/post/rblogdown/</link>
       <pubDate>Thu, 17 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>/post/rblogdown/</guid>
-      <description>忙一忙突然又想起blogdown這個packages，今天終於下定決心開始，不知道會持續多久&amp;hellip;.. blogdown blogdown是基於R M</description>
+      <guid>https://blog.yjtseng.info/post/rblogdown/</guid>
+      <description>
+
+&lt;p&gt;忙一忙突然又想起blogdown這個packages，今天終於下定決心開始，不知道會持續多久&amp;hellip;..&lt;/p&gt;
+
+&lt;h3 id=&#34;blogdown&#34;&gt;blogdown&lt;/h3&gt;
+
+&lt;p&gt;blogdown是基於R Markdown和Hugo開發的R package，簡單來說是讓你可以用R Markdown寫Blog的好幫手。先前用過姊妹套件&lt;a href=&#34;https://bookdown.org/yihui/bookdown/&#34;&gt;bookdown&lt;/a&gt;寫了&lt;a href=&#34;yijutseng.github.io/DataScienceRBook/&#34;&gt;資料科學與R語言&lt;/a&gt;電子書，用來介紹R語言的使用非常方便，不用再辛苦的剪下貼上，也不用擔心程式碼沒上色，導致不清不楚讀者沒耐心看(只有我沒耐心)。&lt;/p&gt;
+
+&lt;h3 id=&#34;hugo&#34;&gt;Hugo&lt;/h3&gt;
+
+&lt;p&gt;決定要寫以後，花了大把時間挑主題(汗)，&lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;有蠻多不錯的&lt;a href=&#34;https://themes.gohugo.io/&#34;&gt;主題&lt;/a&gt;可選，因為希望頁面乾淨整潔，所以選了&lt;a href=&#34;https://github.com/carsonip/hugo-theme-minos&#34;&gt;hugo-theme-minos&lt;/a&gt;，希望不要馬上就看膩了。&lt;/p&gt;
+
+&lt;p&gt;卡關最久的是跟相對路徑有關的設定，不知道為什麼Tags跟Categories的連結一直設定不好，看起來是跟&lt;code&gt;$Site.BaseURL&lt;/code&gt;有關，後來完全硬幹，把&lt;code&gt;$Site.BaseURL&lt;/code&gt;全都改掉了，Google了老半天為什麼會這樣，到目前還是無解。&lt;/p&gt;
+
+&lt;h3 id=&#34;netlify&#34;&gt;Netlify&lt;/h3&gt;
+
+&lt;p&gt;以往都是用GitHub page來存放靜態網頁，這次趁機會試著使用很多人推薦的&lt;a href=&#34;https://www.netlify.com/&#34;&gt;Netlify&lt;/a&gt;，一樣可以跟GitHub做連動，只要Commit &amp;amp; Sync，Netlify會自動部屬網頁，超級方便。
+設定的時候有一些參數要注意:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Build command: hugo
+Publish directory: public
+
+Build environment variables
+key: HUGO_VERSION   value:0.26
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;參考資料:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://slides.yihui.name/2017-rstudio-webinar-blogdown-Yihui-Xie.html&#34;&gt;Making Websites with R Markdown and blogdown&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/rstudio/blogdown&#34;&gt;blogdown GitHub page&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+      
+            <category>R</category>
+      
+            <category>Blog</category>
+      
+            <category>Packages</category>
+      
+            <category>blogdown</category>
+      
     </item>
     
   </channel>

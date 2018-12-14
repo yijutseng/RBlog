@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>正規表示式Regular Expression in R // 有完沒完RRR</title>
+
+        <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Yi-Ju Tseng">
+        <meta property="og:title" content="正規表示式Regular Expression in R" />
+    <meta property="og:description" content="" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://blog.yjtseng.info/post/regexpr/" />
+    
+
+    <link href="" rel="alternate" type="application/rss+xml" title="有完沒完RRR" />
+    <link rel="shortcut icon" href="/favicon.png">
+
+    <link href="https://blog.yjtseng.info/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+    <link href="https://blog.yjtseng.info/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="https://blog.yjtseng.info/css/style.css">
+
+    <link href="http://gmpg.org/xfn/11" rel="profile">
+    
+    <meta name="generator" content="Hugo 0.52" />
+</head>
+
+
+<body>
+<div id="container">
+    <header id="header">
+    <div id="header-outer" class="outer">
+        <div id="header-inner" class="inner">
+            <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
+            <a id="logo" class="logo-text" href="https://blog.yjtseng.info/">有完沒完RRR</a>
+            <nav id="main-nav">
+                
+                <a class="main-nav-link" href="/categories/index.html">Categories</a>
+                
+                <a class="main-nav-link" href="/tags/index.html">Tags</a>
+                
+                <a class="main-nav-link" href="https://yjtseng.info/">About</a>
+                
+            </nav>
+            <nav id="sub-nav">
+                <div id="search-form-wrap">
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+    <section id="main" class="outer">
+        <article class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        <header class="article-header">
+            <h1 class="article-title" itemprop="name">正規表示式Regular Expression in R</h1>
+        </header>
+        
+        <div class="article-meta">
+            <a href="/post/regexpr/" class="article-date">
+                <time datetime='2018-03-26T00:00:00.000&#43;00:00' itemprop="datePublished">2018-03-26</time>
+            </a>
+            
+            
+            <div class="post-categories">
+                <div class="article-category">
+                    
+                    
+                    <a class="article-category-link" href="../../categories/r-language">R language</a>
+                    
+                </div>
+            </div>
+            
+            
+            <div class="article-comment-link-wrap">
+                <a href="/post/regexpr/#disqus_thread" class="article-comment-link">Comments</a>
+            </div>
+            
+        </div>
+        <div class="article-entry" itemprop="articleBody">
+            
+
+<h2 id="什麼是正規表示式">什麼是正規表示式?</h2>
+
+<p>Regular Expression (正規表示式)是指一組能用來表示字串共同格式 (common structure)的樣式 (Pattern)，像是<code>@</code>符號會固定出現在email中，或是手機號碼固定是10碼，等等樣式。
+在所有的程式語言中，只要用到<strong>字串比對</strong>與<strong>字串取代</strong>等字串相關功能，都會用到正規表示式。雖然正規表示式在不同程式語言中會有些許差異，但核心概念是相同的。</p>
+
+<p>以下是常見的範例:</p>
+
+<table>
+<thead>
+<tr>
+<th>語法</th>
+<th>正則表達式</th>
+<th>範例</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>整數</td>
+<td>[0-9]+</td>
+<td>5815</td>
+</tr>
+
+<tr>
+<td>浮點數</td>
+<td>[0-9]+.[0-9]+</td>
+<td>58.15</td>
+</tr>
+
+<tr>
+<td>純英文字串</td>
+<td>[A-Za-z]+</td>
+<td>CGUIM</td>
+</tr>
+
+<tr>
+<td>Email</td>
+<td>[a-zA-Z0-9<em>]+@[a-zA-Z0-9.</em>]+</td>
+<td><code>im@mail.cgu.edu.tw</code></td>
+</tr>
+
+<tr>
+<td>URL</td>
+<td><code>http://[a-zA-Z0-9./_]+</code></td>
+<td><code>http://www.is.cgu.edu.tw/</code></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="可以用正規表示式的r函數">可以用正規表示式的R函數</h2>
+
+<ul>
+<li>grep()</li>
+<li>grepl()</li>
+<li>gsub()</li>
+<li>str_split()</li>
+<li>stringr package中的諸多函數</li>
+</ul>
+
+<h2 id="正規表示式的語法">正規表示式的語法</h2>
+
+<h3 id="逃脫字元">逃脫字元</h3>
+
+<p>*<em>\*</em></p>
+
+<h3 id="表示數量的語法">表示數量的語法</h3>
+
+<ul>
+<li><code>*</code>: 出現0~無限多次</li>
+<li><code>+</code>: 出現1~無限多次</li>
+<li><code>?</code>: 出現0~1次</li>
+<li><code>{n}</code>: 出現n次</li>
+<li><code>{n,}</code>: 出現n~無限多次</li>
+<li><code>{n,m}</code>: 出現n~m次</li>
+</ul>
+
+<pre><code class="language-r">stringVector&lt;-c(&quot;a&quot;,&quot;abc&quot;,&quot;ac&quot;,&quot;abbc&quot;,&quot;abbbc&quot;,&quot;abbbbc&quot;)
+grep(&quot;ab*&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;a&quot;      &quot;abc&quot;    &quot;ac&quot;     &quot;abbc&quot;   &quot;abbbc&quot;  &quot;abbbbc&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;ab+&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;abc&quot;    &quot;abbc&quot;   &quot;abbbc&quot;  &quot;abbbbc&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;ab?c&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;abc&quot; &quot;ac&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;ab{2}c&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;abbc&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;ab{2,}c&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;abbc&quot;   &quot;abbbc&quot;  &quot;abbbbc&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;ab{2,3}c&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;abbc&quot;  &quot;abbbc&quot;
+</code></pre>
+
+<h3 id="表示位置的語法">表示位置的語法</h3>
+
+<ul>
+<li><code>^</code>: 出現在字串開始的位置</li>
+<li><code>$</code>: 出現在字串結束ˇ的位置</li>
+<li><code>\b</code>: 出現空字串(空白)開始或結束的位置</li>
+<li><code>\B</code>: 出現非字串開始或結束的位置</li>
+</ul>
+
+<pre><code class="language-r">stringVector&lt;-c(&quot;abc&quot;,&quot;bcd&quot;,&quot;cde&quot;,&quot;def&quot;,&quot;abc def&quot;,&quot;bcdefg abc&quot;)
+grep(&quot;^bc&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;bcd&quot;        &quot;bcdefg abc&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;bc$&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;abc&quot;        &quot;bcdefg abc&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;\\bde&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;def&quot;     &quot;abc def&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;\\Bde&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;cde&quot;        &quot;bcdefg abc&quot;
+</code></pre>
+
+<h3 id="運算子">運算子</h3>
+
+<ul>
+<li><code>.</code>: 出現所有的字元一次，包括空字串</li>
+<li><code>[...]</code>: 出現字元清單(&hellip;)中的字元一次，可用<code>-</code>表示範圍，如<code>[A-Z]</code>，<code>[a-z]</code>，<code>[0-9]</code></li>
+<li><code>[^...]</code>: 不出現字元清單(&hellip;)中的字元</li>
+<li><code>\</code>: 要搜尋字串中的特殊字元時，前方須加上<code>\</code></li>
+<li><code>|</code>: 或</li>
+</ul>
+
+<pre><code class="language-r">stringVector&lt;-c(&quot;03-2118800&quot;,&quot;02-23123456&quot;,&quot;0988123456&quot;,
+                &quot;07-118&quot;,&quot;0-888&quot;,&quot;csim@mail.cgu.edu.tw&quot;,&quot;csim@.&quot;,&quot;csim@&quot;,
+                &quot;http://www.is.cgu.edu.tw/&quot;)
+grep(&quot;[0-9]{2}-[0-9]{7,8}&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;03-2118800&quot;  &quot;02-23123456&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;[0-9]{10}&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;0988123456&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;02|03&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;03-2118800&quot;  &quot;02-23123456&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;[a-zA-Z0-9_]+@[a-zA-Z0-9._]+&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;csim@mail.cgu.edu.tw&quot; &quot;csim@.&quot;
+</code></pre>
+
+<h3 id="特殊符號">特殊符號</h3>
+
+<ul>
+<li><code>\d</code>: 數字，等於 [0-9]</li>
+<li><code>\D</code>: 非數字，等於 [^0-9]</li>
+<li><code>[:lower:]</code>: 小寫字，等於 [a-z]</li>
+<li><code>[:upper:]</code>: 大寫字，等於 [A-Z]</li>
+<li><code>[:alpha:]</code>: 所有英文字，等於 [[:lower:][:upper:]] or [A-z]</li>
+<li><code>[:alnum:]</code>: 所有英文字和數字，等於 [[:alpha:][:digit:]] or [A-z0-9]</li>
+<li><code>\w</code>: 文字數字與底線，等於 [[:alnum:]<em>] or [A-z0-9</em>]</li>
+<li><code>\W</code>: 非文字數字與底線，等於 [^A-z0-9_]</li>
+<li><code>[:blank:]</code>: 空白字元，包括空白和tab</li>
+<li><code>\s</code>: 空白字元,</li>
+<li><code>\S</code>: 非空白字元</li>
+<li><code>[:punct:]</code>: 標點符號 ! &ldquo; # $ % &amp; ’ ( ) * + , - . / : ; &lt; = &gt; ? @ [  ] ^ _ ` { | } ~.</li>
+</ul>
+
+<pre><code class="language-r">stringVector&lt;-c(&quot;03-2118800&quot;,&quot;02-23123456&quot;,&quot;0988123456&quot;,
+                &quot;07-118&quot;,&quot;0-888&quot;,&quot;csim@mail.cgu.edu.tw&quot;,&quot;http://www.is.cgu.edu.tw/&quot;)
+grep(&quot;\\d{2}-\\d{7,8}&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;03-2118800&quot;  &quot;02-23123456&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;\\d{10}&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;0988123456&quot;
+</code></pre>
+
+<pre><code class="language-r">grep(&quot;\\w+@[a-zA-Z0-9._]+&quot;,stringVector,value=T)
+</code></pre>
+
+<pre><code>## [1] &quot;csim@mail.cgu.edu.tw&quot;
+</code></pre>
+
+<h2 id="參考資料">參考資料</h2>
+
+<ul>
+<li><a href="https://dotblogs.com.tw/johnny/archive/2010/01/25/13301.aspx">Regular Expression 詳論</a></li>
+<li><a href="http://regexlib.com/">RegExLib.com</a></li>
+<li><a href="http://stat545.com/block022_regular-expression.html">Regular Expression in R</a></li>
+</ul>
+
+        </div>
+
+        
+        
+        <div class="article-toc" style="display:none;">
+            <h3>Contents</h3>
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#什麼是正規表示式">什麼是正規表示式?</a></li>
+<li><a href="#可以用正規表示式的r函數">可以用正規表示式的R函數</a></li>
+<li><a href="#正規表示式的語法">正規表示式的語法</a>
+<ul>
+<li><a href="#逃脫字元">逃脫字元</a></li>
+<li><a href="#表示數量的語法">表示數量的語法</a></li>
+<li><a href="#表示位置的語法">表示位置的語法</a></li>
+<li><a href="#運算子">運算子</a></li>
+<li><a href="#特殊符號">特殊符號</a></li>
+</ul></li>
+<li><a href="#參考資料">參考資料</a></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+        
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+        <script>
+            (function() {
+                var $toc = $('#TableOfContents');
+                if ($toc.length > 0) {
+                    var $window = $(window);
+
+                    function onScroll(){
+                        var currentScroll = $window.scrollTop();
+                        var h = $('.article-entry h1, .article-entry h2, .article-entry h3, .article-entry h4, .article-entry h5, .article-entry h6');
+                        var id = "";
+                        h.each(function (i, e) {
+                            e = $(e);
+                            if (e.offset().top - 10 <= currentScroll) {
+                                id = e.attr('id');
+                            }
+                        });
+                        var active = $toc.find('a.active');
+                        if (active.length == 1 && active.eq(0).attr('href') == '#' + id) return true;
+
+                        active.each(function (i, e) {
+                            $(e).removeClass('active').siblings('ul').hide();
+                        });
+                        $toc.find('a[href="#' + id + '"]').parentsUntil('#TableOfContents').each(function (i, e) {
+                            $(e).children('a').addClass('active').siblings('ul').show();
+                        });
+                    }
+
+                    $window.on('scroll', onScroll);
+                    $(document).ready(function() {
+                        $toc.find('a').parent('li').find('ul').hide();
+                        onScroll();
+                        document.getElementsByClassName('article-toc')[0].style.display = '';
+                    });
+                }
+            })();
+        </script>
+        
+
+
+        
+        <footer class="article-footer">
+            <ul class="article-tag-list">
+                
+                <li class="article-tag-list-item">
+                    <a class="article-tag-list-link" href="../../tags/r">R
+                    </a>
+                </li>
+                
+            </ul>
+        </footer>
+        
+    </div>
+    <nav id="article-nav">
+    
+    <a href="/post/dotdotdot/" id="article-nav-newer" class="article-nav-link-wrap">
+        <div class="article-nav-title"><span>&lt;</span>&nbsp;
+            R的arguments出現三個點是...?
+        </div>
+    </a>
+    
+    
+    <a href="/post/jiebar/" id="article-nav-older" class="article-nav-link-wrap">
+        <div class="article-nav-title">在R中使用結巴分詞&nbsp;<span>&gt;</span></div>
+    </a>
+    
+</nav>
+</article>
+
+        
+            
+        
+    </section>
+    <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 有完沒完RRR&nbsp;
+            Powered by <a href="https://gohugo.io" target="_blank">Hugo</a> with theme <a href="https://github.com/carsonip/hugo-theme-minos">Minos</a>
+        </div>
+    </div>
+    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/tomorrow-night.min.css" integrity="sha256-2wL88NKUqvJi/ExflDzkzUumjUM73mcK2gBvBBeLvTk=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js" integrity="sha256-KbfTjB0WZ8vvXngdpJGY3Yp3xKk+tttbqClO11anCIU=" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    <script>
+        document.getElementById('main-nav-toggle').addEventListener('click', function () {
+            var header = document.getElementById('header');
+            if (header.classList.contains('mobile-on')) {
+                header.classList.remove('mobile-on');
+            } else {
+                header.classList.add('mobile-on');
+            }
+        });
+    </script>
+</footer>
+</div>
+</body>
+</html>
