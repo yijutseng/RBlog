@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用R畫存活曲線Survival curve // 有完沒完RRR</title>
+
+        <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="Yi-Ju Tseng">
+        <meta property="og:title" content="用R畫存活曲線Survival curve" />
+    <meta property="og:description" content="" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="/post/2020-05-13-survival-curve/" />
+    
+
+    <link href="" rel="alternate" type="application/rss+xml" title="有完沒完RRR" />
+    <link rel="shortcut icon" href="/favicon.png">
+
+    <link href="/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+    <link href="/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link href="http://gmpg.org/xfn/11" rel="profile">
+    
+    <meta name="generator" content="Hugo 0.70.0" />
+</head>
+
+
+<body>
+<div id="container">
+    <header id="header">
+    <div id="header-outer" class="outer">
+        <div id="header-inner" class="inner">
+            <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
+            <a id="logo" class="logo-text" href="/">有完沒完RRR</a>
+            <nav id="main-nav">
+                
+                <a class="main-nav-link" href="/categories/index.html">Categories</a>
+                
+                <a class="main-nav-link" href="/tags/index.html">Tags</a>
+                
+                <a class="main-nav-link" href="https://yjtseng.info/">About</a>
+                
+            </nav>
+            <nav id="sub-nav">
+                <div id="search-form-wrap">
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+    <section id="main" class="outer">
+        <article class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        <header class="article-header">
+            <h1 class="article-title" itemprop="name">用R畫存活曲線Survival curve</h1>
+        </header>
+        
+        <div class="article-meta">
+            <a href="/post/2020-05-13-survival-curve/" class="article-date">
+                <time datetime='2020-05-13T00:00:00.000&#43;00:00' itemprop="datePublished">2020-05-13</time>
+            </a>
+            
+            
+            <div class="post-categories">
+                <div class="article-category">
+                    
+                    
+                    <a class="article-category-link" href="../../categories/r-language">R language</a>
+                    
+                </div>
+            </div>
+            
+            
+            <div class="article-comment-link-wrap">
+                <a href="/post/2020-05-13-survival-curve/#disqus_thread" class="article-comment-link">Comments</a>
+            </div>
+            
+        </div>
+        <div class="article-entry" itemprop="articleBody">
+            <p>因為研究需要，搜尋了用R畫存活曲線的方法，並調整了圖形參數以及將多張存活曲線圖合併排列，整理成此篇文章。</p>
+<h2 id="什麼是存活曲線">什麼是存活曲線?</h2>
+<p>簡單來說，就是將<strong>沒發生事件的比例</strong>當x軸，<strong>時間</strong>當y軸所繪製出的圖形。可參考<a href="https://zh.wikipedia.org/wiki/%E5%AD%98%E6%B4%BB%E6%9B%B2%E7%B7%9A">維基百科</a>的說明。</p>
+<h2 id="用r畫存活曲線所需套件">用R畫存活曲線所需套件</h2>
+<p>在R中有蠻多畫存活曲線相關的套件，我的初版程式是使用<code>ggfortify</code>套件，但後來Editor要求要在圖上加<strong>Number at risk</strong>的資訊，查了一下發現<code>ggfortify</code>套件沒有這個功能，又不想手動加，就重新搜尋了資源，找到一篇介紹<code>survminer</code>套件的<a href="http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization">文章</a>，並完成完整的survival plot。</p>
+<p>本介紹文以<a href="http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization">survminer R package: Survival Data Analysis and Visualization</a>為基礎，並衍伸其他條件設定的教學。</p>
+<p>以下介紹用<code>survminer</code>套件 (<a href="https://rpkgs.datanovia.com/survminer/index.html">官方說明文件</a>) 畫存活曲線的步驟</p>
+<p>首先載入<code>survminer</code>套件以及處理資料必須的<code>survival</code>套件 (需要套件中的<code>Surv()</code>函數)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">library</span>(survival)
+<span style="color:#a6e22e">library</span>(survminer)
+</code></pre></div><h2 id="範例資料">範例資料</h2>
+<p>以<code>survival</code>套件內附的<code>lung</code>資料為例，資料包括:</p>
+<p>(以下資料翻譯自<code>survival</code>套件說明文件)</p>
+<ul>
+<li>inst: 機構代碼</li>
+<li>time: 存活時間 (單位為日)</li>
+<li>status: &ldquo;設限&quot;或&quot;事件發生&quot;狀況，1為設限，2為事件發生，在此為死亡
+<ul>
+<li>1=censored</li>
+<li>2=dead</li>
+</ul>
+</li>
+<li>age: 年紀 (單位為年)</li>
+<li>sex: 性別
+<ul>
+<li>Male=1</li>
+<li>Female=2</li>
+</ul>
+</li>
+<li>ph.ecog: 醫生評估的ECOG體能狀況評估分數
+<ul>
+<li>0= asymptomatic</li>
+<li>1= symptomatic but completely ambulatory</li>
+<li>2= in bed &lt;50% of the day</li>
+<li>3= in bed &gt; 50% of the day but not bedbound</li>
+<li>4= bedbound</li>
+</ul>
+</li>
+<li>ph.karno: 醫生評估的Karnofsky體能狀況評估分數
+<ul>
+<li>bad=0-good=100</li>
+</ul>
+</li>
+<li>pat.karno: 病人自己評估的Karnofsky體能狀況評估分數</li>
+<li>meal.cal: 卡路里攝取量</li>
+<li>wt.loss: 過去六個月體重下降多少</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">knitr<span style="color:#f92672">::</span><span style="color:#a6e22e">kable</span>(lung <span style="color:#f92672">%&gt;%</span> <span style="color:#a6e22e">head</span>())
+</code></pre></div><table>
+<thead>
+<tr>
+<th align="right">inst</th>
+<th align="right">time</th>
+<th align="right">status</th>
+<th align="right">age</th>
+<th align="right">sex</th>
+<th align="right">ph.ecog</th>
+<th align="right">ph.karno</th>
+<th align="right">pat.karno</th>
+<th align="right">meal.cal</th>
+<th align="right">wt.loss</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">3</td>
+<td align="right">306</td>
+<td align="right">2</td>
+<td align="right">74</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">90</td>
+<td align="right">100</td>
+<td align="right">1175</td>
+<td align="right">NA</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="right">455</td>
+<td align="right">2</td>
+<td align="right">68</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">90</td>
+<td align="right">90</td>
+<td align="right">1225</td>
+<td align="right">15</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="right">1010</td>
+<td align="right">1</td>
+<td align="right">56</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">90</td>
+<td align="right">90</td>
+<td align="right">NA</td>
+<td align="right">15</td>
+</tr>
+<tr>
+<td align="right">5</td>
+<td align="right">210</td>
+<td align="right">2</td>
+<td align="right">57</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">90</td>
+<td align="right">60</td>
+<td align="right">1150</td>
+<td align="right">11</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td align="right">883</td>
+<td align="right">2</td>
+<td align="right">60</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">100</td>
+<td align="right">90</td>
+<td align="right">NA</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td align="right">12</td>
+<td align="right">1022</td>
+<td align="right">1</td>
+<td align="right">74</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">50</td>
+<td align="right">80</td>
+<td align="right">513</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="基本存活曲線">基本存活曲線</h2>
+<p>在準備完資料後，可用<code>survfit()</code>函數製作存活模型，並以<code>ggsurvplot()</code>函數繪製存活曲線，<code>survfit()</code>函數的重要參數包括</p>
+<ul>
+<li>formula: <code>Surv(時間,設限或事件狀態)~分組依據</code>，在這個範例為<code>Surv(time,status)~分組依據</code></li>
+<li>data: 資料名稱，在這個範例為lung</li>
+</ul>
+<p>以最簡單的單一族群存活區限為例，想要畫這個資料集中<strong>所有病人</strong>的存活曲線，其實就是不分組的意思，可將<strong>分組依據</strong>設定成單一數字<strong>1</strong>，如下列範例</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fit<span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">survfit</span>(<span style="color:#a6e22e">Surv</span>(time, status) <span style="color:#f92672">~</span> <span style="color:#ae81ff">1</span>, data <span style="color:#f92672">=</span> lung)
+<span style="color:#a6e22e">ggsurvplot</span>(fit)
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<p>以此類推，若想用性別做分組，也就是男生畫一條存活曲線，女生也畫一條，並放在同一張圖上，此時就將性別<code>sex</code>做為<strong>分組依據</strong>，如下範例</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">fit<span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">survfit</span>(<span style="color:#a6e22e">Surv</span>(time, status) <span style="color:#f92672">~</span> sex, data <span style="color:#f92672">=</span> lung)
+<span style="color:#a6e22e">ggsurvplot</span>(fit)
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h2 id="增加p-value">增加P value</h2>
+<p>將<code>ggsurvplot()</code>函數的<code>pval</code>參數設定為<code>TRUE</code>，即可在圖中加上兩組檢定的P value，這個P value也可以用<code>surv_pvalue()</code>函數取得，預設的檢定方法為<strong>log-rank test</strong>，若想要修改，也可以透過設定<code>pval.method</code>參數修改。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">ggsurvplot</span>(fit, pval <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>)
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<p>可進一步用<code>pval.coord = c(100, 0.03)</code>調整P value顯示位置</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">ggsurvplot</span>(fit, pval <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>, pval.coord <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">0.03</span>))
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h2 id="增加信賴區間">增加信賴區間</h2>
+<p>若生存曲線圖形要加上信賴區間的話，可設定<code>conf.int = TRUE</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">ggsurvplot</span>(fit, pval <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>, pval.coord <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">0.03</span>), 
+           conf.int <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>)
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h2 id="增加number-of-risk-表格">增加number of risk 表格</h2>
+<p>將<code>ggsurvplot()</code>函數的<code>risk.table</code>參數設定為<code>TRUE</code>，即可在圖中加上number of risk 表格</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">ggsurvplot</span>(fit, pval <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>, pval.coord <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">0.03</span>), 
+           conf.int <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>,
+           risk.table <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>)
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<p>若不想要number of risk 表格Y軸文字的顏色，可將<code>risk.table.y.text.col</code>參數設成FALSE</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">ggsurvplot</span>(fit, pval <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>, pval.coord <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">0.03</span>), 
+           conf.int <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>,
+           risk.table <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>, risk.table.y.text.col <span style="color:#f92672">=</span> F)
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h2 id="格式微調">格式微調</h2>
+<p>可分為存活曲線調整與number at risk表格調整，調整參數如下</p>
+<ul>
+<li><code>font.main = 12</code> 圖表標題字型大小</li>
+<li><code>font.x =  12</code> 圖表X軸字型大小</li>
+<li><code>font.y = 12</code> 圖表Y軸字型大小</li>
+<li><code>fontsize = 3</code> Number at risk內文字型大小</li>
+<li><code>break.time.by = 100</code> 每100天設一個標記</li>
+<li><code>font.tickslab = 10</code> 標記字型大小(100, 200, &hellip;等)</li>
+<li><code>legend.labs = c(&quot;Men&quot;, &quot;Women&quot;)</code> 將圖示文字改為Men或是Women</li>
+<li><code>title=&quot;Format setting&quot;</code> 加上圖形標題</li>
+<li><code>xlab=&quot;&quot;, ylab=&quot;&quot;</code> X軸Y軸標題設定</li>
+<li><code>legend =  &quot;none&quot;</code> 不要圖示</li>
+<li><code>tables.theme = clean_theme()</code> 設定Number at risk表格樣式</li>
+</ul>
+<p>若想改Number at risk表格的標題，只能用額外的程式碼<code>theme(plot.title = element_text(size = 10))</code>設定</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">res<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">ggsurvplot</span>(fit, pval <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>, pval.coord <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">0.03</span>), 
+                conf.int <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>,
+                risk.table <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>, 
+                font.main <span style="color:#f92672">=</span> <span style="color:#ae81ff">12</span>,
+                font.x <span style="color:#f92672">=</span>  <span style="color:#ae81ff">12</span>,
+                font.y <span style="color:#f92672">=</span> <span style="color:#ae81ff">12</span>,
+                font.tickslab <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>,
+                fontsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>, 
+                break.time.by <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>,
+                legend.labs <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;Men&#34;</span>, <span style="color:#e6db74">&#34;Women&#34;</span>),
+                title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Format setting&#34;</span>,
+                xlab<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;X Test&#34;</span>, ylab<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Y Test&#34;</span>, legend <span style="color:#f92672">=</span>  <span style="color:#e6db74">&#34;none&#34;</span>,
+                tables.theme <span style="color:#f92672">=</span> <span style="color:#a6e22e">clean_theme</span>())
+res<span style="color:#f92672">$</span>table <span style="color:#f92672">&lt;-</span> res<span style="color:#f92672">$</span>table <span style="color:#f92672">+</span> <span style="color:#a6e22e">theme</span>(plot.title <span style="color:#f92672">=</span> <span style="color:#a6e22e">element_text</span>(size <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>))
+res
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h2 id="客製化p-value顯示方式">客製化P value顯示方式</h2>
+<p>預設的P value是四位小數點，有時不太需要這麼多資訊，只需把小於0.01的值用<strong>&lt;0.01</strong>來表示 (通常是&lt;0.001才轉換，但這邊為了呈現效果改為&lt;0.01)，那就需要在畫圖前先處理。這邊使用<code>surv_pvalue(fit)$pval</code>來取得P value <code>p</code>後，更進一步用<code>if else</code>來將數值轉成文字，最後在<code>ggsurvplot()</code>函數中，將<code>pval = p</code>參數設定為<code>p</code>，就能調整P value的顯示方法</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">p<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">surv_pvalue</span>(fit)<span style="color:#f92672">$</span>pval
+<span style="color:#a6e22e">if</span>(p<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">0.01</span>){
+  p<span style="color:#f92672">&lt;-</span><span style="color:#e6db74">&#34;p&lt;0.01&#34;</span>
+}else{
+  p<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">paste0</span>(<span style="color:#e6db74">&#34;p=&#34;</span>,<span style="color:#a6e22e">round</span>(p,<span style="color:#ae81ff">3</span>))
+}
+
+resP<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">ggsurvplot</span>(fit, pval <span style="color:#f92672">=</span> p, pval.coord <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">0.03</span>), 
+                 conf.int <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>,
+                 risk.table <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>, risk.table.y.text.col <span style="color:#f92672">=</span> F,
+                 font.main <span style="color:#f92672">=</span> <span style="color:#ae81ff">12</span>,
+                 font.x <span style="color:#f92672">=</span>  <span style="color:#ae81ff">12</span>,
+                 font.y <span style="color:#f92672">=</span> <span style="color:#ae81ff">12</span>,
+                 font.tickslab <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>,
+                 fontsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>, 
+                 break.time.by <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>,
+                 legend.labs <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;Men&#34;</span>, <span style="color:#e6db74">&#34;Women&#34;</span>),
+                 title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Customize P value&#34;</span>,
+                 xlab<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;X Test&#34;</span>, ylab<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Y Test&#34;</span>, legend <span style="color:#f92672">=</span>  <span style="color:#e6db74">&#34;none&#34;</span>,
+                 tables.theme <span style="color:#f92672">=</span> <span style="color:#a6e22e">clean_theme</span>())
+resP<span style="color:#f92672">$</span>table <span style="color:#f92672">&lt;-</span> resP<span style="color:#f92672">$</span>table <span style="color:#f92672">+</span> <span style="color:#a6e22e">theme</span>(plot.title <span style="color:#f92672">=</span> <span style="color:#a6e22e">element_text</span>(size <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>))
+resP
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h2 id="合併多張存活曲線圖形">合併多張存活曲線圖形</h2>
+<p>因<code>ggsurvplot()</code>畫出的圖形無法使用常見的<code>grid.arrange()</code>函數排序，<code>survminer</code>套件另有排列多圖的方法<code>arrange_ggsurvplots()</code>，使用方法是將多個<code>ggsurvplot</code>圖形放入<code>list</code>，作為<code>arrange_ggsurvplots()</code>的第一個參數，之後利用<code>ncol</code>設定Column數，<code>nrow</code>設定Row數，<code>risk.table.height</code>設定Number at risk表格高度</p>
+<p>以下是橫放範例</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">arrange_ggsurvplots</span>(<span style="color:#a6e22e">list</span>(res, resP),
+                    ncol<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, nrow<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, 
+                    risk.table.height <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.22</span>)
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<p>直放範例</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">arrange_ggsurvplots</span>(<span style="color:#a6e22e">list</span>(res, resP),
+                    ncol<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, nrow<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, 
+                    risk.table.height <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.22</span>)
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h2 id="參考資料">參考資料</h2>
+<ul>
+<li><a href="http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization">survminer R package: Survival Data Analysis and Visualization</a></li>
+<li><a href="https://rpkgs.datanovia.com/survminer/index.html">survminer套件官方說明文件</a></li>
+</ul>
+
+        </div>
+
+        
+        
+        <div class="article-toc" style="display:none;">
+            <h3>Contents</h3>
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#什麼是存活曲線">什麼是存活曲線?</a></li>
+    <li><a href="#用r畫存活曲線所需套件">用R畫存活曲線所需套件</a></li>
+    <li><a href="#範例資料">範例資料</a></li>
+    <li><a href="#基本存活曲線">基本存活曲線</a></li>
+    <li><a href="#增加p-value">增加P value</a></li>
+    <li><a href="#增加信賴區間">增加信賴區間</a></li>
+    <li><a href="#增加number-of-risk-表格">增加number of risk 表格</a></li>
+    <li><a href="#格式微調">格式微調</a></li>
+    <li><a href="#客製化p-value顯示方式">客製化P value顯示方式</a></li>
+    <li><a href="#合併多張存活曲線圖形">合併多張存活曲線圖形</a></li>
+    <li><a href="#參考資料">參考資料</a></li>
+  </ul>
+</nav>
+        </div>
+        
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+        <script>
+            (function() {
+                var $toc = $('#TableOfContents');
+                if ($toc.length > 0) {
+                    var $window = $(window);
+
+                    function onScroll(){
+                        var currentScroll = $window.scrollTop();
+                        var h = $('.article-entry h1, .article-entry h2, .article-entry h3, .article-entry h4, .article-entry h5, .article-entry h6');
+                        var id = "";
+                        h.each(function (i, e) {
+                            e = $(e);
+                            if (e.offset().top - 10 <= currentScroll) {
+                                id = e.attr('id');
+                            }
+                        });
+                        var active = $toc.find('a.active');
+                        if (active.length == 1 && active.eq(0).attr('href') == '#' + id) return true;
+
+                        active.each(function (i, e) {
+                            $(e).removeClass('active').siblings('ul').hide();
+                        });
+                        $toc.find('a[href="#' + id + '"]').parentsUntil('#TableOfContents').each(function (i, e) {
+                            $(e).children('a').addClass('active').siblings('ul').show();
+                        });
+                    }
+
+                    $window.on('scroll', onScroll);
+                    $(document).ready(function() {
+                        $toc.find('a').parent('li').find('ul').hide();
+                        onScroll();
+                        document.getElementsByClassName('article-toc')[0].style.display = '';
+                    });
+                }
+            })();
+        </script>
+        
+
+
+        
+        <footer class="article-footer">
+            <ul class="article-tag-list">
+                
+                <li class="article-tag-list-item">
+                    <a class="article-tag-list-link" href="../../tags/r">R
+                    </a>
+                </li>
+                
+                <li class="article-tag-list-item">
+                    <a class="article-tag-list-link" href="../../tags/visualization">Visualization
+                    </a>
+                </li>
+                
+            </ul>
+        </footer>
+        
+    </div>
+    <nav id="article-nav">
+    
+    <a href="/post/jupyternotebook/" id="article-nav-newer" class="article-nav-link-wrap">
+        <div class="article-nav-title"><span>&lt;</span>&nbsp;
+            在Ubuntu伺服器架設Jupyter Notebook
+        </div>
+    </a>
+    
+    
+</nav>
+</article>
+
+        
+            
+        
+    </section>
+    <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2020 有完沒完RRR&nbsp;
+            Powered by <a href="https://gohugo.io" target="_blank">Hugo</a> with theme <a href="https://github.com/carsonip/hugo-theme-minos">Minos</a>
+        </div>
+    </div>
+    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/tomorrow-night.min.css" integrity="sha256-2wL88NKUqvJi/ExflDzkzUumjUM73mcK2gBvBBeLvTk=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js" integrity="sha256-KbfTjB0WZ8vvXngdpJGY3Yp3xKk+tttbqClO11anCIU=" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    <script>
+        document.getElementById('main-nav-toggle').addEventListener('click', function () {
+            var header = document.getElementById('header');
+            if (header.classList.contains('mobile-on')) {
+                header.classList.remove('mobile-on');
+            } else {
+                header.classList.add('mobile-on');
+            }
+        });
+    </script>
+</footer>
+</div>
+</body>
+</html>
