@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Server on 有完沒完RRR</title>
@@ -7,7 +8,7 @@
     <language>zh-tw</language>
     <lastBuildDate>Fri, 14 Dec 2018 00:00:00 +0000</lastBuildDate>
     
-        <atom:link href="/tags/server/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/server/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -16,74 +17,7 @@
       <pubDate>Fri, 14 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/jupyternotebook/</guid>
-      <description>&lt;h2 id=&#34;rstudio-server&#34;&gt;RStudio Server&lt;/h2&gt;
-&lt;p&gt;一直以來都是&lt;a href=&#34;https://www.rstudio.com/&#34;&gt;RStudio&lt;/a&gt;的愛用者，在RStudio出現以前，只能用R的陽春Client版介面的超級黑暗期實在是不堪回首（配合無止盡的博士修業過程，好像也蠻搭的）。RStudio也有server版本，只要透過瀏覽器就能在任何電腦使用RStudio進行分析專案。&lt;/p&gt;
-&lt;p&gt;開始教書以後，發現RStudio提供免費的&lt;a href=&#34;https://www.rstudio.com/products/rstudio-server-pro/&#34;&gt;RStudio Server Pro&lt;/a&gt;給&lt;a href=&#34;https://www.rstudio.com/pricing/academic-pricing/&#34;&gt;教學&lt;/a&gt;使用，二話不說提出申請，也很快就得到回覆，並直接提供授權金鑰，雖然要每年寫信重新申請，但仍然是很棒的使用者體驗。
-其實&lt;a href=&#34;https://www.rstudio.com/products/rstudio/#Server&#34;&gt;RStudio Server&lt;/a&gt;的免費版本也很夠用了，有興趣的人可以從免費版開始上手。&lt;/p&gt;
-&lt;h2 id=&#34;jupyter-notebook&#34;&gt;Jupyter Notebook&lt;/h2&gt;
-&lt;p&gt;（本篇標題是Jupyter Notebook，好像完全離題了）除了RStudio Server外，要以瀏覽器透過Web介面來執行資料分析專案當然不能不提&lt;strong&gt;Jupyter Notebook&lt;/strong&gt; &lt;a href=&#34;http://jupyter.org/&#34;&gt;官網在此&lt;/a&gt;，跟RStudio不同的是，&lt;strong&gt;Jupyter Notebook&lt;/strong&gt;多種程式語言，比如 Python、R等等，而且可依需求將程式碼分成不同段落，分段排版與執行，並隨意的加上說明文字（配合markdown語法排版），輕鬆結合資料處理分析與結果呈現等步驟，生成程式與結果與說明並茂的文章。另外執行程式碼的結果會存在記憶體中，整個頁面可以當成一個網頁分享給任何人。&lt;/p&gt;
-&lt;p&gt;另外這種可以架在伺服器上，並且用瀏覽器可輕鬆存取的資料分析平台非常適合上課使用，在課堂上電腦教室的環境不一定與學生自有電腦相同，同學常常回家執行時發生各式各樣的問題，讓學習體驗變得很糟糕。而且電腦教室的電腦通常有還原卡，同學上課的程式碼若無自行備份，哪天想起來要取用程式碼時也只能再重打一次，然後就直接放棄治療，實在很可惜。如果不管同學用哪裡的電腦都能取用跟上課時一模一樣的環境，也不用受限於電腦教室的爛電腦（開機要一百萬年），真的能解決很多不必要的苦難。&lt;/p&gt;
-&lt;p&gt;因為上述原因，還有要跟上時代潮流，就在實驗室也架了&lt;strong&gt;Jupyter Notebook&lt;/strong&gt;，過程記錄如下：&lt;/p&gt;
-&lt;h2 id=&#34;架設自己的jupyter-notebook&#34;&gt;架設自己的Jupyter Notebook&lt;/h2&gt;
-&lt;h3 id=&#34;伺服器說明&#34;&gt;伺服器說明&lt;/h3&gt;
-&lt;p&gt;Ubuntu Server 16.04.4 LTS &lt;a href=&#34;https://www.ubuntu.com/download/server&#34;&gt;下載連結&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;更新ubuntu套件&#34;&gt;更新Ubuntu套件&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;sudo apt-get update
-sudo apt-get upgrade
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;安裝python3-pip&#34;&gt;安裝python3-pip&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;sudo apt-get install python3-pip
-conda install jupyter
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;sudo apt-get install npm nodejs-legacy
-sudo npm install -g configurable-http-proxy
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;jupyterhub&#34;&gt;Jupyterhub&lt;/h3&gt;
-&lt;p&gt;首先先裝Anaconda，這邊是裝3.5.1.0版本，可參考&lt;a href=&#34;https://www.anaconda.com/download/#linux&#34;&gt;官網&lt;/a&gt;安裝最新版本。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;wget https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh
-bash Anaconda3-5.1.0-Linux-x86_64.sh
-export PATH=~/anaconda3/bin:$PATH
-
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;conda install -c conda-forge jupyterhub  # installs jupyterhub and proxy
-conda install notebook
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;sudo jupyterhub --generate-config -f /etc/jupyterhub/jupyterhub_config.py
-jupyterhub --no-ssl
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;c.JupyterHub.ip = &#39;192.168.1.5&#39;
-c.JupyterHub.port = 8000
-c.PAMAuthenticator.encoding = &#39;utf8&#39;
-
-
-c.LocalAuthenticator.create_system_users = True
-c.Authenticator.admin_users = {&#39;yjtseng&#39;}
-
-c.Spawner.cmd=[&#39;jupyterhub-singleuser&#39;]
-c.JupyterHub.statsd_prefix = &#39;jupyterhub&#39;
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;sudo systemctl start jupyterhub
-sudo systemctl status jupyterhub
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;[Unit]
-Description=Jupyterhub
-
-[Service]
-User=root
-Environment=&amp;quot;PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/anaconda3/bin:/home/yjtseng/anaconda3/bin&amp;quot;
-ExecStart=/bin/bash/home/yjtseng/anaconda3/bin/jupyterhub -f /etc/jupyterhub/jupyterhub_config.py
-
-[Install]
-WantedBy=multi-user.target
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;sudo pip install bash_kernel
-sudo pip install octave_kernel
-devtools::install_github(paste0(&#39;IRkernel/&#39;, c(&#39;repr&#39;, &#39;IRdisplay&#39;, &#39;IRkernel&#39;)))
-IRkernel::installspec(user = FALSE)                 
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://jerrynest.io/install-jupyter-with-style/&#34;&gt;快速安裝架設 Jupyter Notebook 並修改主題樣式&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://jupyter-notebook.readthedocs.io/en/stable/&#34;&gt;Jupyter Notebook Doc&lt;/a&gt;
-&lt;a href=&#34;https://github.com/jupyterhub/jupyterhub/wiki/Run-jupyterhub-as-a-system-service&#34;&gt;https://github.com/jupyterhub/jupyterhub/wiki/Run-jupyterhub-as-a-system-service&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/45776003/fixing-a-systemd-service-203-exec-failure-no-such-file-or-directory&#34;&gt;https://stackoverflow.com/questions/45776003/fixing-a-systemd-service-203-exec-failure-no-such-file-or-directory&lt;/a&gt;&lt;/p&gt;
-</description>
-      
-            <category>R</category>
-      
-            <category>Server</category>
-      
+      <description>RStudio Server 一直以來都是RStudio的愛用者，在RStudio出現以前，只能用R的陽春Client版介面的超級黑暗期實在是不堪回首（配合無止盡的博</description>
     </item>
     
   </channel>

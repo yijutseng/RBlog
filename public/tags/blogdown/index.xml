@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>blogdown on 有完沒完RRR</title>
@@ -7,7 +8,7 @@
     <language>zh-tw</language>
     <lastBuildDate>Mon, 21 Aug 2017 00:00:00 +0000</lastBuildDate>
     
-        <atom:link href="/tags/blogdown/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/blogdown/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -16,45 +17,7 @@
       <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
       <guid>/post/website/</guid>
-      <description>&lt;p&gt;除了前篇提到的Blog外，也一口氣更新了原有的&lt;a href=&#34;https://yjtseng.info&#34;&gt;個人網頁&lt;/a&gt; (兩年過去，看膩了&amp;hellip;.)。新版網頁使用的一樣是&lt;a href=&#34;https://github.com/rstudio/blogdown&#34;&gt;blogdown&lt;/a&gt; package，搭配適合做學術個人網頁的&lt;a href=&#34;https://github.com/gcushen/hugo-academic&#34;&gt;Academic theme&lt;/a&gt;，並且下定決心，透過&lt;a href=&#34;https://domains.google/&#34;&gt;Google Domain&lt;/a&gt;買了自己的Domain name &lt;strong&gt;yjtseng.info&lt;/strong&gt;，包括設定各類參數和Domain name、加入發表、Talk、Project等內容，大概花了一天的時間完成更新，要是做研究也這樣一氣呵成那有多好(?)。&lt;/p&gt;
-&lt;h3 id=&#34;blogdown&#34;&gt;blogdown&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/rstudio/blogdown&#34;&gt;blogdown&lt;/a&gt;是基於R Markdown和Hugo開發的R package，簡單來說是讓你可以用R Markdown 或是Markdown寫Blog和網頁的好幫手。這個Blog也是用blogdown寫的，沒想到寫學術個人網頁也非常方便! 一樣是從&lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;的&lt;a href=&#34;https://themes.gohugo.io/&#34;&gt;主題&lt;/a&gt;中，選一個順眼的，就能開始了。&lt;/p&gt;
-&lt;h3 id=&#34;academic-theme&#34;&gt;Academic theme&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/gcushen/hugo-academic&#34;&gt;Academic theme&lt;/a&gt;的Demo&lt;a href=&#34;https://sourcethemes.com/academic/&#34;&gt;在此&lt;/a&gt;，官方說法是十分鐘內就能做出如同Demo一樣的像樣網頁，其實做網頁花最多時間的還是微調跟內容更新，所以十分鐘是做出和模板一樣的東西，改內容絕對是會超過十分鐘的啦。此模板如名稱，是針對學術個人網頁設計，包括各項學術個人網頁需要的內容，像是發表、演講、授課內容、計畫內容等，值得一提的是，這個模板也內建Blog的功能，但經過評估，Blog常常會有些五四三的言論，我還是決定將Blog這個功能從學術個人網頁獨立出來，另闢一個Blog網站。&lt;/p&gt;
-&lt;p&gt;如果想要在個人網頁加上留言功能，此模板支援&lt;a href=&#34;https://disqus.com/&#34;&gt;Disqus&lt;/a&gt;，也支援使用&lt;a href=&#34;https://analytics.google.com/analytics/web/&#34;&gt;Google Analytics&lt;/a&gt;做各式各樣的流量分析，有需要的可以直接設定&lt;code&gt;config.toml&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;雖然內建的版面已經可以應付多數需求，如果要微調版面 (如調整字形、字體大小、部分連結需要開新視窗等) ，還是要直接改theme裡面的layout html檔，這部分懂一點基本的HTML和CSS是必要條件。&lt;/p&gt;
-&lt;h3 id=&#34;netlify&#34;&gt;Netlify&lt;/h3&gt;
-&lt;p&gt;套官網的描述:&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Netlify is a unified platform that automates your code to create high-performant, easily maintainable sites and web apps.&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Netlify是2014年成立的新創，提供免費的網頁部屬服務，對我來說最吸引人的功能是可以跟GitHub做連動，只要Commit &amp;amp; Sync，Netlify會自動部屬網頁，超級方便。其他特色包括Global &lt;a href=&#34;https://zh.wikipedia.org/wiki/%E5%85%A7%E5%AE%B9%E5%82%B3%E9%81%9E%E7%B6%B2%E8%B7%AF&#34;&gt;CDN&lt;/a&gt;、https加密服務等。&lt;/p&gt;
-&lt;p&gt;以下是Hugo在Netlify的設定:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Build command: hugo
-Publish directory: public
-
-Build environment variables
-key: HUGO_VERSION   value:0.26
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;google-domain&#34;&gt;Google Domain&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;https://domains.google/&#34;&gt;Google Domain&lt;/a&gt;顧名思義是Google提供的域名(Domain Name)管理購買服務，介面操作非常容易，只要從首頁進入，一路輸入想要的域名後，刷卡即可，域名價錢從USD12/年起跳，不算最便宜，但一個月只要1美金的價錢還是很平民的，如果需要圖文教學，可參考免費資源網路社群的&lt;a href=&#34;https://free.com.tw/google-domains/&#34;&gt;圖文並茂教學&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;值得注意的是，如果國家輸入台灣，會無止盡的告訴你省/州錯誤，有些教學建議國家設成中國，但我最後是設成美國來解決。&lt;/p&gt;
-&lt;p&gt;Google Domain跟Netlify的介接設定有兩個部分:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Google Domain&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;可以參考Netlify的&lt;a href=&#34;https://www.netlify.com/blog/2016/03/14/setting-up-your-custom-domain/&#34;&gt;官方文件&lt;/a&gt;，設定A以及CNAME。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Netlify&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;在Netlify網頁的頁面，選&lt;code&gt;Set up domain&lt;/code&gt;後，選擇&lt;code&gt;Use another DNS&lt;/code&gt;，將申請好的網址貼上。&lt;/p&gt;
-&lt;h3 id=&#34;小結&#34;&gt;小結&lt;/h3&gt;
-&lt;p&gt;以上就是用R的blogdown package做學術&lt;a href=&#34;https://yjtseng.info&#34;&gt;個人網頁&lt;/a&gt;的心得筆記，希望不要太快看膩阿~&lt;/p&gt;
-</description>
-      
-            <category>R</category>
-      
-            <category>Packages</category>
-      
-            <category>blogdown</category>
-      
+      <description>除了前篇提到的Blog外，也一口氣更新了原有的個人網頁 (兩年過去，看膩了&amp;hellip;.)。新版網頁使用的一樣是blogdown packa</description>
     </item>
     
     <item>
@@ -63,35 +26,7 @@ key: HUGO_VERSION   value:0.26
       <pubDate>Thu, 17 Aug 2017 00:00:00 +0000</pubDate>
       
       <guid>/post/rblogdown/</guid>
-      <description>&lt;p&gt;忙一忙突然又想起blogdown這個packages，今天終於下定決心開始，不知道會持續多久&amp;hellip;..&lt;/p&gt;
-&lt;h3 id=&#34;blogdown&#34;&gt;blogdown&lt;/h3&gt;
-&lt;p&gt;blogdown是基於R Markdown和Hugo開發的R package，簡單來說是讓你可以用R Markdown寫Blog的好幫手。先前用過姊妹套件&lt;a href=&#34;https://bookdown.org/yihui/bookdown/&#34;&gt;bookdown&lt;/a&gt;寫了&lt;a href=&#34;yijutseng.github.io/DataScienceRBook/&#34;&gt;資料科學與R語言&lt;/a&gt;電子書，用來介紹R語言的使用非常方便，不用再辛苦的剪下貼上，也不用擔心程式碼沒上色，導致不清不楚讀者沒耐心看(只有我沒耐心)。&lt;/p&gt;
-&lt;h3 id=&#34;hugo&#34;&gt;Hugo&lt;/h3&gt;
-&lt;p&gt;決定要寫以後，花了大把時間挑主題(汗)，&lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;有蠻多不錯的&lt;a href=&#34;https://themes.gohugo.io/&#34;&gt;主題&lt;/a&gt;可選，因為希望頁面乾淨整潔，所以選了&lt;a href=&#34;https://github.com/carsonip/hugo-theme-minos&#34;&gt;hugo-theme-minos&lt;/a&gt;，希望不要馬上就看膩了。&lt;/p&gt;
-&lt;p&gt;卡關最久的是跟相對路徑有關的設定，不知道為什麼Tags跟Categories的連結一直設定不好，看起來是跟&lt;code&gt;$Site.BaseURL&lt;/code&gt;有關，後來完全硬幹，把&lt;code&gt;$Site.BaseURL&lt;/code&gt;全都改掉了，Google了老半天為什麼會這樣，到目前還是無解。&lt;/p&gt;
-&lt;h3 id=&#34;netlify&#34;&gt;Netlify&lt;/h3&gt;
-&lt;p&gt;以往都是用GitHub page來存放靜態網頁，這次趁機會試著使用很多人推薦的&lt;a href=&#34;https://www.netlify.com/&#34;&gt;Netlify&lt;/a&gt;，一樣可以跟GitHub做連動，只要Commit &amp;amp; Sync，Netlify會自動部屬網頁，超級方便。
-設定的時候有一些參數要注意:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Build command: hugo
-Publish directory: public
-
-Build environment variables
-key: HUGO_VERSION   value:0.26
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;參考資料:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://slides.yihui.name/2017-rstudio-webinar-blogdown-Yihui-Xie.html&#34;&gt;Making Websites with R Markdown and blogdown&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/rstudio/blogdown&#34;&gt;blogdown GitHub page&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-      
-            <category>R</category>
-      
-            <category>Blog</category>
-      
-            <category>Packages</category>
-      
-            <category>blogdown</category>
-      
+      <description>忙一忙突然又想起blogdown這個packages，今天終於下定決心開始，不知道會持續多久&amp;hellip;.. blogdown blogdown是基於R M</description>
     </item>
     
   </channel>
