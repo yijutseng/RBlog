@@ -13,20 +13,20 @@
     <meta property="og:description" content="" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:url" content="https://blog.yjtseng.info/post/jupyternotebook/" />
+    <meta property="og:url" content="/post/jupyternotebook/" />
     
 
     <link href="" rel="alternate" type="application/rss+xml" title="有完沒完RRR" />
     <link rel="shortcut icon" href="/favicon.png">
 
-    <link href="https://blog.yjtseng.info/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
-    <link href="https://blog.yjtseng.info/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+    <link href="/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+    <link href="/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
 
-    <link rel="stylesheet" href="https://blog.yjtseng.info/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 
     <link href="http://gmpg.org/xfn/11" rel="profile">
     
-    <meta name="generator" content="Hugo 0.52" />
+    <meta name="generator" content="Hugo 0.70.0" />
 </head>
 
 
@@ -36,7 +36,7 @@
     <div id="header-outer" class="outer">
         <div id="header-inner" class="inner">
             <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
-            <a id="logo" class="logo-text" href="https://blog.yjtseng.info/">有完沒完RRR</a>
+            <a id="logo" class="logo-text" href="/">有完沒完RRR</a>
             <nav id="main-nav">
                 
                 <a class="main-nav-link" href="/categories/index.html">Categories</a>
@@ -83,64 +83,36 @@
             
         </div>
         <div class="article-entry" itemprop="articleBody">
-            
-
-<h2 id="rstudio-server">RStudio Server</h2>
-
+            <h2 id="rstudio-server">RStudio Server</h2>
 <p>一直以來都是<a href="https://www.rstudio.com/">RStudio</a>的愛用者，在RStudio出現以前，只能用R的陽春Client版介面的超級黑暗期實在是不堪回首（配合無止盡的博士修業過程，好像也蠻搭的）。RStudio也有server版本，只要透過瀏覽器就能在任何電腦使用RStudio進行分析專案。</p>
-
 <p>開始教書以後，發現RStudio提供免費的<a href="https://www.rstudio.com/products/rstudio-server-pro/">RStudio Server Pro</a>給<a href="https://www.rstudio.com/pricing/academic-pricing/">教學</a>使用，二話不說提出申請，也很快就得到回覆，並直接提供授權金鑰，雖然要每年寫信重新申請，但仍然是很棒的使用者體驗。
 其實<a href="https://www.rstudio.com/products/rstudio/#Server">RStudio Server</a>的免費版本也很夠用了，有興趣的人可以從免費版開始上手。</p>
-
 <h2 id="jupyter-notebook">Jupyter Notebook</h2>
-
 <p>（本篇標題是Jupyter Notebook，好像完全離題了）除了RStudio Server外，要以瀏覽器透過Web介面來執行資料分析專案當然不能不提<strong>Jupyter Notebook</strong> <a href="http://jupyter.org/">官網在此</a>，跟RStudio不同的是，<strong>Jupyter Notebook</strong>多種程式語言，比如 Python、R等等，而且可依需求將程式碼分成不同段落，分段排版與執行，並隨意的加上說明文字（配合markdown語法排版），輕鬆結合資料處理分析與結果呈現等步驟，生成程式與結果與說明並茂的文章。另外執行程式碼的結果會存在記憶體中，整個頁面可以當成一個網頁分享給任何人。</p>
-
 <p>另外這種可以架在伺服器上，並且用瀏覽器可輕鬆存取的資料分析平台非常適合上課使用，在課堂上電腦教室的環境不一定與學生自有電腦相同，同學常常回家執行時發生各式各樣的問題，讓學習體驗變得很糟糕。而且電腦教室的電腦通常有還原卡，同學上課的程式碼若無自行備份，哪天想起來要取用程式碼時也只能再重打一次，然後就直接放棄治療，實在很可惜。如果不管同學用哪裡的電腦都能取用跟上課時一模一樣的環境，也不用受限於電腦教室的爛電腦（開機要一百萬年），真的能解決很多不必要的苦難。</p>
-
 <p>因為上述原因，還有要跟上時代潮流，就在實驗室也架了<strong>Jupyter Notebook</strong>，過程記錄如下：</p>
-
 <h2 id="架設自己的jupyter-notebook">架設自己的Jupyter Notebook</h2>
-
 <h3 id="伺服器說明">伺服器說明</h3>
-
 <p>Ubuntu Server 16.04.4 LTS <a href="https://www.ubuntu.com/download/server">下載連結</a></p>
-
 <h3 id="更新ubuntu套件">更新Ubuntu套件</h3>
-
 <pre><code>sudo apt-get update
 sudo apt-get upgrade
-</code></pre>
-
-<h3 id="安裝python3-pip">安裝python3-pip</h3>
-
+</code></pre><h3 id="安裝python3-pip">安裝python3-pip</h3>
 <pre><code>sudo apt-get install python3-pip
 conda install jupyter
-</code></pre>
-
-<pre><code>sudo apt-get install npm nodejs-legacy
+</code></pre><pre><code>sudo apt-get install npm nodejs-legacy
 sudo npm install -g configurable-http-proxy
-</code></pre>
-
-<h3 id="jupyterhub">Jupyterhub</h3>
-
+</code></pre><h3 id="jupyterhub">Jupyterhub</h3>
 <p>首先先裝Anaconda，這邊是裝3.5.1.0版本，可參考<a href="https://www.anaconda.com/download/#linux">官網</a>安裝最新版本。</p>
-
 <pre><code>wget https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh
 bash Anaconda3-5.1.0-Linux-x86_64.sh
 export PATH=~/anaconda3/bin:$PATH
 
-</code></pre>
-
-<pre><code>conda install -c conda-forge jupyterhub  # installs jupyterhub and proxy
+</code></pre><pre><code>conda install -c conda-forge jupyterhub  # installs jupyterhub and proxy
 conda install notebook
-</code></pre>
-
-<pre><code>sudo jupyterhub --generate-config -f /etc/jupyterhub/jupyterhub_config.py
+</code></pre><pre><code>sudo jupyterhub --generate-config -f /etc/jupyterhub/jupyterhub_config.py
 jupyterhub --no-ssl
-</code></pre>
-
-<pre><code>c.JupyterHub.ip = '192.168.1.5'
+</code></pre><pre><code>c.JupyterHub.ip = '192.168.1.5'
 c.JupyterHub.port = 8000
 c.PAMAuthenticator.encoding = 'utf8'
 
@@ -150,13 +122,9 @@ c.Authenticator.admin_users = {'yjtseng'}
 
 c.Spawner.cmd=['jupyterhub-singleuser']
 c.JupyterHub.statsd_prefix = 'jupyterhub'
-</code></pre>
-
-<pre><code>sudo systemctl start jupyterhub
+</code></pre><pre><code>sudo systemctl start jupyterhub
 sudo systemctl status jupyterhub
-</code></pre>
-
-<pre><code>[Unit]
+</code></pre><pre><code>[Unit]
 Description=Jupyterhub
 
 [Service]
@@ -166,22 +134,16 @@ ExecStart=/bin/bash/home/yjtseng/anaconda3/bin/jupyterhub -f /etc/jupyterhub/jup
 
 [Install]
 WantedBy=multi-user.target
-</code></pre>
-
-<pre><code>sudo pip install bash_kernel
+</code></pre><pre><code>sudo pip install bash_kernel
 sudo pip install octave_kernel
 devtools::install_github(paste0('IRkernel/', c('repr', 'IRdisplay', 'IRkernel')))
 IRkernel::installspec(user = FALSE)                 
-</code></pre>
-
-<h2 id="參考資料">參考資料</h2>
-
+</code></pre><h2 id="參考資料">參考資料</h2>
 <ul>
 <li><a href="https://jerrynest.io/install-jupyter-with-style/">快速安裝架設 Jupyter Notebook 並修改主題樣式</a></li>
 <li><a href="http://jupyter-notebook.readthedocs.io/en/stable/">Jupyter Notebook Doc</a>
 <a href="https://github.com/jupyterhub/jupyterhub/wiki/Run-jupyterhub-as-a-system-service">https://github.com/jupyterhub/jupyterhub/wiki/Run-jupyterhub-as-a-system-service</a></li>
 </ul>
-
 <p><a href="https://stackoverflow.com/questions/45776003/fixing-a-systemd-service-203-exec-failure-no-such-file-or-directory">https://stackoverflow.com/questions/45776003/fixing-a-systemd-service-203-exec-failure-no-such-file-or-directory</a></p>
 
         </div>
@@ -191,21 +153,19 @@ IRkernel::installspec(user = FALSE)
         <div class="article-toc" style="display:none;">
             <h3>Contents</h3>
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#rstudio-server">RStudio Server</a></li>
-<li><a href="#jupyter-notebook">Jupyter Notebook</a></li>
-<li><a href="#架設自己的jupyter-notebook">架設自己的Jupyter Notebook</a>
-<ul>
-<li><a href="#伺服器說明">伺服器說明</a></li>
-<li><a href="#更新ubuntu套件">更新Ubuntu套件</a></li>
-<li><a href="#安裝python3-pip">安裝python3-pip</a></li>
-<li><a href="#jupyterhub">Jupyterhub</a></li>
-</ul></li>
-<li><a href="#參考資料">參考資料</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#rstudio-server">RStudio Server</a></li>
+    <li><a href="#jupyter-notebook">Jupyter Notebook</a></li>
+    <li><a href="#架設自己的jupyter-notebook">架設自己的Jupyter Notebook</a>
+      <ul>
+        <li><a href="#伺服器說明">伺服器說明</a></li>
+        <li><a href="#更新ubuntu套件">更新Ubuntu套件</a></li>
+        <li><a href="#安裝python3-pip">安裝python3-pip</a></li>
+        <li><a href="#jupyterhub">Jupyterhub</a></li>
+      </ul>
+    </li>
+    <li><a href="#參考資料">參考資料</a></li>
+  </ul>
 </nav>
         </div>
         
@@ -272,9 +232,15 @@ IRkernel::installspec(user = FALSE)
     </div>
     <nav id="article-nav">
     
+    <a href="/post/dotdotdot/" id="article-nav-newer" class="article-nav-link-wrap">
+        <div class="article-nav-title"><span>&lt;</span>&nbsp;
+            R的arguments出現三個點是...?
+        </div>
+    </a>
     
-    <a href="/post/dotdotdot/" id="article-nav-older" class="article-nav-link-wrap">
-        <div class="article-nav-title">R的arguments出現三個點是...?&nbsp;<span>&gt;</span></div>
+    
+    <a href="/post/survival-curve/" id="article-nav-older" class="article-nav-link-wrap">
+        <div class="article-nav-title">用R畫存活曲線Survival curve&nbsp;<span>&gt;</span></div>
     </a>
     
 </nav>
@@ -287,7 +253,7 @@ IRkernel::installspec(user = FALSE)
     <footer id="footer">
     <div class="outer">
         <div id="footer-info" class="inner">
-            &copy; 2018 有完沒完RRR&nbsp;
+            &copy; 2020 有完沒完RRR&nbsp;
             Powered by <a href="https://gohugo.io" target="_blank">Hugo</a> with theme <a href="https://github.com/carsonip/hugo-theme-minos">Minos</a>
         </div>
     </div>

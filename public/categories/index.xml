@@ -1,51 +1,51 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on 有完沒完RRR</title>
-    <link>https://blog.yjtseng.info/categories/</link>
+    <link>/categories/</link>
     <description>Recent content in Categories on 有完沒完RRR</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
+    <lastBuildDate>Wed, 13 May 2020 00:00:00 +0000</lastBuildDate>
     
-        <atom:link href="https://blog.yjtseng.info/categories/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Environment</title>
-      <link>https://blog.yjtseng.info/categories/environment/</link>
-      <pubDate>Fri, 14 Dec 2018 00:00:00 +0000</pubDate>
+      <title>R language</title>
+      <link>/categories/r-language/</link>
+      <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/categories/environment/</guid>
+      <guid>/categories/r-language/</guid>
       <description></description>
       
     </item>
     
     <item>
-      <title>R Language</title>
-      <link>https://blog.yjtseng.info/categories/r-language/</link>
-      <pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate>
+      <title>Environment</title>
+      <link>/categories/environment/</link>
+      <pubDate>Fri, 14 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/categories/r-language/</guid>
+      <guid>/categories/environment/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Text Mining</title>
-      <link>https://blog.yjtseng.info/categories/text-mining/</link>
+      <link>/categories/text-mining/</link>
       <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/categories/text-mining/</guid>
+      <guid>/categories/text-mining/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Website</title>
-      <link>https://blog.yjtseng.info/categories/website/</link>
+      <link>/categories/website/</link>
       <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/categories/website/</guid>
+      <guid>/categories/website/</guid>
       <description></description>
       
     </item>

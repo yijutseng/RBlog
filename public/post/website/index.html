@@ -13,20 +13,20 @@
     <meta property="og:description" content="" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:url" content="https://blog.yjtseng.info/post/website/" />
+    <meta property="og:url" content="/post/website/" />
     
 
     <link href="" rel="alternate" type="application/rss+xml" title="有完沒完RRR" />
     <link rel="shortcut icon" href="/favicon.png">
 
-    <link href="https://blog.yjtseng.info/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
-    <link href="https://blog.yjtseng.info/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+    <link href="/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+    <link href="/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
 
-    <link rel="stylesheet" href="https://blog.yjtseng.info/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 
     <link href="http://gmpg.org/xfn/11" rel="profile">
     
-    <meta name="generator" content="Hugo 0.52" />
+    <meta name="generator" content="Hugo 0.70.0" />
 </head>
 
 
@@ -36,7 +36,7 @@
     <div id="header-outer" class="outer">
         <div id="header-inner" class="inner">
             <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
-            <a id="logo" class="logo-text" href="https://blog.yjtseng.info/">有完沒完RRR</a>
+            <a id="logo" class="logo-text" href="/">有完沒完RRR</a>
             <nav id="main-nav">
                 
                 <a class="main-nav-link" href="/categories/index.html">Categories</a>
@@ -83,61 +83,36 @@
             
         </div>
         <div class="article-entry" itemprop="articleBody">
-            
-
-<p>除了前篇提到的Blog外，也一口氣更新了原有的<a href="https://yjtseng.info">個人網頁</a> (兩年過去，看膩了&hellip;.)。新版網頁使用的一樣是<a href="https://github.com/rstudio/blogdown">blogdown</a> package，搭配適合做學術個人網頁的<a href="https://github.com/gcushen/hugo-academic">Academic theme</a>，並且下定決心，透過<a href="https://domains.google/">Google Domain</a>買了自己的Domain name <strong>yjtseng.info</strong>，包括設定各類參數和Domain name、加入發表、Talk、Project等內容，大概花了一天的時間完成更新，要是做研究也這樣一氣呵成那有多好(?)。</p>
-
+            <p>除了前篇提到的Blog外，也一口氣更新了原有的<a href="https://yjtseng.info">個人網頁</a> (兩年過去，看膩了&hellip;.)。新版網頁使用的一樣是<a href="https://github.com/rstudio/blogdown">blogdown</a> package，搭配適合做學術個人網頁的<a href="https://github.com/gcushen/hugo-academic">Academic theme</a>，並且下定決心，透過<a href="https://domains.google/">Google Domain</a>買了自己的Domain name <strong>yjtseng.info</strong>，包括設定各類參數和Domain name、加入發表、Talk、Project等內容，大概花了一天的時間完成更新，要是做研究也這樣一氣呵成那有多好(?)。</p>
 <h3 id="blogdown">blogdown</h3>
-
 <p><a href="https://github.com/rstudio/blogdown">blogdown</a>是基於R Markdown和Hugo開發的R package，簡單來說是讓你可以用R Markdown 或是Markdown寫Blog和網頁的好幫手。這個Blog也是用blogdown寫的，沒想到寫學術個人網頁也非常方便! 一樣是從<a href="https://gohugo.io/">Hugo</a>的<a href="https://themes.gohugo.io/">主題</a>中，選一個順眼的，就能開始了。</p>
-
 <h3 id="academic-theme">Academic theme</h3>
-
 <p><a href="https://github.com/gcushen/hugo-academic">Academic theme</a>的Demo<a href="https://sourcethemes.com/academic/">在此</a>，官方說法是十分鐘內就能做出如同Demo一樣的像樣網頁，其實做網頁花最多時間的還是微調跟內容更新，所以十分鐘是做出和模板一樣的東西，改內容絕對是會超過十分鐘的啦。此模板如名稱，是針對學術個人網頁設計，包括各項學術個人網頁需要的內容，像是發表、演講、授課內容、計畫內容等，值得一提的是，這個模板也內建Blog的功能，但經過評估，Blog常常會有些五四三的言論，我還是決定將Blog這個功能從學術個人網頁獨立出來，另闢一個Blog網站。</p>
-
 <p>如果想要在個人網頁加上留言功能，此模板支援<a href="https://disqus.com/">Disqus</a>，也支援使用<a href="https://analytics.google.com/analytics/web/">Google Analytics</a>做各式各樣的流量分析，有需要的可以直接設定<code>config.toml</code>。</p>
-
 <p>雖然內建的版面已經可以應付多數需求，如果要微調版面 (如調整字形、字體大小、部分連結需要開新視窗等) ，還是要直接改theme裡面的layout html檔，這部分懂一點基本的HTML和CSS是必要條件。</p>
-
 <h3 id="netlify">Netlify</h3>
-
 <p>套官網的描述:</p>
-
 <p><strong>Netlify is a unified platform that automates your code to create high-performant, easily maintainable sites and web apps.</strong></p>
-
 <p>Netlify是2014年成立的新創，提供免費的網頁部屬服務，對我來說最吸引人的功能是可以跟GitHub做連動，只要Commit &amp; Sync，Netlify會自動部屬網頁，超級方便。其他特色包括Global <a href="https://zh.wikipedia.org/wiki/%E5%85%A7%E5%AE%B9%E5%82%B3%E9%81%9E%E7%B6%B2%E8%B7%AF">CDN</a>、https加密服務等。</p>
-
 <p>以下是Hugo在Netlify的設定:</p>
-
 <pre><code>Build command: hugo
 Publish directory: public
 
 Build environment variables
 key: HUGO_VERSION   value:0.26
-</code></pre>
-
-<h3 id="google-domain">Google Domain</h3>
-
+</code></pre><h3 id="google-domain">Google Domain</h3>
 <p><a href="https://domains.google/">Google Domain</a>顧名思義是Google提供的域名(Domain Name)管理購買服務，介面操作非常容易，只要從首頁進入，一路輸入想要的域名後，刷卡即可，域名價錢從USD12/年起跳，不算最便宜，但一個月只要1美金的價錢還是很平民的，如果需要圖文教學，可參考免費資源網路社群的<a href="https://free.com.tw/google-domains/">圖文並茂教學</a>。</p>
-
 <p>值得注意的是，如果國家輸入台灣，會無止盡的告訴你省/州錯誤，有些教學建議國家設成中國，但我最後是設成美國來解決。</p>
-
 <p>Google Domain跟Netlify的介接設定有兩個部分:</p>
-
 <ul>
 <li>Google Domain</li>
 </ul>
-
 <p>可以參考Netlify的<a href="https://www.netlify.com/blog/2016/03/14/setting-up-your-custom-domain/">官方文件</a>，設定A以及CNAME。</p>
-
 <ul>
 <li>Netlify</li>
 </ul>
-
 <p>在Netlify網頁的頁面，選<code>Set up domain</code>後，選擇<code>Use another DNS</code>，將申請好的網址貼上。</p>
-
 <h3 id="小結">小結</h3>
-
 <p>以上就是用R的blogdown package做學術<a href="https://yjtseng.info">個人網頁</a>的心得筆記，希望不要太快看膩阿~</p>
 
         </div>
@@ -147,19 +122,17 @@ key: HUGO_VERSION   value:0.26
         <div class="article-toc" style="display:none;">
             <h3>Contents</h3>
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#blogdown">blogdown</a></li>
-<li><a href="#academic-theme">Academic theme</a></li>
-<li><a href="#netlify">Netlify</a></li>
-<li><a href="#google-domain">Google Domain</a></li>
-<li><a href="#小結">小結</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#blogdown">blogdown</a></li>
+        <li><a href="#academic-theme">Academic theme</a></li>
+        <li><a href="#netlify">Netlify</a></li>
+        <li><a href="#google-domain">Google Domain</a></li>
+        <li><a href="#小結">小結</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
         
@@ -231,15 +204,15 @@ key: HUGO_VERSION   value:0.26
     </div>
     <nav id="article-nav">
     
-    <a href="/post/jiebar/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/post/rblogdown/" id="article-nav-newer" class="article-nav-link-wrap">
         <div class="article-nav-title"><span>&lt;</span>&nbsp;
-            在R中使用結巴分詞
+            開始用blogdown寫blog啦
         </div>
     </a>
     
     
-    <a href="/post/rblogdown/" id="article-nav-older" class="article-nav-link-wrap">
-        <div class="article-nav-title">開始用blogdown寫blog啦&nbsp;<span>&gt;</span></div>
+    <a href="/post/jiebar/" id="article-nav-older" class="article-nav-link-wrap">
+        <div class="article-nav-title">在R中使用結巴分詞&nbsp;<span>&gt;</span></div>
     </a>
     
 </nav>
@@ -252,7 +225,7 @@ key: HUGO_VERSION   value:0.26
     <footer id="footer">
     <div class="outer">
         <div id="footer-info" class="inner">
-            &copy; 2018 有完沒完RRR&nbsp;
+            &copy; 2020 有完沒完RRR&nbsp;
             Powered by <a href="https://gohugo.io" target="_blank">Hugo</a> with theme <a href="https://github.com/carsonip/hugo-theme-minos">Minos</a>
         </div>
     </div>

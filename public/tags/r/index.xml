@@ -1,80 +1,337 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>R on 有完沒完RRR</title>
-    <link>https://blog.yjtseng.info/tags/r/</link>
+    <link>/tags/r/</link>
     <description>Recent content in R on 有完沒完RRR</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
-    <lastBuildDate>Fri, 14 Dec 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 13 May 2020 00:00:00 +0000</lastBuildDate>
     
-        <atom:link href="https://blog.yjtseng.info/tags/r/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>在Ubuntu伺服器架設Jupyter Notebook</title>
-      <link>https://blog.yjtseng.info/post/jupyternotebook/</link>
-      <pubDate>Fri, 14 Dec 2018 00:00:00 +0000</pubDate>
+      <title>用R畫存活曲線Survival curve</title>
+      <link>/post/survival-curve/</link>
+      <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/post/jupyternotebook/</guid>
+      <guid>/post/survival-curve/</guid>
       <description>
 
-&lt;h2 id=&#34;rstudio-server&#34;&gt;RStudio Server&lt;/h2&gt;
 
+&lt;p&gt;因為研究需要，搜尋了用R畫存活曲線的方法，並調整了圖形參數以及將多張存活曲線圖合併排列，整理成此篇文章。&lt;/p&gt;
+&lt;div id=&#34;什麼是存活曲線&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;什麼是存活曲線?&lt;/h2&gt;
+&lt;p&gt;簡單來說，就是將&lt;strong&gt;沒發生事件的比例&lt;/strong&gt;當x軸，&lt;strong&gt;時間&lt;/strong&gt;當y軸所繪製出的圖形。可參考&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E5%AD%98%E6%B4%BB%E6%9B%B2%E7%B7%9A&#34;&gt;維基百科&lt;/a&gt;的說明。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;用r畫存活曲線所需套件&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;用R畫存活曲線所需套件&lt;/h2&gt;
+&lt;p&gt;在R中有蠻多畫存活曲線相關的套件，我的初版程式是使用&lt;code&gt;ggfortify&lt;/code&gt;套件，但後來Editor要求要在圖上加&lt;strong&gt;Number at risk&lt;/strong&gt;的資訊，查了一下發現&lt;code&gt;ggfortify&lt;/code&gt;套件沒有這個功能，又不想手動加，就重新搜尋了資源，找到一篇介紹&lt;code&gt;survminer&lt;/code&gt;套件的&lt;a href=&#34;http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization&#34;&gt;文章&lt;/a&gt;，並完成完整的survival plot。&lt;/p&gt;
+&lt;p&gt;本介紹文以&lt;a href=&#34;http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization&#34;&gt;survminer R package: Survival Data Analysis and Visualization&lt;/a&gt;為基礎，並衍伸其他條件設定的教學。&lt;/p&gt;
+&lt;p&gt;以下介紹用&lt;code&gt;survminer&lt;/code&gt;套件 (&lt;a href=&#34;https://rpkgs.datanovia.com/survminer/index.html&#34;&gt;官方說明文件&lt;/a&gt;) 畫存活曲線的步驟&lt;/p&gt;
+&lt;p&gt;首先載入&lt;code&gt;survminer&lt;/code&gt;套件以及處理資料必須的&lt;code&gt;survival&lt;/code&gt;套件 (需要套件中的&lt;code&gt;Surv()&lt;/code&gt;函數)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(survival)
+library(survminer)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;範例資料&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;範例資料&lt;/h2&gt;
+&lt;p&gt;以&lt;code&gt;survival&lt;/code&gt;套件內附的&lt;code&gt;lung&lt;/code&gt;資料為例，資料包括:&lt;/p&gt;
+&lt;p&gt;(以下資料翻譯自&lt;code&gt;survival&lt;/code&gt;套件說明文件)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;inst: 機構代碼&lt;/li&gt;
+&lt;li&gt;time: 存活時間 (單位為日)&lt;/li&gt;
+&lt;li&gt;status: “設限”或“事件發生”狀況，1為設限，2為事件發生，在此為死亡
+&lt;ul&gt;
+&lt;li&gt;1=censored&lt;/li&gt;
+&lt;li&gt;2=dead&lt;br /&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;age: 年紀 (單位為年)&lt;/li&gt;
+&lt;li&gt;sex: 性別
+&lt;ul&gt;
+&lt;li&gt;Male=1&lt;/li&gt;
+&lt;li&gt;Female=2&lt;br /&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;ph.ecog: 醫生評估的ECOG體能狀況評估分數
+&lt;ul&gt;
+&lt;li&gt;0= asymptomatic&lt;/li&gt;
+&lt;li&gt;1= symptomatic but completely ambulatory&lt;/li&gt;
+&lt;li&gt;2= in bed &amp;lt;50% of the day&lt;/li&gt;
+&lt;li&gt;3= in bed &amp;gt; 50% of the day but not bedbound&lt;/li&gt;
+&lt;li&gt;4= bedbound&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;ph.karno: 醫生評估的Karnofsky體能狀況評估分數
+&lt;ul&gt;
+&lt;li&gt;bad=0-good=100&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;pat.karno: 病人自己評估的Karnofsky體能狀況評估分數&lt;/li&gt;
+&lt;li&gt;meal.cal: 卡路里攝取量&lt;/li&gt;
+&lt;li&gt;wt.loss: 過去六個月體重下降多少&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::kable(lung %&amp;gt;% head())&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;inst&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;time&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;status&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;age&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sex&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;ph.ecog&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;ph.karno&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pat.karno&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;meal.cal&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;wt.loss&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;306&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1175&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;455&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1225&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1010&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;56&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;210&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1150&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;883&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1022&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;50&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;513&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;基本存活曲線&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;基本存活曲線&lt;/h2&gt;
+&lt;p&gt;在準備完資料後，可用&lt;code&gt;survfit()&lt;/code&gt;函數製作存活模型，並以&lt;code&gt;ggsurvplot()&lt;/code&gt;函數繪製存活曲線，&lt;code&gt;survfit()&lt;/code&gt;函數的重要參數包括&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;formula: &lt;code&gt;Surv(時間,設限或事件狀態)~分組依據&lt;/code&gt;，在這個範例為&lt;code&gt;Surv(time,status)~分組依據&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;data: 資料名稱，在這個範例為lung&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以最簡單的單一族群存活區限為例，想要畫這個資料集中&lt;strong&gt;所有病人&lt;/strong&gt;的存活曲線，其實就是不分組的意思，可將&lt;strong&gt;分組依據&lt;/strong&gt;設定成單一數字&lt;strong&gt;1&lt;/strong&gt;，如下列範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit&amp;lt;- survfit(Surv(time, status) ~ 1, data = lung)
+ggsurvplot(fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;以此類推，若想用性別做分組，也就是男生畫一條存活曲線，女生也畫一條，並放在同一張圖上，此時就將性別&lt;code&gt;sex&lt;/code&gt;做為&lt;strong&gt;分組依據&lt;/strong&gt;，如下範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit&amp;lt;- survfit(Surv(time, status) ~ sex, data = lung)
+ggsurvplot(fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;增加p-value&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;增加P value&lt;/h2&gt;
+&lt;p&gt;將&lt;code&gt;ggsurvplot()&lt;/code&gt;函數的&lt;code&gt;pval&lt;/code&gt;參數設定為&lt;code&gt;TRUE&lt;/code&gt;，即可在圖中加上兩組檢定的P value，這個P value也可以用&lt;code&gt;surv_pvalue()&lt;/code&gt;函數取得，預設的檢定方法為&lt;strong&gt;log-rank test&lt;/strong&gt;，若想要修改，也可以透過設定&lt;code&gt;pval.method&lt;/code&gt;參數修改。&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;可進一步用&lt;code&gt;pval.coord = c(100, 0.03)&lt;/code&gt;調整P value顯示位置&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;增加信賴區間&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;增加信賴區間&lt;/h2&gt;
+&lt;p&gt;若生存曲線圖形要加上信賴區間的話，可設定&lt;code&gt;conf.int = TRUE&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+           conf.int = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;增加number-of-risk-表格&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;增加number of risk 表格&lt;/h2&gt;
+&lt;p&gt;將&lt;code&gt;ggsurvplot()&lt;/code&gt;函數的&lt;code&gt;risk.table&lt;/code&gt;參數設定為&lt;code&gt;TRUE&lt;/code&gt;，即可在圖中加上number of risk 表格&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+           conf.int = TRUE,
+           risk.table = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;若不想要number of risk 表格Y軸文字的顏色，可將&lt;code&gt;risk.table.y.text.col&lt;/code&gt;參數設成FALSE&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+           conf.int = TRUE,
+           risk.table = TRUE, risk.table.y.text.col = F)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;格式微調&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;格式微調&lt;/h2&gt;
+&lt;p&gt;可分為存活曲線調整與number at risk表格調整，調整參數如下&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;font.main = 12&lt;/code&gt; 圖表標題字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;font.x =  12&lt;/code&gt; 圖表X軸字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;font.y = 12&lt;/code&gt; 圖表Y軸字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fontsize = 3&lt;/code&gt; Number at risk內文字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;break.time.by = 100&lt;/code&gt; 每100天設一個標記&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;font.tickslab = 10&lt;/code&gt; 標記字型大小(100, 200, …等)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;legend.labs = c(&#34;Men&#34;, &#34;Women&#34;)&lt;/code&gt; 將圖示文字改為Men或是Women&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;title=&#34;Format setting&#34;&lt;/code&gt; 加上圖形標題&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;xlab=&#34;&#34;, ylab=&#34;&#34;&lt;/code&gt; X軸Y軸標題設定&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;legend =  &#34;none&#34;&lt;/code&gt; 不要圖示&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tables.theme = clean_theme()&lt;/code&gt; 設定Number at risk表格樣式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;若想改Number at risk表格的標題，只能用額外的程式碼&lt;code&gt;theme(plot.title = element_text(size = 10))&lt;/code&gt;設定&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;res&amp;lt;-ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+                conf.int = TRUE,
+                risk.table = TRUE, 
+                font.main = 12,
+                font.x =  12,
+                font.y = 12,
+                font.tickslab = 10,
+                fontsize = 3, 
+                break.time.by = 100,
+                legend.labs = c(&amp;quot;Men&amp;quot;, &amp;quot;Women&amp;quot;),
+                title=&amp;quot;Format setting&amp;quot;,
+                xlab=&amp;quot;X Test&amp;quot;, ylab=&amp;quot;Y Test&amp;quot;, legend =  &amp;quot;none&amp;quot;,
+                tables.theme = clean_theme())
+res$table &amp;lt;- res$table + theme(plot.title = element_text(size = 10))
+res&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;客製化p-value顯示方式&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;客製化P value顯示方式&lt;/h2&gt;
+&lt;p&gt;預設的P value是四位小數點，有時不太需要這麼多資訊，只需把小於0.01的值用&lt;strong&gt;&amp;lt;0.01&lt;/strong&gt;來表示 (通常是&amp;lt;0.001才轉換，但這邊為了呈現效果改為&amp;lt;0.01)，那就需要在畫圖前先處理。這邊使用&lt;code&gt;surv_pvalue(fit)$pval&lt;/code&gt;來取得P value &lt;code&gt;p&lt;/code&gt;後，更進一步用&lt;code&gt;if else&lt;/code&gt;來將數值轉成文字，最後在&lt;code&gt;ggsurvplot()&lt;/code&gt;函數中，將&lt;code&gt;pval = p&lt;/code&gt;參數設定為&lt;code&gt;p&lt;/code&gt;，就能調整P value的顯示方法&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;p&amp;lt;-surv_pvalue(fit)$pval
+if(p&amp;lt;0.01){
+  p&amp;lt;-&amp;quot;p&amp;lt;0.01&amp;quot;
+}else{
+  p&amp;lt;-paste0(&amp;quot;p=&amp;quot;,round(p,3))
+}
+
+resP&amp;lt;-ggsurvplot(fit, pval = p, pval.coord = c(100, 0.03), 
+                 conf.int = TRUE,
+                 risk.table = TRUE, risk.table.y.text.col = F,
+                 font.main = 12,
+                 font.x =  12,
+                 font.y = 12,
+                 font.tickslab = 10,
+                 fontsize = 3, 
+                 break.time.by = 100,
+                 legend.labs = c(&amp;quot;Men&amp;quot;, &amp;quot;Women&amp;quot;),
+                 title=&amp;quot;Customize P value&amp;quot;,
+                 xlab=&amp;quot;X Test&amp;quot;, ylab=&amp;quot;Y Test&amp;quot;, legend =  &amp;quot;none&amp;quot;,
+                 tables.theme = clean_theme())
+resP$table &amp;lt;- resP$table + theme(plot.title = element_text(size = 10))
+resP&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;合併多張存活曲線圖形&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;合併多張存活曲線圖形&lt;/h2&gt;
+&lt;p&gt;因&lt;code&gt;ggsurvplot()&lt;/code&gt;畫出的圖形無法使用常見的&lt;code&gt;grid.arrange()&lt;/code&gt;函數排序，&lt;code&gt;survminer&lt;/code&gt;套件另有排列多圖的方法&lt;code&gt;arrange_ggsurvplots()&lt;/code&gt;，使用方法是將多個&lt;code&gt;ggsurvplot&lt;/code&gt;圖形放入&lt;code&gt;list&lt;/code&gt;，作為&lt;code&gt;arrange_ggsurvplots()&lt;/code&gt;的第一個參數，之後利用&lt;code&gt;ncol&lt;/code&gt;設定Column數，&lt;code&gt;nrow&lt;/code&gt;設定Row數，&lt;code&gt;risk.table.height&lt;/code&gt;設定Number at risk表格高度&lt;/p&gt;
+&lt;p&gt;以下是橫放範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;arrange_ggsurvplots(list(res, resP),
+                    ncol=2, nrow=1, 
+                    risk.table.height = 0.22)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;直放範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;arrange_ggsurvplots(list(res, resP),
+                    ncol=1, nrow=2, 
+                    risk.table.height = 0.22)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;參考資料&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;參考資料&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization&#34;&gt;survminer R package: Survival Data Analysis and Visualization&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://rpkgs.datanovia.com/survminer/index.html&#34;&gt;survminer套件官方說明文件&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+</description>
+      
+            <category>R</category>
+      
+            <category>Visualization</category>
+      
+    </item>
+    
+    <item>
+      <title>在Ubuntu伺服器架設Jupyter Notebook</title>
+      <link>/post/jupyternotebook/</link>
+      <pubDate>Fri, 14 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/jupyternotebook/</guid>
+      <description>&lt;h2 id=&#34;rstudio-server&#34;&gt;RStudio Server&lt;/h2&gt;
 &lt;p&gt;一直以來都是&lt;a href=&#34;https://www.rstudio.com/&#34;&gt;RStudio&lt;/a&gt;的愛用者，在RStudio出現以前，只能用R的陽春Client版介面的超級黑暗期實在是不堪回首（配合無止盡的博士修業過程，好像也蠻搭的）。RStudio也有server版本，只要透過瀏覽器就能在任何電腦使用RStudio進行分析專案。&lt;/p&gt;
-
 &lt;p&gt;開始教書以後，發現RStudio提供免費的&lt;a href=&#34;https://www.rstudio.com/products/rstudio-server-pro/&#34;&gt;RStudio Server Pro&lt;/a&gt;給&lt;a href=&#34;https://www.rstudio.com/pricing/academic-pricing/&#34;&gt;教學&lt;/a&gt;使用，二話不說提出申請，也很快就得到回覆，並直接提供授權金鑰，雖然要每年寫信重新申請，但仍然是很棒的使用者體驗。
 其實&lt;a href=&#34;https://www.rstudio.com/products/rstudio/#Server&#34;&gt;RStudio Server&lt;/a&gt;的免費版本也很夠用了，有興趣的人可以從免費版開始上手。&lt;/p&gt;
-
 &lt;h2 id=&#34;jupyter-notebook&#34;&gt;Jupyter Notebook&lt;/h2&gt;
-
 &lt;p&gt;（本篇標題是Jupyter Notebook，好像完全離題了）除了RStudio Server外，要以瀏覽器透過Web介面來執行資料分析專案當然不能不提&lt;strong&gt;Jupyter Notebook&lt;/strong&gt; &lt;a href=&#34;http://jupyter.org/&#34;&gt;官網在此&lt;/a&gt;，跟RStudio不同的是，&lt;strong&gt;Jupyter Notebook&lt;/strong&gt;多種程式語言，比如 Python、R等等，而且可依需求將程式碼分成不同段落，分段排版與執行，並隨意的加上說明文字（配合markdown語法排版），輕鬆結合資料處理分析與結果呈現等步驟，生成程式與結果與說明並茂的文章。另外執行程式碼的結果會存在記憶體中，整個頁面可以當成一個網頁分享給任何人。&lt;/p&gt;
-
 &lt;p&gt;另外這種可以架在伺服器上，並且用瀏覽器可輕鬆存取的資料分析平台非常適合上課使用，在課堂上電腦教室的環境不一定與學生自有電腦相同，同學常常回家執行時發生各式各樣的問題，讓學習體驗變得很糟糕。而且電腦教室的電腦通常有還原卡，同學上課的程式碼若無自行備份，哪天想起來要取用程式碼時也只能再重打一次，然後就直接放棄治療，實在很可惜。如果不管同學用哪裡的電腦都能取用跟上課時一模一樣的環境，也不用受限於電腦教室的爛電腦（開機要一百萬年），真的能解決很多不必要的苦難。&lt;/p&gt;
-
 &lt;p&gt;因為上述原因，還有要跟上時代潮流，就在實驗室也架了&lt;strong&gt;Jupyter Notebook&lt;/strong&gt;，過程記錄如下：&lt;/p&gt;
-
 &lt;h2 id=&#34;架設自己的jupyter-notebook&#34;&gt;架設自己的Jupyter Notebook&lt;/h2&gt;
-
 &lt;h3 id=&#34;伺服器說明&#34;&gt;伺服器說明&lt;/h3&gt;
-
 &lt;p&gt;Ubuntu Server 16.04.4 LTS &lt;a href=&#34;https://www.ubuntu.com/download/server&#34;&gt;下載連結&lt;/a&gt;&lt;/p&gt;
-
 &lt;h3 id=&#34;更新ubuntu套件&#34;&gt;更新Ubuntu套件&lt;/h3&gt;
-
 &lt;pre&gt;&lt;code&gt;sudo apt-get update
 sudo apt-get upgrade
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;安裝python3-pip&#34;&gt;安裝python3-pip&lt;/h3&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;安裝python3-pip&#34;&gt;安裝python3-pip&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;sudo apt-get install python3-pip
 conda install jupyter
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get install npm nodejs-legacy
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;sudo apt-get install npm nodejs-legacy
 sudo npm install -g configurable-http-proxy
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;jupyterhub&#34;&gt;Jupyterhub&lt;/h3&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;jupyterhub&#34;&gt;Jupyterhub&lt;/h3&gt;
 &lt;p&gt;首先先裝Anaconda，這邊是裝3.5.1.0版本，可參考&lt;a href=&#34;https://www.anaconda.com/download/#linux&#34;&gt;官網&lt;/a&gt;安裝最新版本。&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;wget https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh
 bash Anaconda3-5.1.0-Linux-x86_64.sh
 export PATH=~/anaconda3/bin:$PATH
 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;conda install -c conda-forge jupyterhub  # installs jupyterhub and proxy
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;conda install -c conda-forge jupyterhub  # installs jupyterhub and proxy
 conda install notebook
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo jupyterhub --generate-config -f /etc/jupyterhub/jupyterhub_config.py
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;sudo jupyterhub --generate-config -f /etc/jupyterhub/jupyterhub_config.py
 jupyterhub --no-ssl
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;c.JupyterHub.ip = &#39;192.168.1.5&#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;c.JupyterHub.ip = &#39;192.168.1.5&#39;
 c.JupyterHub.port = 8000
 c.PAMAuthenticator.encoding = &#39;utf8&#39;
 
@@ -84,13 +341,9 @@ c.Authenticator.admin_users = {&#39;yjtseng&#39;}
 
 c.Spawner.cmd=[&#39;jupyterhub-singleuser&#39;]
 c.JupyterHub.statsd_prefix = &#39;jupyterhub&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo systemctl start jupyterhub
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;sudo systemctl start jupyterhub
 sudo systemctl status jupyterhub
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;[Unit]
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;[Unit]
 Description=Jupyterhub
 
 [Service]
@@ -100,22 +353,16 @@ ExecStart=/bin/bash/home/yjtseng/anaconda3/bin/jupyterhub -f /etc/jupyterhub/jup
 
 [Install]
 WantedBy=multi-user.target
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo pip install bash_kernel
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;sudo pip install bash_kernel
 sudo pip install octave_kernel
 devtools::install_github(paste0(&#39;IRkernel/&#39;, c(&#39;repr&#39;, &#39;IRdisplay&#39;, &#39;IRkernel&#39;)))
 IRkernel::installspec(user = FALSE)                 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://jerrynest.io/install-jupyter-with-style/&#34;&gt;快速安裝架設 Jupyter Notebook 並修改主題樣式&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://jupyter-notebook.readthedocs.io/en/stable/&#34;&gt;Jupyter Notebook Doc&lt;/a&gt;
 &lt;a href=&#34;https://github.com/jupyterhub/jupyterhub/wiki/Run-jupyterhub-as-a-system-service&#34;&gt;https://github.com/jupyterhub/jupyterhub/wiki/Run-jupyterhub-as-a-system-service&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/45776003/fixing-a-systemd-service-203-exec-failure-no-such-file-or-directory&#34;&gt;https://stackoverflow.com/questions/45776003/fixing-a-systemd-service-203-exec-failure-no-such-file-or-directory&lt;/a&gt;&lt;/p&gt;
 </description>
       
@@ -127,78 +374,42 @@ IRkernel::installspec(user = FALSE)
     
     <item>
       <title>R的arguments出現三個點是...?</title>
-      <link>https://blog.yjtseng.info/post/dotdotdot/</link>
+      <link>/post/dotdotdot/</link>
       <pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/post/dotdotdot/</guid>
-      <description>
-
-&lt;h2 id=&#34;r函數介紹&#34;&gt;R函數介紹&lt;/h2&gt;
-
+      <guid>/post/dotdotdot/</guid>
+      <description>&lt;h2 id=&#34;r函數介紹&#34;&gt;R函數介紹&lt;/h2&gt;
 &lt;p&gt;需要先介紹怎麼在R裡面寫函數&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;f &amp;lt;- function(...) { 
-  names(list(...)) 
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;f &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;function&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;) { 
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;names&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;)) 
 } 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上述程式碼中，·&lt;code&gt;f&lt;/code&gt;是一個使用者自訂函數，就像java裡面的method，而&lt;strong&gt;…&lt;/strong&gt;的功能，則是讓&lt;code&gt;f&lt;/code&gt;函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上述程式碼中，·&lt;code&gt;f&lt;/code&gt;是一個使用者自訂函數，就像java裡面的method，而**…**的功能，則是讓&lt;code&gt;f&lt;/code&gt;函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。&lt;/p&gt;
 &lt;h2 id=&#34;使用範例一&#34;&gt;&amp;hellip;使用範例一&lt;/h2&gt;
-
 &lt;p&gt;舉例來說，若執行&lt;code&gt;f(a = 1, b = 2)&lt;/code&gt;，a和b這兩個參數可以直接傳到&lt;code&gt;list()&lt;/code&gt;函數中，變成&lt;code&gt;names(list(a=1,b=2))&lt;/code&gt;，意即生成一個list，內有兩個元素，a=1以及b=2。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;f(a = 1, b = 2)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot; &amp;quot;b&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;names(list(a=1,b=2)) #輸出相同
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot; &amp;quot;b&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;使用範例二&#34;&gt;&amp;hellip;使用範例二&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;addPercent &amp;lt;- function(x, mult = 100, ...){ 
-  percent &amp;lt;- round(x * mult, ...) 
-  paste0(percent, &amp;quot;%&amp;quot;) 
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;f&lt;/span&gt;(a &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, b &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot; &amp;quot;b&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;names&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(a&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,b&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)) &lt;span style=&#34;color:#75715e&#34;&gt;#輸出相同&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot; &amp;quot;b&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;使用範例二&#34;&gt;&amp;hellip;使用範例二&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;addPercent &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;function&lt;/span&gt;(x, mult &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;){ 
+  percent &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;round&lt;/span&gt;(x &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; mult, &lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;) 
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;paste0&lt;/span&gt;(percent, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%&amp;#34;&lt;/span&gt;) 
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在上述程式碼中，&lt;code&gt;addPercent&lt;/code&gt;是一個使用者自訂函數，&lt;strong&gt;…&lt;/strong&gt;的功能讓&lt;code&gt;addPercent&lt;/code&gt;函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;addPercent(c(0.5887,0.6925), digits = 2)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;58.87%&amp;quot; &amp;quot;69.25%&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;addPercent(c(0.5887,0.6925), digits = 1)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;58.9%&amp;quot; &amp;quot;69.2%&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;因此在執行&lt;code&gt;addPercent(c(0.5887,0.6925), digits = 2)&lt;/code&gt;時，&lt;code&gt;digits&lt;/code&gt;參數被傳遞到自定義函數&lt;code&gt;addPercent&lt;/code&gt;中的&lt;code&gt;round&lt;/code&gt;函數內，變成&lt;code&gt;round&lt;/code&gt;函數中的參數。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在上述程式碼中，&lt;code&gt;addPercent&lt;/code&gt;是一個使用者自訂函數，**…**的功能讓&lt;code&gt;addPercent&lt;/code&gt;函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;addPercent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.5887&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0.6925&lt;/span&gt;), digits &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;58.87%&amp;quot; &amp;quot;69.25%&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;addPercent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.5887&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0.6925&lt;/span&gt;), digits &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;58.9%&amp;quot; &amp;quot;69.2%&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;因此在執行&lt;code&gt;addPercent(c(0.5887,0.6925), digits = 2)&lt;/code&gt;時，&lt;code&gt;digits&lt;/code&gt;參數被傳遞到自定義函數&lt;code&gt;addPercent&lt;/code&gt;中的&lt;code&gt;round&lt;/code&gt;函數內，變成&lt;code&gt;round&lt;/code&gt;函數中的參數。
 在&lt;code&gt;round&lt;/code&gt;函數中，&lt;code&gt;digits&lt;/code&gt;參數的功能是設定四捨五入的位數，因此&lt;code&gt;digits = 2&lt;/code&gt;是指四捨五入到小數點第二位，&lt;code&gt;digits = 1&lt;/code&gt;是指四捨五入到小數點第一位。&lt;/p&gt;
-
 &lt;h2 id=&#34;使用範例三&#34;&gt;&amp;hellip;使用範例三&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;HelloWorld &amp;lt;- function(...) {
-  arguments &amp;lt;- list(...) 
-  paste(arguments)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;HelloWorld &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;function&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;) {
+  arguments &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;) 
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;paste&lt;/span&gt;(arguments)
 } 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;HelloWorld(&amp;quot;Hello&amp;quot;, &amp;quot;World&amp;quot;, &amp;quot;!&amp;quot;,&amp;quot;~&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Hello&amp;quot; &amp;quot;World&amp;quot; &amp;quot;!&amp;quot;     &amp;quot;~&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;HelloWorld&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;World&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;!&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;~&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Hello&amp;quot; &amp;quot;World&amp;quot; &amp;quot;!&amp;quot;     &amp;quot;~&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;</description>
       
             <category>R</category>
       
@@ -206,19 +417,14 @@ IRkernel::installspec(user = FALSE)
     
     <item>
       <title>正規表示式Regular Expression in R</title>
-      <link>https://blog.yjtseng.info/post/regexpr/</link>
+      <link>/post/regexpr/</link>
       <pubDate>Mon, 26 Mar 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/post/regexpr/</guid>
-      <description>
-
-&lt;h2 id=&#34;什麼是正規表示式&#34;&gt;什麼是正規表示式?&lt;/h2&gt;
-
+      <guid>/post/regexpr/</guid>
+      <description>&lt;h2 id=&#34;什麼是正規表示式&#34;&gt;什麼是正規表示式?&lt;/h2&gt;
 &lt;p&gt;Regular Expression (正規表示式)是指一組能用來表示字串共同格式 (common structure)的樣式 (Pattern)，像是&lt;code&gt;@&lt;/code&gt;符號會固定出現在email中，或是手機號碼固定是10碼，等等樣式。
 在所有的程式語言中，只要用到&lt;strong&gt;字串比對&lt;/strong&gt;與&lt;strong&gt;字串取代&lt;/strong&gt;等字串相關功能，都會用到正規表示式。雖然正規表示式在不同程式語言中會有些許差異，但核心概念是相同的。&lt;/p&gt;
-
 &lt;p&gt;以下是常見的範例:&lt;/p&gt;
-
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -227,32 +433,27 @@ IRkernel::installspec(user = FALSE)
 &lt;th&gt;範例&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
-
 &lt;tbody&gt;
 &lt;tr&gt;
 &lt;td&gt;整數&lt;/td&gt;
 &lt;td&gt;[0-9]+&lt;/td&gt;
 &lt;td&gt;5815&lt;/td&gt;
 &lt;/tr&gt;
-
 &lt;tr&gt;
 &lt;td&gt;浮點數&lt;/td&gt;
 &lt;td&gt;[0-9]+.[0-9]+&lt;/td&gt;
 &lt;td&gt;58.15&lt;/td&gt;
 &lt;/tr&gt;
-
 &lt;tr&gt;
 &lt;td&gt;純英文字串&lt;/td&gt;
 &lt;td&gt;[A-Za-z]+&lt;/td&gt;
 &lt;td&gt;CGUIM&lt;/td&gt;
 &lt;/tr&gt;
-
 &lt;tr&gt;
 &lt;td&gt;Email&lt;/td&gt;
-&lt;td&gt;[a-zA-Z0-9&lt;em&gt;]+@[a-zA-Z0-9.&lt;/em&gt;]+&lt;/td&gt;
+&lt;td&gt;[a-zA-Z0-9_]+@[a-zA-Z0-9._]+&lt;/td&gt;
 &lt;td&gt;&lt;code&gt;im@mail.cgu.edu.tw&lt;/code&gt;&lt;/td&gt;
 &lt;/tr&gt;
-
 &lt;tr&gt;
 &lt;td&gt;URL&lt;/td&gt;
 &lt;td&gt;&lt;code&gt;http://[a-zA-Z0-9./_]+&lt;/code&gt;&lt;/td&gt;
@@ -260,9 +461,7 @@ IRkernel::installspec(user = FALSE)
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-
 &lt;h2 id=&#34;可以用正規表示式的r函數&#34;&gt;可以用正規表示式的R函數&lt;/h2&gt;
-
 &lt;ul&gt;
 &lt;li&gt;grep()&lt;/li&gt;
 &lt;li&gt;grepl()&lt;/li&gt;
@@ -270,15 +469,10 @@ IRkernel::installspec(user = FALSE)
 &lt;li&gt;str_split()&lt;/li&gt;
 &lt;li&gt;stringr package中的諸多函數&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;正規表示式的語法&#34;&gt;正規表示式的語法&lt;/h2&gt;
-
 &lt;h3 id=&#34;逃脫字元&#34;&gt;逃脫字元&lt;/h3&gt;
-
-&lt;p&gt;*&lt;em&gt;\*&lt;/em&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;strong&gt;\&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id=&#34;表示數量的語法&#34;&gt;表示數量的語法&lt;/h3&gt;
-
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;*&lt;/code&gt;: 出現0~無限多次&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;+&lt;/code&gt;: 出現1~無限多次&lt;/li&gt;
@@ -287,80 +481,36 @@ IRkernel::installspec(user = FALSE)
 &lt;li&gt;&lt;code&gt;{n,}&lt;/code&gt;: 出現n~無限多次&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;{n,m}&lt;/code&gt;: 出現n~m次&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;stringVector&amp;lt;-c(&amp;quot;a&amp;quot;,&amp;quot;abc&amp;quot;,&amp;quot;ac&amp;quot;,&amp;quot;abbc&amp;quot;,&amp;quot;abbbc&amp;quot;,&amp;quot;abbbbc&amp;quot;)
-grep(&amp;quot;ab*&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot;      &amp;quot;abc&amp;quot;    &amp;quot;ac&amp;quot;     &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab+&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot;    &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab?c&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot; &amp;quot;ac&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab{2}c&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab{2,}c&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab{2,3}c&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;  &amp;quot;abbbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;表示位置的語法&#34;&gt;表示位置的語法&lt;/h3&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;stringVector&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abc&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ac&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abbc&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abbbc&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abbbbc&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab*&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot;      &amp;quot;abc&amp;quot;    &amp;quot;ac&amp;quot;     &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab+&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot;    &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab?c&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot; &amp;quot;ac&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab{2}c&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab{2,}c&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab{2,3}c&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;  &amp;quot;abbbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;表示位置的語法&#34;&gt;表示位置的語法&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;^&lt;/code&gt;: 出現在字串開始的位置&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;$&lt;/code&gt;: 出現在字串結束ˇ的位置&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\b&lt;/code&gt;: 出現空字串(空白)開始或結束的位置&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\B&lt;/code&gt;: 出現非字串開始或結束的位置&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;stringVector&amp;lt;-c(&amp;quot;abc&amp;quot;,&amp;quot;bcd&amp;quot;,&amp;quot;cde&amp;quot;,&amp;quot;def&amp;quot;,&amp;quot;abc def&amp;quot;,&amp;quot;bcdefg abc&amp;quot;)
-grep(&amp;quot;^bc&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;bcd&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;bc$&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;\\bde&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;def&amp;quot;     &amp;quot;abc def&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;\\Bde&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;cde&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;運算子&#34;&gt;運算子&lt;/h3&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;stringVector&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abc&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bcd&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cde&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;def&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abc def&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bcdefg abc&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;^bc&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;bcd&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bc$&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\bde&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;def&amp;quot;     &amp;quot;abc def&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\Bde&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;cde&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;運算子&#34;&gt;運算子&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;.&lt;/code&gt;: 出現所有的字元一次，包括空字串&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;[...]&lt;/code&gt;: 出現字元清單(&amp;hellip;)中的字元一次，可用&lt;code&gt;-&lt;/code&gt;表示範圍，如&lt;code&gt;[A-Z]&lt;/code&gt;，&lt;code&gt;[a-z]&lt;/code&gt;，&lt;code&gt;[0-9]&lt;/code&gt;&lt;/li&gt;
@@ -368,36 +518,18 @@ grep(&amp;quot;^bc&amp;quot;,stringVector,value=T)
 &lt;li&gt;&lt;code&gt;\&lt;/code&gt;: 要搜尋字串中的特殊字元時，前方須加上&lt;code&gt;\&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;|&lt;/code&gt;: 或&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;stringVector&amp;lt;-c(&amp;quot;03-2118800&amp;quot;,&amp;quot;02-23123456&amp;quot;,&amp;quot;0988123456&amp;quot;,
-                &amp;quot;07-118&amp;quot;,&amp;quot;0-888&amp;quot;,&amp;quot;csim@mail.cgu.edu.tw&amp;quot;,&amp;quot;csim@.&amp;quot;,&amp;quot;csim@&amp;quot;,
-                &amp;quot;http://www.is.cgu.edu.tw/&amp;quot;)
-grep(&amp;quot;[0-9]{2}-[0-9]{7,8}&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;[0-9]{10}&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;0988123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;02|03&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;[a-zA-Z0-9_]+@[a-zA-Z0-9._]+&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;csim@mail.cgu.edu.tw&amp;quot; &amp;quot;csim@.&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;特殊符號&#34;&gt;特殊符號&lt;/h3&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;stringVector&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;03-2118800&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;02-23123456&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0988123456&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;07-118&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0-888&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;csim@mail.cgu.edu.tw&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;csim@.&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;csim@&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://www.is.cgu.edu.tw/&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[0-9]{2}-[0-9]{7,8}&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[0-9]{10}&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;0988123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;02|03&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[a-zA-Z0-9_]+@[a-zA-Z0-9._]+&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;csim@mail.cgu.edu.tw&amp;quot; &amp;quot;csim@.&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;特殊符號&#34;&gt;特殊符號&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;\d&lt;/code&gt;: 數字，等於 [0-9]&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\D&lt;/code&gt;: 非數字，等於 [^0-9]&lt;/li&gt;
@@ -408,33 +540,19 @@ grep(&amp;quot;[0-9]{2}-[0-9]{7,8}&amp;quot;,stringVector,value=T)
 &lt;li&gt;&lt;code&gt;\w&lt;/code&gt;: 文字數字與底線，等於 [[:alnum:]&lt;em&gt;] or [A-z0-9&lt;/em&gt;]&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\W&lt;/code&gt;: 非文字數字與底線，等於 [^A-z0-9_]&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;[:blank:]&lt;/code&gt;: 空白字元，包括空白和tab&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;\s&lt;/code&gt;: 空白字元,&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;\s&lt;/code&gt;: 空白字元, &lt;code&gt; &lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\S&lt;/code&gt;: 非空白字元&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;[:punct:]&lt;/code&gt;: 標點符號 ! &amp;ldquo; # $ % &amp;amp; ’ ( ) * + , - . / : ; &amp;lt; = &amp;gt; ? @ [  ] ^ _ ` { | } ~.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;[:punct:]&lt;/code&gt;: 標點符號 ! &amp;quot; # $ % &amp;amp; ’ ( ) * + , - . / : ; &amp;lt; = &amp;gt; ? @ [  ] ^ _ ` { | } ~.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;stringVector&amp;lt;-c(&amp;quot;03-2118800&amp;quot;,&amp;quot;02-23123456&amp;quot;,&amp;quot;0988123456&amp;quot;,
-                &amp;quot;07-118&amp;quot;,&amp;quot;0-888&amp;quot;,&amp;quot;csim@mail.cgu.edu.tw&amp;quot;,&amp;quot;http://www.is.cgu.edu.tw/&amp;quot;)
-grep(&amp;quot;\\d{2}-\\d{7,8}&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;\\d{10}&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;0988123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;\\w+@[a-zA-Z0-9._]+&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;csim@mail.cgu.edu.tw&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;stringVector&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;03-2118800&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;02-23123456&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0988123456&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;07-118&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0-888&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;csim@mail.cgu.edu.tw&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://www.is.cgu.edu.tw/&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\d{2}-\\d{7,8}&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\d{10}&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;0988123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\w+@[a-zA-Z0-9._]+&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;csim@mail.cgu.edu.tw&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://dotblogs.com.tw/johnny/archive/2010/01/25/13301.aspx&#34;&gt;Regular Expression 詳論&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://regexlib.com/&#34;&gt;RegExLib.com&lt;/a&gt;&lt;/li&gt;
@@ -448,42 +566,24 @@ grep(&amp;quot;\\d{2}-\\d{7,8}&amp;quot;,stringVector,value=T)
     
     <item>
       <title>在R中使用結巴分詞</title>
-      <link>https://blog.yjtseng.info/post/jiebar/</link>
+      <link>/post/jiebar/</link>
       <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/post/jiebar/</guid>
-      <description>
-
-&lt;h2 id=&#34;有關結巴&#34;&gt;有關結巴&lt;/h2&gt;
-
+      <guid>/post/jiebar/</guid>
+      <description>&lt;h2 id=&#34;有關結巴&#34;&gt;有關結巴&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/fxsjy/jieba&#34;&gt;“结巴”中文分词：做最好的 Python 中文分词组件&lt;/a&gt;&lt;/p&gt;
-
 &lt;h2 id=&#34;在r內使用結巴分詞&#34;&gt;在R內使用結巴分詞&lt;/h2&gt;
-
 &lt;h3 id=&#34;安裝載入套件&#34;&gt;安裝載入套件&lt;/h3&gt;
-
 &lt;p&gt;安裝套件&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;install.packages(&amp;quot;jiebaR&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;載入套件&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(jiebaR) #載入jiebaR package
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## Loading required package: jiebaRD
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;斷詞&#34;&gt;斷詞&lt;/h3&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install.packages&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jiebaR&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;載入套件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(jiebaR) &lt;span style=&#34;color:#75715e&#34;&gt;#載入jiebaR package&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Loading required package: jiebaRD
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;斷詞&#34;&gt;斷詞&lt;/h3&gt;
 &lt;p&gt;新增斷詞工具&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter &amp;lt;- worker()
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;()
 cutter 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## Worker Type:  Jieba Segment
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Worker Type:  Jieba Segment
 ## 
 ## Default Method  :  mix
 ## Detect Encoding :  TRUE
@@ -516,28 +616,18 @@ cutter
 ## [1] 1544777122
 ## 
 ## $default $detect $encoding $symbol $output $write $lines $bylines can be reset.
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;斷詞實作&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&amp;quot;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;    &amp;quot;9019&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;662&amp;quot;  &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E00&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;   
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;斷詞實作&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;這是一段測試用文字，請不要再戰長庚資管了&amp;#34;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;    &amp;quot;9019&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;662&amp;quot;  &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E00&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;   
 ## [11] &amp;quot;BB5&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;    &amp;quot;E2C&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;A66&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;7528&amp;quot; &amp;quot;U&amp;quot;   
 ## [21] &amp;quot;6587&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;    &amp;quot;B57&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;FF0C&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;ACB&amp;quot;  &amp;quot;U&amp;quot;   
 ## [31] &amp;quot;4&amp;quot;    &amp;quot;E0D&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8981&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;518&amp;quot;  &amp;quot;D&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;6230&amp;quot; &amp;quot;U&amp;quot;   
 ## [41] &amp;quot;9577&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;    &amp;quot;E9A&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;CC7&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;7&amp;quot;    &amp;quot;BA1&amp;quot; 
 ## [51] &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E86&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;詞性判別&#34;&gt;詞性判別&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;tagger &amp;lt;- worker(&amp;quot;tag&amp;quot;)
-tagger[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&amp;quot;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##      x      m      x      m      x      x      x    eng      x      x 
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;詞性判別&#34;&gt;詞性判別&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;tagger &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;tag&amp;#34;&lt;/span&gt;)
+tagger[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;這是一段測試用文字，請不要再戰長庚資管了&amp;#34;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##      x      m      x      m      x      x      x    eng      x      x 
 ##    &amp;quot;U&amp;quot; &amp;quot;9019&amp;quot;    &amp;quot;U&amp;quot;  &amp;quot;662&amp;quot;    &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;  &amp;quot;E00&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot; 
 ##    eng      x      x    eng      x      x    eng      x      m      x 
 ##  &amp;quot;BB5&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;  &amp;quot;E2C&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;  &amp;quot;A66&amp;quot;    &amp;quot;U&amp;quot; &amp;quot;7528&amp;quot;    &amp;quot;U&amp;quot; 
@@ -549,20 +639,11 @@ tagger[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&am
 ## &amp;quot;9577&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;  &amp;quot;E9A&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;  &amp;quot;CC7&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;7&amp;quot;  &amp;quot;BA1&amp;quot; 
 ##      x      x    eng 
 ##    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;  &amp;quot;E86&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;新增自訂詞彙&#34;&gt;新增自訂詞彙&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;new_user_word(cutter,&#39;長庚資管&#39;,&amp;quot;n&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] TRUE
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&amp;quot;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;                                &amp;quot;9019&amp;quot;                            
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;新增自訂詞彙&#34;&gt;新增自訂詞彙&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;new_user_word&lt;/span&gt;(cutter,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;長庚資管&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;n&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] TRUE
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;這是一段測試用文字，請不要再戰長庚資管了&amp;#34;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;                                &amp;quot;9019&amp;quot;                            
 ##  [3] &amp;quot;U&amp;quot;                                &amp;quot;662&amp;quot;                             
 ##  [5] &amp;quot;F&amp;quot;                                &amp;quot;U&amp;quot;                               
 ##  [7] &amp;quot;4&amp;quot;                                &amp;quot;E00&amp;quot;                             
@@ -584,41 +665,25 @@ tagger[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&am
 ## [39] &amp;quot;6230&amp;quot;                             &amp;quot;&amp;lt;U+9577&amp;gt;&amp;lt;U+5E9A&amp;gt;&amp;lt;U+8CC7&amp;gt;&amp;lt;U+7BA1&amp;gt;&amp;quot;
 ## [41] &amp;quot;U&amp;quot;                                &amp;quot;4&amp;quot;                               
 ## [43] &amp;quot;E86&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;自訂停止詞&#34;&gt;自訂停止詞&lt;/h3&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;自訂停止詞&#34;&gt;自訂停止詞&lt;/h3&gt;
 &lt;p&gt;&lt;a href=&#34;https://blog.yjtseng.info/file/stop.txt&#34;&gt;停止詞範例檔下載&lt;/a&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter = worker(stop_word =&amp;quot;stop.txt&amp;quot;)
-cutter[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&amp;quot;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;    &amp;quot;9019&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;662&amp;quot;  &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E00&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;   
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;(stop_word &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;stop.txt&amp;#34;&lt;/span&gt;)
+cutter[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;這是一段測試用文字，請不要再戰長庚資管了&amp;#34;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;    &amp;quot;9019&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;662&amp;quot;  &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E00&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;   
 ## [11] &amp;quot;BB5&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;    &amp;quot;E2C&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;A66&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;7528&amp;quot; &amp;quot;U&amp;quot;   
 ## [21] &amp;quot;6587&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;    &amp;quot;B57&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;FF0C&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;ACB&amp;quot;  &amp;quot;U&amp;quot;   
 ## [31] &amp;quot;4&amp;quot;    &amp;quot;E0D&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8981&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;518&amp;quot;  &amp;quot;D&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;6230&amp;quot; &amp;quot;U&amp;quot;   
 ## [41] &amp;quot;9577&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;    &amp;quot;E9A&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;CC7&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;7&amp;quot;    &amp;quot;BA1&amp;quot; 
 ## [51] &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E86&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;操作範例&#34;&gt;操作範例&lt;/h2&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;操作範例&#34;&gt;操作範例&lt;/h2&gt;
 &lt;h3 id=&#34;載入需要做分詞的資料&#34;&gt;載入需要做分詞的資料&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(rvest)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## Loading required package: xml2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;PTTNBA &amp;lt;- &amp;quot;https://www.ptt.cc/bbs/NBA/index.html&amp;quot;
-pttContent &amp;lt;- read_html(PTTNBA)
-post_title &amp;lt;- pttContent %&amp;gt;% html_nodes(&amp;quot;.title&amp;quot;) %&amp;gt;% html_text()
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(rvest)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Loading required package: xml2
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;PTTNBA &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://www.ptt.cc/bbs/NBA/index.html&amp;#34;&lt;/span&gt;
+pttContent &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;read_html&lt;/span&gt;(PTTNBA)
+post_title &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; pttContent &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;html_nodes&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;.title&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;html_text&lt;/span&gt;()
 post_title
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;\n\t\t\t\n\t\t\t\t[BOX ] Bulls 91:97 Magic &amp;lt;U+6578&amp;gt;&amp;lt;U+64DA&amp;gt;\n\t\t\t\n\t\t\t&amp;quot;                                                                                                                         
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;\n\t\t\t\n\t\t\t\t[BOX ] Bulls 91:97 Magic &amp;lt;U+6578&amp;gt;&amp;lt;U+64DA&amp;gt;\n\t\t\t\n\t\t\t&amp;quot;                                                                                                                         
 ##  [2] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+5916&amp;gt;&amp;lt;U+7D6E&amp;gt;] LBJ&amp;lt;U+5FD8&amp;gt;&amp;lt;U+4E0D&amp;gt;&amp;lt;U+4E86&amp;gt;2010&amp;lt;U+5E74&amp;gt;&amp;lt;U+96FB&amp;gt;&amp;lt;U+68AF&amp;gt;&amp;lt;U+9047&amp;gt;&amp;lt;U+5230&amp;gt;&amp;lt;U+7684&amp;gt;&amp;lt;U+4E00&amp;gt;&amp;lt;U+5E55&amp;gt;(&amp;lt;U+7B2C&amp;gt;&amp;lt;U+4E00&amp;gt;&amp;lt;U+6B21&amp;gt;&amp;lt;U+7A7F&amp;gt;&amp;lt;U+71B1&amp;gt;&amp;lt;U+706B&amp;gt;&amp;lt;U+7403&amp;gt;&amp;lt;U+8863&amp;gt;&amp;lt;U+56DE&amp;gt;&amp;lt;U+5230&amp;gt;&amp;lt;U+514B&amp;gt;&amp;lt;U+57CE&amp;gt;)\n\t\t\t\n\t\t\t&amp;quot;
 ##  [3] &amp;quot;\n\t\t\t\n\t\t\t\t(&amp;lt;U+5DF2&amp;gt;&amp;lt;U+88AB&amp;gt;namie810303&amp;lt;U+522A&amp;gt;&amp;lt;U+9664&amp;gt;) &amp;lt;cool34&amp;gt;1-5\n\t\t\t\n\t\t\t&amp;quot;                                                                                                         
 ##  [4] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+60C5&amp;gt;&amp;lt;U+5831&amp;gt;] James:&amp;lt;U+548C&amp;gt;&amp;lt;U+706B&amp;gt;&amp;lt;U+7BAD&amp;gt;&amp;lt;U+4EA4&amp;gt;&amp;lt;U+624B&amp;gt;&amp;lt;U+8981&amp;gt;&amp;lt;U+7279&amp;gt;&amp;lt;U+5225&amp;gt;&amp;lt;U+6CE8&amp;gt;&amp;lt;U+610F&amp;gt;&amp;lt;U+9632&amp;gt;&amp;lt;U+5B88&amp;gt;&amp;lt;U+6642&amp;gt;&amp;lt;U+5225&amp;gt;&amp;lt;U+72AF&amp;gt;&amp;lt;U+898F&amp;gt;\n\t\t\t\n\t\t\t&amp;quot;         
@@ -641,15 +706,10 @@ post_title
 ## [21] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+516C&amp;gt;&amp;lt;U+544A&amp;gt;] &amp;lt;U+677F&amp;gt;&amp;lt;U+898F&amp;gt;v6.2\n\t\t\t\n\t\t\t&amp;quot;                                                                                                                           
 ## [22] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+60C5&amp;gt;&amp;lt;U+5831&amp;gt;] SEASON Schedule &amp;lt;U+8CFD&amp;gt;&amp;lt;U+7A0B&amp;gt; December 18&amp;lt;U+2013&amp;gt;19\n\t\t\t\n\t\t\t&amp;quot;                                                                                         
 ## [23] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+60C5&amp;gt;&amp;lt;U+5831&amp;gt;] NBA Standings (2018.12.12)\n\t\t\t\n\t\t\t&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;斷詞-1&#34;&gt;斷詞&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter &amp;lt;- worker()
-cutter[post_title] ## 不分行輸出
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##   [1] &amp;quot;BOX&amp;quot;                                             
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;斷詞-1&#34;&gt;斷詞&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;()
+cutter[post_title] &lt;span style=&#34;color:#75715e&#34;&gt;## 不分行輸出&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##   [1] &amp;quot;BOX&amp;quot;                                             
 ##   [2] &amp;quot;Bulls&amp;quot;                                           
 ##   [3] &amp;quot;91&amp;quot;                                              
 ##   [4] &amp;quot;97&amp;quot;                                              
@@ -854,13 +914,9 @@ cutter[post_title] ## 不分行輸出
 ## [203] &amp;quot;NBA&amp;quot;                                             
 ## [204] &amp;quot;Standings&amp;quot;                                       
 ## [205] &amp;quot;2018.12.12&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter$bylines&amp;lt;-T
-cutter[post_title] ## 分行輸出
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [[1]]
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;bylines&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;T
+cutter[post_title] &lt;span style=&#34;color:#75715e&#34;&gt;## 分行輸出&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [[1]]
 ## [1] &amp;quot;BOX&amp;quot;                      &amp;quot;Bulls&amp;quot;                   
 ## [3] &amp;quot;91&amp;quot;                       &amp;quot;97&amp;quot;                      
 ## [5] &amp;quot;Magic&amp;quot;                    &amp;quot;\346\225\270\346\223\232&amp;quot;
@@ -1043,15 +1099,10 @@ cutter[post_title] ## 分行輸出
 ## [[23]]
 ## [1] &amp;quot;\346\203\205\345\240\261&amp;quot; &amp;quot;NBA&amp;quot;                     
 ## [3] &amp;quot;Standings&amp;quot;                &amp;quot;2018.12.12&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;分析斷詞後最常出現的詞彙&#34;&gt;分析斷詞後最常出現的詞彙&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter &amp;lt;- worker()
-sort(table(cutter[post_title]),decreasing = T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## 
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;分析斷詞後最常出現的詞彙&#34;&gt;分析斷詞後最常出現的詞彙&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;()
+&lt;span style=&#34;color:#a6e22e&#34;&gt;sort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;table&lt;/span&gt;(cutter[post_title]),decreasing &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
 ##                         \346\203\205\345\240\261 
 ##                                                5 
 ##                                     \357\274\232 
@@ -1396,10 +1447,7 @@ sort(table(cutter[post_title]),decreasing = T)
 ##                                                1 
 ##                                     \357\274\214 
 ##                                                1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/qinwf/jiebaR&#34;&gt;jiebaR GitHub&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://qinwenfeng.com/jiebaR/&#34;&gt;jiebaR 使用指南&lt;/a&gt;&lt;/li&gt;
@@ -1415,65 +1463,40 @@ sort(table(cutter[post_title]),decreasing = T)
     
     <item>
       <title>用blogdown建立個人網頁</title>
-      <link>https://blog.yjtseng.info/post/website/</link>
+      <link>/post/website/</link>
       <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/post/website/</guid>
-      <description>
-
-&lt;p&gt;除了前篇提到的Blog外，也一口氣更新了原有的&lt;a href=&#34;https://yjtseng.info&#34;&gt;個人網頁&lt;/a&gt; (兩年過去，看膩了&amp;hellip;.)。新版網頁使用的一樣是&lt;a href=&#34;https://github.com/rstudio/blogdown&#34;&gt;blogdown&lt;/a&gt; package，搭配適合做學術個人網頁的&lt;a href=&#34;https://github.com/gcushen/hugo-academic&#34;&gt;Academic theme&lt;/a&gt;，並且下定決心，透過&lt;a href=&#34;https://domains.google/&#34;&gt;Google Domain&lt;/a&gt;買了自己的Domain name &lt;strong&gt;yjtseng.info&lt;/strong&gt;，包括設定各類參數和Domain name、加入發表、Talk、Project等內容，大概花了一天的時間完成更新，要是做研究也這樣一氣呵成那有多好(?)。&lt;/p&gt;
-
+      <guid>/post/website/</guid>
+      <description>&lt;p&gt;除了前篇提到的Blog外，也一口氣更新了原有的&lt;a href=&#34;https://yjtseng.info&#34;&gt;個人網頁&lt;/a&gt; (兩年過去，看膩了&amp;hellip;.)。新版網頁使用的一樣是&lt;a href=&#34;https://github.com/rstudio/blogdown&#34;&gt;blogdown&lt;/a&gt; package，搭配適合做學術個人網頁的&lt;a href=&#34;https://github.com/gcushen/hugo-academic&#34;&gt;Academic theme&lt;/a&gt;，並且下定決心，透過&lt;a href=&#34;https://domains.google/&#34;&gt;Google Domain&lt;/a&gt;買了自己的Domain name &lt;strong&gt;yjtseng.info&lt;/strong&gt;，包括設定各類參數和Domain name、加入發表、Talk、Project等內容，大概花了一天的時間完成更新，要是做研究也這樣一氣呵成那有多好(?)。&lt;/p&gt;
 &lt;h3 id=&#34;blogdown&#34;&gt;blogdown&lt;/h3&gt;
-
 &lt;p&gt;&lt;a href=&#34;https://github.com/rstudio/blogdown&#34;&gt;blogdown&lt;/a&gt;是基於R Markdown和Hugo開發的R package，簡單來說是讓你可以用R Markdown 或是Markdown寫Blog和網頁的好幫手。這個Blog也是用blogdown寫的，沒想到寫學術個人網頁也非常方便! 一樣是從&lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;的&lt;a href=&#34;https://themes.gohugo.io/&#34;&gt;主題&lt;/a&gt;中，選一個順眼的，就能開始了。&lt;/p&gt;
-
 &lt;h3 id=&#34;academic-theme&#34;&gt;Academic theme&lt;/h3&gt;
-
 &lt;p&gt;&lt;a href=&#34;https://github.com/gcushen/hugo-academic&#34;&gt;Academic theme&lt;/a&gt;的Demo&lt;a href=&#34;https://sourcethemes.com/academic/&#34;&gt;在此&lt;/a&gt;，官方說法是十分鐘內就能做出如同Demo一樣的像樣網頁，其實做網頁花最多時間的還是微調跟內容更新，所以十分鐘是做出和模板一樣的東西，改內容絕對是會超過十分鐘的啦。此模板如名稱，是針對學術個人網頁設計，包括各項學術個人網頁需要的內容，像是發表、演講、授課內容、計畫內容等，值得一提的是，這個模板也內建Blog的功能，但經過評估，Blog常常會有些五四三的言論，我還是決定將Blog這個功能從學術個人網頁獨立出來，另闢一個Blog網站。&lt;/p&gt;
-
 &lt;p&gt;如果想要在個人網頁加上留言功能，此模板支援&lt;a href=&#34;https://disqus.com/&#34;&gt;Disqus&lt;/a&gt;，也支援使用&lt;a href=&#34;https://analytics.google.com/analytics/web/&#34;&gt;Google Analytics&lt;/a&gt;做各式各樣的流量分析，有需要的可以直接設定&lt;code&gt;config.toml&lt;/code&gt;。&lt;/p&gt;
-
 &lt;p&gt;雖然內建的版面已經可以應付多數需求，如果要微調版面 (如調整字形、字體大小、部分連結需要開新視窗等) ，還是要直接改theme裡面的layout html檔，這部分懂一點基本的HTML和CSS是必要條件。&lt;/p&gt;
-
 &lt;h3 id=&#34;netlify&#34;&gt;Netlify&lt;/h3&gt;
-
 &lt;p&gt;套官網的描述:&lt;/p&gt;
-
 &lt;p&gt;&lt;strong&gt;Netlify is a unified platform that automates your code to create high-performant, easily maintainable sites and web apps.&lt;/strong&gt;&lt;/p&gt;
-
 &lt;p&gt;Netlify是2014年成立的新創，提供免費的網頁部屬服務，對我來說最吸引人的功能是可以跟GitHub做連動，只要Commit &amp;amp; Sync，Netlify會自動部屬網頁，超級方便。其他特色包括Global &lt;a href=&#34;https://zh.wikipedia.org/wiki/%E5%85%A7%E5%AE%B9%E5%82%B3%E9%81%9E%E7%B6%B2%E8%B7%AF&#34;&gt;CDN&lt;/a&gt;、https加密服務等。&lt;/p&gt;
-
 &lt;p&gt;以下是Hugo在Netlify的設定:&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;Build command: hugo
 Publish directory: public
 
 Build environment variables
 key: HUGO_VERSION   value:0.26
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;google-domain&#34;&gt;Google Domain&lt;/h3&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;google-domain&#34;&gt;Google Domain&lt;/h3&gt;
 &lt;p&gt;&lt;a href=&#34;https://domains.google/&#34;&gt;Google Domain&lt;/a&gt;顧名思義是Google提供的域名(Domain Name)管理購買服務，介面操作非常容易，只要從首頁進入，一路輸入想要的域名後，刷卡即可，域名價錢從USD12/年起跳，不算最便宜，但一個月只要1美金的價錢還是很平民的，如果需要圖文教學，可參考免費資源網路社群的&lt;a href=&#34;https://free.com.tw/google-domains/&#34;&gt;圖文並茂教學&lt;/a&gt;。&lt;/p&gt;
-
 &lt;p&gt;值得注意的是，如果國家輸入台灣，會無止盡的告訴你省/州錯誤，有些教學建議國家設成中國，但我最後是設成美國來解決。&lt;/p&gt;
-
 &lt;p&gt;Google Domain跟Netlify的介接設定有兩個部分:&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Google Domain&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;可以參考Netlify的&lt;a href=&#34;https://www.netlify.com/blog/2016/03/14/setting-up-your-custom-domain/&#34;&gt;官方文件&lt;/a&gt;，設定A以及CNAME。&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Netlify&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;在Netlify網頁的頁面，選&lt;code&gt;Set up domain&lt;/code&gt;後，選擇&lt;code&gt;Use another DNS&lt;/code&gt;，將申請好的網址貼上。&lt;/p&gt;
-
 &lt;h3 id=&#34;小結&#34;&gt;小結&lt;/h3&gt;
-
 &lt;p&gt;以上就是用R的blogdown package做學術&lt;a href=&#34;https://yjtseng.info&#34;&gt;個人網頁&lt;/a&gt;的心得筆記，希望不要太快看膩阿~&lt;/p&gt;
 </description>
       
@@ -1487,38 +1510,25 @@ key: HUGO_VERSION   value:0.26
     
     <item>
       <title>開始用blogdown寫blog啦</title>
-      <link>https://blog.yjtseng.info/post/rblogdown/</link>
+      <link>/post/rblogdown/</link>
       <pubDate>Thu, 17 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/post/rblogdown/</guid>
-      <description>
-
-&lt;p&gt;忙一忙突然又想起blogdown這個packages，今天終於下定決心開始，不知道會持續多久&amp;hellip;..&lt;/p&gt;
-
+      <guid>/post/rblogdown/</guid>
+      <description>&lt;p&gt;忙一忙突然又想起blogdown這個packages，今天終於下定決心開始，不知道會持續多久&amp;hellip;..&lt;/p&gt;
 &lt;h3 id=&#34;blogdown&#34;&gt;blogdown&lt;/h3&gt;
-
 &lt;p&gt;blogdown是基於R Markdown和Hugo開發的R package，簡單來說是讓你可以用R Markdown寫Blog的好幫手。先前用過姊妹套件&lt;a href=&#34;https://bookdown.org/yihui/bookdown/&#34;&gt;bookdown&lt;/a&gt;寫了&lt;a href=&#34;yijutseng.github.io/DataScienceRBook/&#34;&gt;資料科學與R語言&lt;/a&gt;電子書，用來介紹R語言的使用非常方便，不用再辛苦的剪下貼上，也不用擔心程式碼沒上色，導致不清不楚讀者沒耐心看(只有我沒耐心)。&lt;/p&gt;
-
 &lt;h3 id=&#34;hugo&#34;&gt;Hugo&lt;/h3&gt;
-
 &lt;p&gt;決定要寫以後，花了大把時間挑主題(汗)，&lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;有蠻多不錯的&lt;a href=&#34;https://themes.gohugo.io/&#34;&gt;主題&lt;/a&gt;可選，因為希望頁面乾淨整潔，所以選了&lt;a href=&#34;https://github.com/carsonip/hugo-theme-minos&#34;&gt;hugo-theme-minos&lt;/a&gt;，希望不要馬上就看膩了。&lt;/p&gt;
-
 &lt;p&gt;卡關最久的是跟相對路徑有關的設定，不知道為什麼Tags跟Categories的連結一直設定不好，看起來是跟&lt;code&gt;$Site.BaseURL&lt;/code&gt;有關，後來完全硬幹，把&lt;code&gt;$Site.BaseURL&lt;/code&gt;全都改掉了，Google了老半天為什麼會這樣，到目前還是無解。&lt;/p&gt;
-
 &lt;h3 id=&#34;netlify&#34;&gt;Netlify&lt;/h3&gt;
-
 &lt;p&gt;以往都是用GitHub page來存放靜態網頁，這次趁機會試著使用很多人推薦的&lt;a href=&#34;https://www.netlify.com/&#34;&gt;Netlify&lt;/a&gt;，一樣可以跟GitHub做連動，只要Commit &amp;amp; Sync，Netlify會自動部屬網頁，超級方便。
 設定的時候有一些參數要注意:&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;Build command: hugo
 Publish directory: public
 
 Build environment variables
 key: HUGO_VERSION   value:0.26
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;參考資料:&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;參考資料:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://slides.yihui.name/2017-rstudio-webinar-blogdown-Yihui-Xie.html&#34;&gt;Making Websites with R Markdown and blogdown&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/rstudio/blogdown&#34;&gt;blogdown GitHub page&lt;/a&gt;&lt;/li&gt;

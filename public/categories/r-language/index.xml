@@ -1,90 +1,339 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>R Language on 有完沒完RRR</title>
-    <link>https://blog.yjtseng.info/categories/r-language/</link>
-    <description>Recent content in R Language on 有完沒完RRR</description>
+    <title>R language on 有完沒完RRR</title>
+    <link>/categories/r-language/</link>
+    <description>Recent content in R language on 有完沒完RRR</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
-    <lastBuildDate>Tue, 27 Mar 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 13 May 2020 00:00:00 +0000</lastBuildDate>
     
-        <atom:link href="https://blog.yjtseng.info/categories/r-language/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="/categories/r-language/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>R的arguments出現三個點是...?</title>
-      <link>https://blog.yjtseng.info/post/dotdotdot/</link>
-      <pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate>
+      <title>用R畫存活曲線Survival curve</title>
+      <link>/post/survival-curve/</link>
+      <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/post/dotdotdot/</guid>
+      <guid>/post/survival-curve/</guid>
       <description>
 
-&lt;h2 id=&#34;r函數介紹&#34;&gt;R函數介紹&lt;/h2&gt;
 
-&lt;p&gt;需要先介紹怎麼在R裡面寫函數&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;f &amp;lt;- function(...) { 
-  names(list(...)) 
-} 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上述程式碼中，·&lt;code&gt;f&lt;/code&gt;是一個使用者自訂函數，就像java裡面的method，而&lt;strong&gt;…&lt;/strong&gt;的功能，則是讓&lt;code&gt;f&lt;/code&gt;函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。&lt;/p&gt;
-
-&lt;h2 id=&#34;使用範例一&#34;&gt;&amp;hellip;使用範例一&lt;/h2&gt;
-
-&lt;p&gt;舉例來說，若執行&lt;code&gt;f(a = 1, b = 2)&lt;/code&gt;，a和b這兩個參數可以直接傳到&lt;code&gt;list()&lt;/code&gt;函數中，變成&lt;code&gt;names(list(a=1,b=2))&lt;/code&gt;，意即生成一個list，內有兩個元素，a=1以及b=2。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;f(a = 1, b = 2)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot; &amp;quot;b&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;names(list(a=1,b=2)) #輸出相同
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot; &amp;quot;b&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;使用範例二&#34;&gt;&amp;hellip;使用範例二&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;addPercent &amp;lt;- function(x, mult = 100, ...){ 
-  percent &amp;lt;- round(x * mult, ...) 
-  paste0(percent, &amp;quot;%&amp;quot;) 
+&lt;p&gt;因為研究需要，搜尋了用R畫存活曲線的方法，並調整了圖形參數以及將多張存活曲線圖合併排列，整理成此篇文章。&lt;/p&gt;
+&lt;div id=&#34;什麼是存活曲線&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;什麼是存活曲線?&lt;/h2&gt;
+&lt;p&gt;簡單來說，就是將&lt;strong&gt;沒發生事件的比例&lt;/strong&gt;當x軸，&lt;strong&gt;時間&lt;/strong&gt;當y軸所繪製出的圖形。可參考&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E5%AD%98%E6%B4%BB%E6%9B%B2%E7%B7%9A&#34;&gt;維基百科&lt;/a&gt;的說明。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;用r畫存活曲線所需套件&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;用R畫存活曲線所需套件&lt;/h2&gt;
+&lt;p&gt;在R中有蠻多畫存活曲線相關的套件，我的初版程式是使用&lt;code&gt;ggfortify&lt;/code&gt;套件，但後來Editor要求要在圖上加&lt;strong&gt;Number at risk&lt;/strong&gt;的資訊，查了一下發現&lt;code&gt;ggfortify&lt;/code&gt;套件沒有這個功能，又不想手動加，就重新搜尋了資源，找到一篇介紹&lt;code&gt;survminer&lt;/code&gt;套件的&lt;a href=&#34;http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization&#34;&gt;文章&lt;/a&gt;，並完成完整的survival plot。&lt;/p&gt;
+&lt;p&gt;本介紹文以&lt;a href=&#34;http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization&#34;&gt;survminer R package: Survival Data Analysis and Visualization&lt;/a&gt;為基礎，並衍伸其他條件設定的教學。&lt;/p&gt;
+&lt;p&gt;以下介紹用&lt;code&gt;survminer&lt;/code&gt;套件 (&lt;a href=&#34;https://rpkgs.datanovia.com/survminer/index.html&#34;&gt;官方說明文件&lt;/a&gt;) 畫存活曲線的步驟&lt;/p&gt;
+&lt;p&gt;首先載入&lt;code&gt;survminer&lt;/code&gt;套件以及處理資料必須的&lt;code&gt;survival&lt;/code&gt;套件 (需要套件中的&lt;code&gt;Surv()&lt;/code&gt;函數)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(survival)
+library(survminer)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;範例資料&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;範例資料&lt;/h2&gt;
+&lt;p&gt;以&lt;code&gt;survival&lt;/code&gt;套件內附的&lt;code&gt;lung&lt;/code&gt;資料為例，資料包括:&lt;/p&gt;
+&lt;p&gt;(以下資料翻譯自&lt;code&gt;survival&lt;/code&gt;套件說明文件)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;inst: 機構代碼&lt;/li&gt;
+&lt;li&gt;time: 存活時間 (單位為日)&lt;/li&gt;
+&lt;li&gt;status: “設限”或“事件發生”狀況，1為設限，2為事件發生，在此為死亡
+&lt;ul&gt;
+&lt;li&gt;1=censored&lt;/li&gt;
+&lt;li&gt;2=dead&lt;br /&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;age: 年紀 (單位為年)&lt;/li&gt;
+&lt;li&gt;sex: 性別
+&lt;ul&gt;
+&lt;li&gt;Male=1&lt;/li&gt;
+&lt;li&gt;Female=2&lt;br /&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;ph.ecog: 醫生評估的ECOG體能狀況評估分數
+&lt;ul&gt;
+&lt;li&gt;0= asymptomatic&lt;/li&gt;
+&lt;li&gt;1= symptomatic but completely ambulatory&lt;/li&gt;
+&lt;li&gt;2= in bed &amp;lt;50% of the day&lt;/li&gt;
+&lt;li&gt;3= in bed &amp;gt; 50% of the day but not bedbound&lt;/li&gt;
+&lt;li&gt;4= bedbound&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;ph.karno: 醫生評估的Karnofsky體能狀況評估分數
+&lt;ul&gt;
+&lt;li&gt;bad=0-good=100&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;pat.karno: 病人自己評估的Karnofsky體能狀況評估分數&lt;/li&gt;
+&lt;li&gt;meal.cal: 卡路里攝取量&lt;/li&gt;
+&lt;li&gt;wt.loss: 過去六個月體重下降多少&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::kable(lung %&amp;gt;% head())&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;inst&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;time&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;status&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;age&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sex&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;ph.ecog&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;ph.karno&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pat.karno&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;meal.cal&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;wt.loss&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;306&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1175&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;455&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1225&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1010&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;56&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;210&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1150&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;883&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1022&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;50&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;513&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;基本存活曲線&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;基本存活曲線&lt;/h2&gt;
+&lt;p&gt;在準備完資料後，可用&lt;code&gt;survfit()&lt;/code&gt;函數製作存活模型，並以&lt;code&gt;ggsurvplot()&lt;/code&gt;函數繪製存活曲線，&lt;code&gt;survfit()&lt;/code&gt;函數的重要參數包括&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;formula: &lt;code&gt;Surv(時間,設限或事件狀態)~分組依據&lt;/code&gt;，在這個範例為&lt;code&gt;Surv(time,status)~分組依據&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;data: 資料名稱，在這個範例為lung&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以最簡單的單一族群存活區限為例，想要畫這個資料集中&lt;strong&gt;所有病人&lt;/strong&gt;的存活曲線，其實就是不分組的意思，可將&lt;strong&gt;分組依據&lt;/strong&gt;設定成單一數字&lt;strong&gt;1&lt;/strong&gt;，如下列範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit&amp;lt;- survfit(Surv(time, status) ~ 1, data = lung)
+ggsurvplot(fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;以此類推，若想用性別做分組，也就是男生畫一條存活曲線，女生也畫一條，並放在同一張圖上，此時就將性別&lt;code&gt;sex&lt;/code&gt;做為&lt;strong&gt;分組依據&lt;/strong&gt;，如下範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit&amp;lt;- survfit(Surv(time, status) ~ sex, data = lung)
+ggsurvplot(fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;增加p-value&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;增加P value&lt;/h2&gt;
+&lt;p&gt;將&lt;code&gt;ggsurvplot()&lt;/code&gt;函數的&lt;code&gt;pval&lt;/code&gt;參數設定為&lt;code&gt;TRUE&lt;/code&gt;，即可在圖中加上兩組檢定的P value，這個P value也可以用&lt;code&gt;surv_pvalue()&lt;/code&gt;函數取得，預設的檢定方法為&lt;strong&gt;log-rank test&lt;/strong&gt;，若想要修改，也可以透過設定&lt;code&gt;pval.method&lt;/code&gt;參數修改。&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;可進一步用&lt;code&gt;pval.coord = c(100, 0.03)&lt;/code&gt;調整P value顯示位置&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;增加信賴區間&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;增加信賴區間&lt;/h2&gt;
+&lt;p&gt;若生存曲線圖形要加上信賴區間的話，可設定&lt;code&gt;conf.int = TRUE&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+           conf.int = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;增加number-of-risk-表格&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;增加number of risk 表格&lt;/h2&gt;
+&lt;p&gt;將&lt;code&gt;ggsurvplot()&lt;/code&gt;函數的&lt;code&gt;risk.table&lt;/code&gt;參數設定為&lt;code&gt;TRUE&lt;/code&gt;，即可在圖中加上number of risk 表格&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+           conf.int = TRUE,
+           risk.table = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;若不想要number of risk 表格Y軸文字的顏色，可將&lt;code&gt;risk.table.y.text.col&lt;/code&gt;參數設成FALSE&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+           conf.int = TRUE,
+           risk.table = TRUE, risk.table.y.text.col = F)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;格式微調&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;格式微調&lt;/h2&gt;
+&lt;p&gt;可分為存活曲線調整與number at risk表格調整，調整參數如下&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;font.main = 12&lt;/code&gt; 圖表標題字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;font.x =  12&lt;/code&gt; 圖表X軸字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;font.y = 12&lt;/code&gt; 圖表Y軸字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fontsize = 3&lt;/code&gt; Number at risk內文字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;break.time.by = 100&lt;/code&gt; 每100天設一個標記&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;font.tickslab = 10&lt;/code&gt; 標記字型大小(100, 200, …等)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;legend.labs = c(&#34;Men&#34;, &#34;Women&#34;)&lt;/code&gt; 將圖示文字改為Men或是Women&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;title=&#34;Format setting&#34;&lt;/code&gt; 加上圖形標題&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;xlab=&#34;&#34;, ylab=&#34;&#34;&lt;/code&gt; X軸Y軸標題設定&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;legend =  &#34;none&#34;&lt;/code&gt; 不要圖示&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tables.theme = clean_theme()&lt;/code&gt; 設定Number at risk表格樣式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;若想改Number at risk表格的標題，只能用額外的程式碼&lt;code&gt;theme(plot.title = element_text(size = 10))&lt;/code&gt;設定&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;res&amp;lt;-ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+                conf.int = TRUE,
+                risk.table = TRUE, 
+                font.main = 12,
+                font.x =  12,
+                font.y = 12,
+                font.tickslab = 10,
+                fontsize = 3, 
+                break.time.by = 100,
+                legend.labs = c(&amp;quot;Men&amp;quot;, &amp;quot;Women&amp;quot;),
+                title=&amp;quot;Format setting&amp;quot;,
+                xlab=&amp;quot;X Test&amp;quot;, ylab=&amp;quot;Y Test&amp;quot;, legend =  &amp;quot;none&amp;quot;,
+                tables.theme = clean_theme())
+res$table &amp;lt;- res$table + theme(plot.title = element_text(size = 10))
+res&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;客製化p-value顯示方式&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;客製化P value顯示方式&lt;/h2&gt;
+&lt;p&gt;預設的P value是四位小數點，有時不太需要這麼多資訊，只需把小於0.01的值用&lt;strong&gt;&amp;lt;0.01&lt;/strong&gt;來表示 (通常是&amp;lt;0.001才轉換，但這邊為了呈現效果改為&amp;lt;0.01)，那就需要在畫圖前先處理。這邊使用&lt;code&gt;surv_pvalue(fit)$pval&lt;/code&gt;來取得P value &lt;code&gt;p&lt;/code&gt;後，更進一步用&lt;code&gt;if else&lt;/code&gt;來將數值轉成文字，最後在&lt;code&gt;ggsurvplot()&lt;/code&gt;函數中，將&lt;code&gt;pval = p&lt;/code&gt;參數設定為&lt;code&gt;p&lt;/code&gt;，就能調整P value的顯示方法&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;p&amp;lt;-surv_pvalue(fit)$pval
+if(p&amp;lt;0.01){
+  p&amp;lt;-&amp;quot;p&amp;lt;0.01&amp;quot;
+}else{
+  p&amp;lt;-paste0(&amp;quot;p=&amp;quot;,round(p,3))
 }
-&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;在上述程式碼中，&lt;code&gt;addPercent&lt;/code&gt;是一個使用者自訂函數，&lt;strong&gt;…&lt;/strong&gt;的功能讓&lt;code&gt;addPercent&lt;/code&gt;函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;addPercent(c(0.5887,0.6925), digits = 2)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;58.87%&amp;quot; &amp;quot;69.25%&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;addPercent(c(0.5887,0.6925), digits = 1)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;58.9%&amp;quot; &amp;quot;69.2%&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;因此在執行&lt;code&gt;addPercent(c(0.5887,0.6925), digits = 2)&lt;/code&gt;時，&lt;code&gt;digits&lt;/code&gt;參數被傳遞到自定義函數&lt;code&gt;addPercent&lt;/code&gt;中的&lt;code&gt;round&lt;/code&gt;函數內，變成&lt;code&gt;round&lt;/code&gt;函數中的參數。
-在&lt;code&gt;round&lt;/code&gt;函數中，&lt;code&gt;digits&lt;/code&gt;參數的功能是設定四捨五入的位數，因此&lt;code&gt;digits = 2&lt;/code&gt;是指四捨五入到小數點第二位，&lt;code&gt;digits = 1&lt;/code&gt;是指四捨五入到小數點第一位。&lt;/p&gt;
-
-&lt;h2 id=&#34;使用範例三&#34;&gt;&amp;hellip;使用範例三&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;HelloWorld &amp;lt;- function(...) {
-  arguments &amp;lt;- list(...) 
-  paste(arguments)
-} 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;HelloWorld(&amp;quot;Hello&amp;quot;, &amp;quot;World&amp;quot;, &amp;quot;!&amp;quot;,&amp;quot;~&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Hello&amp;quot; &amp;quot;World&amp;quot; &amp;quot;!&amp;quot;     &amp;quot;~&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
+resP&amp;lt;-ggsurvplot(fit, pval = p, pval.coord = c(100, 0.03), 
+                 conf.int = TRUE,
+                 risk.table = TRUE, risk.table.y.text.col = F,
+                 font.main = 12,
+                 font.x =  12,
+                 font.y = 12,
+                 font.tickslab = 10,
+                 fontsize = 3, 
+                 break.time.by = 100,
+                 legend.labs = c(&amp;quot;Men&amp;quot;, &amp;quot;Women&amp;quot;),
+                 title=&amp;quot;Customize P value&amp;quot;,
+                 xlab=&amp;quot;X Test&amp;quot;, ylab=&amp;quot;Y Test&amp;quot;, legend =  &amp;quot;none&amp;quot;,
+                 tables.theme = clean_theme())
+resP$table &amp;lt;- resP$table + theme(plot.title = element_text(size = 10))
+resP&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;合併多張存活曲線圖形&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;合併多張存活曲線圖形&lt;/h2&gt;
+&lt;p&gt;因&lt;code&gt;ggsurvplot()&lt;/code&gt;畫出的圖形無法使用常見的&lt;code&gt;grid.arrange()&lt;/code&gt;函數排序，&lt;code&gt;survminer&lt;/code&gt;套件另有排列多圖的方法&lt;code&gt;arrange_ggsurvplots()&lt;/code&gt;，使用方法是將多個&lt;code&gt;ggsurvplot&lt;/code&gt;圖形放入&lt;code&gt;list&lt;/code&gt;，作為&lt;code&gt;arrange_ggsurvplots()&lt;/code&gt;的第一個參數，之後利用&lt;code&gt;ncol&lt;/code&gt;設定Column數，&lt;code&gt;nrow&lt;/code&gt;設定Row數，&lt;code&gt;risk.table.height&lt;/code&gt;設定Number at risk表格高度&lt;/p&gt;
+&lt;p&gt;以下是橫放範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;arrange_ggsurvplots(list(res, resP),
+                    ncol=2, nrow=1, 
+                    risk.table.height = 0.22)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;直放範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;arrange_ggsurvplots(list(res, resP),
+                    ncol=1, nrow=2, 
+                    risk.table.height = 0.22)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;參考資料&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;參考資料&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization&#34;&gt;survminer R package: Survival Data Analysis and Visualization&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://rpkgs.datanovia.com/survminer/index.html&#34;&gt;survminer套件官方說明文件&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
 </description>
+      
+            <category>R</category>
+      
+            <category>Visualization</category>
+      
+    </item>
+    
+    <item>
+      <title>R的arguments出現三個點是...?</title>
+      <link>/post/dotdotdot/</link>
+      <pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/dotdotdot/</guid>
+      <description>&lt;h2 id=&#34;r函數介紹&#34;&gt;R函數介紹&lt;/h2&gt;
+&lt;p&gt;需要先介紹怎麼在R裡面寫函數&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;f &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;function&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;) { 
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;names&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;)) 
+} 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上述程式碼中，·&lt;code&gt;f&lt;/code&gt;是一個使用者自訂函數，就像java裡面的method，而**…**的功能，則是讓&lt;code&gt;f&lt;/code&gt;函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。&lt;/p&gt;
+&lt;h2 id=&#34;使用範例一&#34;&gt;&amp;hellip;使用範例一&lt;/h2&gt;
+&lt;p&gt;舉例來說，若執行&lt;code&gt;f(a = 1, b = 2)&lt;/code&gt;，a和b這兩個參數可以直接傳到&lt;code&gt;list()&lt;/code&gt;函數中，變成&lt;code&gt;names(list(a=1,b=2))&lt;/code&gt;，意即生成一個list，內有兩個元素，a=1以及b=2。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;f&lt;/span&gt;(a &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, b &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot; &amp;quot;b&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;names&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(a&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,b&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)) &lt;span style=&#34;color:#75715e&#34;&gt;#輸出相同&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot; &amp;quot;b&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;使用範例二&#34;&gt;&amp;hellip;使用範例二&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;addPercent &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;function&lt;/span&gt;(x, mult &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;, &lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;){ 
+  percent &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;round&lt;/span&gt;(x &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; mult, &lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;) 
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;paste0&lt;/span&gt;(percent, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%&amp;#34;&lt;/span&gt;) 
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在上述程式碼中，&lt;code&gt;addPercent&lt;/code&gt;是一個使用者自訂函數，**…**的功能讓&lt;code&gt;addPercent&lt;/code&gt;函數可以輸入各式各樣的參數，而且可以將參數往下丟到其他函數內。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;addPercent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.5887&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0.6925&lt;/span&gt;), digits &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;58.87%&amp;quot; &amp;quot;69.25%&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;addPercent&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.5887&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;0.6925&lt;/span&gt;), digits &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;58.9%&amp;quot; &amp;quot;69.2%&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;因此在執行&lt;code&gt;addPercent(c(0.5887,0.6925), digits = 2)&lt;/code&gt;時，&lt;code&gt;digits&lt;/code&gt;參數被傳遞到自定義函數&lt;code&gt;addPercent&lt;/code&gt;中的&lt;code&gt;round&lt;/code&gt;函數內，變成&lt;code&gt;round&lt;/code&gt;函數中的參數。
+在&lt;code&gt;round&lt;/code&gt;函數中，&lt;code&gt;digits&lt;/code&gt;參數的功能是設定四捨五入的位數，因此&lt;code&gt;digits = 2&lt;/code&gt;是指四捨五入到小數點第二位，&lt;code&gt;digits = 1&lt;/code&gt;是指四捨五入到小數點第一位。&lt;/p&gt;
+&lt;h2 id=&#34;使用範例三&#34;&gt;&amp;hellip;使用範例三&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;HelloWorld &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;function&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;) {
+  arguments &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;...&lt;/span&gt;) 
+  &lt;span style=&#34;color:#a6e22e&#34;&gt;paste&lt;/span&gt;(arguments)
+} 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;HelloWorld&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;World&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;!&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;~&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Hello&amp;quot; &amp;quot;World&amp;quot; &amp;quot;!&amp;quot;     &amp;quot;~&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;</description>
       
             <category>R</category>
       
@@ -92,19 +341,14 @@
     
     <item>
       <title>正規表示式Regular Expression in R</title>
-      <link>https://blog.yjtseng.info/post/regexpr/</link>
+      <link>/post/regexpr/</link>
       <pubDate>Mon, 26 Mar 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/post/regexpr/</guid>
-      <description>
-
-&lt;h2 id=&#34;什麼是正規表示式&#34;&gt;什麼是正規表示式?&lt;/h2&gt;
-
+      <guid>/post/regexpr/</guid>
+      <description>&lt;h2 id=&#34;什麼是正規表示式&#34;&gt;什麼是正規表示式?&lt;/h2&gt;
 &lt;p&gt;Regular Expression (正規表示式)是指一組能用來表示字串共同格式 (common structure)的樣式 (Pattern)，像是&lt;code&gt;@&lt;/code&gt;符號會固定出現在email中，或是手機號碼固定是10碼，等等樣式。
 在所有的程式語言中，只要用到&lt;strong&gt;字串比對&lt;/strong&gt;與&lt;strong&gt;字串取代&lt;/strong&gt;等字串相關功能，都會用到正規表示式。雖然正規表示式在不同程式語言中會有些許差異，但核心概念是相同的。&lt;/p&gt;
-
 &lt;p&gt;以下是常見的範例:&lt;/p&gt;
-
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -113,32 +357,27 @@
 &lt;th&gt;範例&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
-
 &lt;tbody&gt;
 &lt;tr&gt;
 &lt;td&gt;整數&lt;/td&gt;
 &lt;td&gt;[0-9]+&lt;/td&gt;
 &lt;td&gt;5815&lt;/td&gt;
 &lt;/tr&gt;
-
 &lt;tr&gt;
 &lt;td&gt;浮點數&lt;/td&gt;
 &lt;td&gt;[0-9]+.[0-9]+&lt;/td&gt;
 &lt;td&gt;58.15&lt;/td&gt;
 &lt;/tr&gt;
-
 &lt;tr&gt;
 &lt;td&gt;純英文字串&lt;/td&gt;
 &lt;td&gt;[A-Za-z]+&lt;/td&gt;
 &lt;td&gt;CGUIM&lt;/td&gt;
 &lt;/tr&gt;
-
 &lt;tr&gt;
 &lt;td&gt;Email&lt;/td&gt;
-&lt;td&gt;[a-zA-Z0-9&lt;em&gt;]+@[a-zA-Z0-9.&lt;/em&gt;]+&lt;/td&gt;
+&lt;td&gt;[a-zA-Z0-9_]+@[a-zA-Z0-9._]+&lt;/td&gt;
 &lt;td&gt;&lt;code&gt;im@mail.cgu.edu.tw&lt;/code&gt;&lt;/td&gt;
 &lt;/tr&gt;
-
 &lt;tr&gt;
 &lt;td&gt;URL&lt;/td&gt;
 &lt;td&gt;&lt;code&gt;http://[a-zA-Z0-9./_]+&lt;/code&gt;&lt;/td&gt;
@@ -146,9 +385,7 @@
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-
 &lt;h2 id=&#34;可以用正規表示式的r函數&#34;&gt;可以用正規表示式的R函數&lt;/h2&gt;
-
 &lt;ul&gt;
 &lt;li&gt;grep()&lt;/li&gt;
 &lt;li&gt;grepl()&lt;/li&gt;
@@ -156,15 +393,10 @@
 &lt;li&gt;str_split()&lt;/li&gt;
 &lt;li&gt;stringr package中的諸多函數&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;正規表示式的語法&#34;&gt;正規表示式的語法&lt;/h2&gt;
-
 &lt;h3 id=&#34;逃脫字元&#34;&gt;逃脫字元&lt;/h3&gt;
-
-&lt;p&gt;*&lt;em&gt;\*&lt;/em&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;strong&gt;\&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id=&#34;表示數量的語法&#34;&gt;表示數量的語法&lt;/h3&gt;
-
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;*&lt;/code&gt;: 出現0~無限多次&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;+&lt;/code&gt;: 出現1~無限多次&lt;/li&gt;
@@ -173,80 +405,36 @@
 &lt;li&gt;&lt;code&gt;{n,}&lt;/code&gt;: 出現n~無限多次&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;{n,m}&lt;/code&gt;: 出現n~m次&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;stringVector&amp;lt;-c(&amp;quot;a&amp;quot;,&amp;quot;abc&amp;quot;,&amp;quot;ac&amp;quot;,&amp;quot;abbc&amp;quot;,&amp;quot;abbbc&amp;quot;,&amp;quot;abbbbc&amp;quot;)
-grep(&amp;quot;ab*&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot;      &amp;quot;abc&amp;quot;    &amp;quot;ac&amp;quot;     &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab+&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot;    &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab?c&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot; &amp;quot;ac&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab{2}c&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab{2,}c&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;ab{2,3}c&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;  &amp;quot;abbbc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;表示位置的語法&#34;&gt;表示位置的語法&lt;/h3&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;stringVector&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abc&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ac&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abbc&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abbbc&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abbbbc&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab*&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;a&amp;quot;      &amp;quot;abc&amp;quot;    &amp;quot;ac&amp;quot;     &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab+&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot;    &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab?c&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot; &amp;quot;ac&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab{2}c&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab{2,}c&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;   &amp;quot;abbbc&amp;quot;  &amp;quot;abbbbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ab{2,3}c&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abbc&amp;quot;  &amp;quot;abbbc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;表示位置的語法&#34;&gt;表示位置的語法&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;^&lt;/code&gt;: 出現在字串開始的位置&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;$&lt;/code&gt;: 出現在字串結束ˇ的位置&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\b&lt;/code&gt;: 出現空字串(空白)開始或結束的位置&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\B&lt;/code&gt;: 出現非字串開始或結束的位置&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;stringVector&amp;lt;-c(&amp;quot;abc&amp;quot;,&amp;quot;bcd&amp;quot;,&amp;quot;cde&amp;quot;,&amp;quot;def&amp;quot;,&amp;quot;abc def&amp;quot;,&amp;quot;bcdefg abc&amp;quot;)
-grep(&amp;quot;^bc&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;bcd&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;bc$&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;\\bde&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;def&amp;quot;     &amp;quot;abc def&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;\\Bde&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;cde&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;運算子&#34;&gt;運算子&lt;/h3&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;stringVector&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abc&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bcd&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cde&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;def&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;abc def&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bcdefg abc&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;^bc&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;bcd&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bc$&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;abc&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\bde&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;def&amp;quot;     &amp;quot;abc def&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\Bde&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;cde&amp;quot;        &amp;quot;bcdefg abc&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;運算子&#34;&gt;運算子&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;.&lt;/code&gt;: 出現所有的字元一次，包括空字串&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;[...]&lt;/code&gt;: 出現字元清單(&amp;hellip;)中的字元一次，可用&lt;code&gt;-&lt;/code&gt;表示範圍，如&lt;code&gt;[A-Z]&lt;/code&gt;，&lt;code&gt;[a-z]&lt;/code&gt;，&lt;code&gt;[0-9]&lt;/code&gt;&lt;/li&gt;
@@ -254,36 +442,18 @@ grep(&amp;quot;^bc&amp;quot;,stringVector,value=T)
 &lt;li&gt;&lt;code&gt;\&lt;/code&gt;: 要搜尋字串中的特殊字元時，前方須加上&lt;code&gt;\&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;|&lt;/code&gt;: 或&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;stringVector&amp;lt;-c(&amp;quot;03-2118800&amp;quot;,&amp;quot;02-23123456&amp;quot;,&amp;quot;0988123456&amp;quot;,
-                &amp;quot;07-118&amp;quot;,&amp;quot;0-888&amp;quot;,&amp;quot;csim@mail.cgu.edu.tw&amp;quot;,&amp;quot;csim@.&amp;quot;,&amp;quot;csim@&amp;quot;,
-                &amp;quot;http://www.is.cgu.edu.tw/&amp;quot;)
-grep(&amp;quot;[0-9]{2}-[0-9]{7,8}&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;[0-9]{10}&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;0988123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;02|03&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;[a-zA-Z0-9_]+@[a-zA-Z0-9._]+&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;csim@mail.cgu.edu.tw&amp;quot; &amp;quot;csim@.&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;特殊符號&#34;&gt;特殊符號&lt;/h3&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;stringVector&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;03-2118800&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;02-23123456&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0988123456&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;07-118&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0-888&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;csim@mail.cgu.edu.tw&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;csim@.&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;csim@&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://www.is.cgu.edu.tw/&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[0-9]{2}-[0-9]{7,8}&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[0-9]{10}&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;0988123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;02|03&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[a-zA-Z0-9_]+@[a-zA-Z0-9._]+&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;csim@mail.cgu.edu.tw&amp;quot; &amp;quot;csim@.&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;特殊符號&#34;&gt;特殊符號&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;\d&lt;/code&gt;: 數字，等於 [0-9]&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\D&lt;/code&gt;: 非數字，等於 [^0-9]&lt;/li&gt;
@@ -294,33 +464,19 @@ grep(&amp;quot;[0-9]{2}-[0-9]{7,8}&amp;quot;,stringVector,value=T)
 &lt;li&gt;&lt;code&gt;\w&lt;/code&gt;: 文字數字與底線，等於 [[:alnum:]&lt;em&gt;] or [A-z0-9&lt;/em&gt;]&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\W&lt;/code&gt;: 非文字數字與底線，等於 [^A-z0-9_]&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;[:blank:]&lt;/code&gt;: 空白字元，包括空白和tab&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;\s&lt;/code&gt;: 空白字元,&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;\s&lt;/code&gt;: 空白字元, &lt;code&gt; &lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;\S&lt;/code&gt;: 非空白字元&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;[:punct:]&lt;/code&gt;: 標點符號 ! &amp;ldquo; # $ % &amp;amp; ’ ( ) * + , - . / : ; &amp;lt; = &amp;gt; ? @ [  ] ^ _ ` { | } ~.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;[:punct:]&lt;/code&gt;: 標點符號 ! &amp;quot; # $ % &amp;amp; ’ ( ) * + , - . / : ; &amp;lt; = &amp;gt; ? @ [  ] ^ _ ` { | } ~.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;stringVector&amp;lt;-c(&amp;quot;03-2118800&amp;quot;,&amp;quot;02-23123456&amp;quot;,&amp;quot;0988123456&amp;quot;,
-                &amp;quot;07-118&amp;quot;,&amp;quot;0-888&amp;quot;,&amp;quot;csim@mail.cgu.edu.tw&amp;quot;,&amp;quot;http://www.is.cgu.edu.tw/&amp;quot;)
-grep(&amp;quot;\\d{2}-\\d{7,8}&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;\\d{10}&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;0988123456&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;grep(&amp;quot;\\w+@[a-zA-Z0-9._]+&amp;quot;,stringVector,value=T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;csim@mail.cgu.edu.tw&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;stringVector&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;03-2118800&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;02-23123456&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0988123456&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;07-118&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0-888&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;csim@mail.cgu.edu.tw&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://www.is.cgu.edu.tw/&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\d{2}-\\d{7,8}&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;03-2118800&amp;quot;  &amp;quot;02-23123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\d{10}&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;0988123456&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;grep&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;\\w+@[a-zA-Z0-9._]+&amp;#34;&lt;/span&gt;,stringVector,value&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;csim@mail.cgu.edu.tw&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://dotblogs.com.tw/johnny/archive/2010/01/25/13301.aspx&#34;&gt;Regular Expression 詳論&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://regexlib.com/&#34;&gt;RegExLib.com&lt;/a&gt;&lt;/li&gt;

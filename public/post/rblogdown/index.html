@@ -13,20 +13,20 @@
     <meta property="og:description" content="" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:url" content="https://blog.yjtseng.info/post/rblogdown/" />
+    <meta property="og:url" content="/post/rblogdown/" />
     
 
     <link href="" rel="alternate" type="application/rss+xml" title="有完沒完RRR" />
     <link rel="shortcut icon" href="/favicon.png">
 
-    <link href="https://blog.yjtseng.info/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
-    <link href="https://blog.yjtseng.info/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+    <link href="/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+    <link href="/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
 
-    <link rel="stylesheet" href="https://blog.yjtseng.info/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 
     <link href="http://gmpg.org/xfn/11" rel="profile">
     
-    <meta name="generator" content="Hugo 0.52" />
+    <meta name="generator" content="Hugo 0.70.0" />
 </head>
 
 
@@ -36,7 +36,7 @@
     <div id="header-outer" class="outer">
         <div id="header-inner" class="inner">
             <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
-            <a id="logo" class="logo-text" href="https://blog.yjtseng.info/">有完沒完RRR</a>
+            <a id="logo" class="logo-text" href="/">有完沒完RRR</a>
             <nav id="main-nav">
                 
                 <a class="main-nav-link" href="/categories/index.html">Categories</a>
@@ -83,34 +83,21 @@
             
         </div>
         <div class="article-entry" itemprop="articleBody">
-            
-
-<p>忙一忙突然又想起blogdown這個packages，今天終於下定決心開始，不知道會持續多久&hellip;..</p>
-
+            <p>忙一忙突然又想起blogdown這個packages，今天終於下定決心開始，不知道會持續多久&hellip;..</p>
 <h3 id="blogdown">blogdown</h3>
-
 <p>blogdown是基於R Markdown和Hugo開發的R package，簡單來說是讓你可以用R Markdown寫Blog的好幫手。先前用過姊妹套件<a href="https://bookdown.org/yihui/bookdown/">bookdown</a>寫了<a href="yijutseng.github.io/DataScienceRBook/">資料科學與R語言</a>電子書，用來介紹R語言的使用非常方便，不用再辛苦的剪下貼上，也不用擔心程式碼沒上色，導致不清不楚讀者沒耐心看(只有我沒耐心)。</p>
-
 <h3 id="hugo">Hugo</h3>
-
 <p>決定要寫以後，花了大把時間挑主題(汗)，<a href="https://gohugo.io/">Hugo</a>有蠻多不錯的<a href="https://themes.gohugo.io/">主題</a>可選，因為希望頁面乾淨整潔，所以選了<a href="https://github.com/carsonip/hugo-theme-minos">hugo-theme-minos</a>，希望不要馬上就看膩了。</p>
-
 <p>卡關最久的是跟相對路徑有關的設定，不知道為什麼Tags跟Categories的連結一直設定不好，看起來是跟<code>$Site.BaseURL</code>有關，後來完全硬幹，把<code>$Site.BaseURL</code>全都改掉了，Google了老半天為什麼會這樣，到目前還是無解。</p>
-
 <h3 id="netlify">Netlify</h3>
-
 <p>以往都是用GitHub page來存放靜態網頁，這次趁機會試著使用很多人推薦的<a href="https://www.netlify.com/">Netlify</a>，一樣可以跟GitHub做連動，只要Commit &amp; Sync，Netlify會自動部屬網頁，超級方便。
 設定的時候有一些參數要注意:</p>
-
 <pre><code>Build command: hugo
 Publish directory: public
 
 Build environment variables
 key: HUGO_VERSION   value:0.26
-</code></pre>
-
-<p>參考資料:</p>
-
+</code></pre><p>參考資料:</p>
 <ul>
 <li><a href="https://slides.yihui.name/2017-rstudio-webinar-blogdown-Yihui-Xie.html">Making Websites with R Markdown and blogdown</a></li>
 <li><a href="https://github.com/rstudio/blogdown">blogdown GitHub page</a></li>
@@ -123,17 +110,15 @@ key: HUGO_VERSION   value:0.26
         <div class="article-toc" style="display:none;">
             <h3>Contents</h3>
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#blogdown">blogdown</a></li>
-<li><a href="#hugo">Hugo</a></li>
-<li><a href="#netlify">Netlify</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#blogdown">blogdown</a></li>
+        <li><a href="#hugo">Hugo</a></li>
+        <li><a href="#netlify">Netlify</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
         
@@ -210,15 +195,9 @@ key: HUGO_VERSION   value:0.26
     </div>
     <nav id="article-nav">
     
-    <a href="/post/website/" id="article-nav-newer" class="article-nav-link-wrap">
-        <div class="article-nav-title"><span>&lt;</span>&nbsp;
-            用blogdown建立個人網頁
-        </div>
-    </a>
     
-    
-    <a href="/post/2018-12-14-jupternotebook/" id="article-nav-older" class="article-nav-link-wrap">
-        <div class="article-nav-title">&nbsp;<span>&gt;</span></div>
+    <a href="/post/website/" id="article-nav-older" class="article-nav-link-wrap">
+        <div class="article-nav-title">用blogdown建立個人網頁&nbsp;<span>&gt;</span></div>
     </a>
     
 </nav>
@@ -231,7 +210,7 @@ key: HUGO_VERSION   value:0.26
     <footer id="footer">
     <div class="outer">
         <div id="footer-info" class="inner">
-            &copy; 2018 有完沒完RRR&nbsp;
+            &copy; 2020 有完沒完RRR&nbsp;
             Powered by <a href="https://gohugo.io" target="_blank">Hugo</a> with theme <a href="https://github.com/carsonip/hugo-theme-minos">Minos</a>
         </div>
     </div>

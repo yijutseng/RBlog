@@ -1,0 +1,300 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Visualization on 有完沒完RRR</title>
+    <link>/tags/visualization/</link>
+    <description>Recent content in Visualization on 有完沒完RRR</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-tw</language>
+    <lastBuildDate>Wed, 13 May 2020 00:00:00 +0000</lastBuildDate>
+    
+        <atom:link href="/tags/visualization/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>用R畫存活曲線Survival curve</title>
+      <link>/post/survival-curve/</link>
+      <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/survival-curve/</guid>
+      <description>
+
+
+&lt;p&gt;因為研究需要，搜尋了用R畫存活曲線的方法，並調整了圖形參數以及將多張存活曲線圖合併排列，整理成此篇文章。&lt;/p&gt;
+&lt;div id=&#34;什麼是存活曲線&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;什麼是存活曲線?&lt;/h2&gt;
+&lt;p&gt;簡單來說，就是將&lt;strong&gt;沒發生事件的比例&lt;/strong&gt;當x軸，&lt;strong&gt;時間&lt;/strong&gt;當y軸所繪製出的圖形。可參考&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E5%AD%98%E6%B4%BB%E6%9B%B2%E7%B7%9A&#34;&gt;維基百科&lt;/a&gt;的說明。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;用r畫存活曲線所需套件&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;用R畫存活曲線所需套件&lt;/h2&gt;
+&lt;p&gt;在R中有蠻多畫存活曲線相關的套件，我的初版程式是使用&lt;code&gt;ggfortify&lt;/code&gt;套件，但後來Editor要求要在圖上加&lt;strong&gt;Number at risk&lt;/strong&gt;的資訊，查了一下發現&lt;code&gt;ggfortify&lt;/code&gt;套件沒有這個功能，又不想手動加，就重新搜尋了資源，找到一篇介紹&lt;code&gt;survminer&lt;/code&gt;套件的&lt;a href=&#34;http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization&#34;&gt;文章&lt;/a&gt;，並完成完整的survival plot。&lt;/p&gt;
+&lt;p&gt;本介紹文以&lt;a href=&#34;http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization&#34;&gt;survminer R package: Survival Data Analysis and Visualization&lt;/a&gt;為基礎，並衍伸其他條件設定的教學。&lt;/p&gt;
+&lt;p&gt;以下介紹用&lt;code&gt;survminer&lt;/code&gt;套件 (&lt;a href=&#34;https://rpkgs.datanovia.com/survminer/index.html&#34;&gt;官方說明文件&lt;/a&gt;) 畫存活曲線的步驟&lt;/p&gt;
+&lt;p&gt;首先載入&lt;code&gt;survminer&lt;/code&gt;套件以及處理資料必須的&lt;code&gt;survival&lt;/code&gt;套件 (需要套件中的&lt;code&gt;Surv()&lt;/code&gt;函數)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(survival)
+library(survminer)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;範例資料&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;範例資料&lt;/h2&gt;
+&lt;p&gt;以&lt;code&gt;survival&lt;/code&gt;套件內附的&lt;code&gt;lung&lt;/code&gt;資料為例，資料包括:&lt;/p&gt;
+&lt;p&gt;(以下資料翻譯自&lt;code&gt;survival&lt;/code&gt;套件說明文件)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;inst: 機構代碼&lt;/li&gt;
+&lt;li&gt;time: 存活時間 (單位為日)&lt;/li&gt;
+&lt;li&gt;status: “設限”或“事件發生”狀況，1為設限，2為事件發生，在此為死亡
+&lt;ul&gt;
+&lt;li&gt;1=censored&lt;/li&gt;
+&lt;li&gt;2=dead&lt;br /&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;age: 年紀 (單位為年)&lt;/li&gt;
+&lt;li&gt;sex: 性別
+&lt;ul&gt;
+&lt;li&gt;Male=1&lt;/li&gt;
+&lt;li&gt;Female=2&lt;br /&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;ph.ecog: 醫生評估的ECOG體能狀況評估分數
+&lt;ul&gt;
+&lt;li&gt;0= asymptomatic&lt;/li&gt;
+&lt;li&gt;1= symptomatic but completely ambulatory&lt;/li&gt;
+&lt;li&gt;2= in bed &amp;lt;50% of the day&lt;/li&gt;
+&lt;li&gt;3= in bed &amp;gt; 50% of the day but not bedbound&lt;/li&gt;
+&lt;li&gt;4= bedbound&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;ph.karno: 醫生評估的Karnofsky體能狀況評估分數
+&lt;ul&gt;
+&lt;li&gt;bad=0-good=100&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;pat.karno: 病人自己評估的Karnofsky體能狀況評估分數&lt;/li&gt;
+&lt;li&gt;meal.cal: 卡路里攝取量&lt;/li&gt;
+&lt;li&gt;wt.loss: 過去六個月體重下降多少&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::kable(lung %&amp;gt;% head())&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;inst&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;time&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;status&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;age&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sex&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;ph.ecog&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;ph.karno&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pat.karno&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;meal.cal&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;wt.loss&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;306&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1175&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;455&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;68&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1225&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1010&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;56&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;210&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1150&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;883&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1022&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;74&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;50&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;513&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;基本存活曲線&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;基本存活曲線&lt;/h2&gt;
+&lt;p&gt;在準備完資料後，可用&lt;code&gt;survfit()&lt;/code&gt;函數製作存活模型，並以&lt;code&gt;ggsurvplot()&lt;/code&gt;函數繪製存活曲線，&lt;code&gt;survfit()&lt;/code&gt;函數的重要參數包括&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;formula: &lt;code&gt;Surv(時間,設限或事件狀態)~分組依據&lt;/code&gt;，在這個範例為&lt;code&gt;Surv(time,status)~分組依據&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;data: 資料名稱，在這個範例為lung&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以最簡單的單一族群存活區限為例，想要畫這個資料集中&lt;strong&gt;所有病人&lt;/strong&gt;的存活曲線，其實就是不分組的意思，可將&lt;strong&gt;分組依據&lt;/strong&gt;設定成單一數字&lt;strong&gt;1&lt;/strong&gt;，如下列範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit&amp;lt;- survfit(Surv(time, status) ~ 1, data = lung)
+ggsurvplot(fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;以此類推，若想用性別做分組，也就是男生畫一條存活曲線，女生也畫一條，並放在同一張圖上，此時就將性別&lt;code&gt;sex&lt;/code&gt;做為&lt;strong&gt;分組依據&lt;/strong&gt;，如下範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit&amp;lt;- survfit(Surv(time, status) ~ sex, data = lung)
+ggsurvplot(fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;增加p-value&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;增加P value&lt;/h2&gt;
+&lt;p&gt;將&lt;code&gt;ggsurvplot()&lt;/code&gt;函數的&lt;code&gt;pval&lt;/code&gt;參數設定為&lt;code&gt;TRUE&lt;/code&gt;，即可在圖中加上兩組檢定的P value，這個P value也可以用&lt;code&gt;surv_pvalue()&lt;/code&gt;函數取得，預設的檢定方法為&lt;strong&gt;log-rank test&lt;/strong&gt;，若想要修改，也可以透過設定&lt;code&gt;pval.method&lt;/code&gt;參數修改。&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;可進一步用&lt;code&gt;pval.coord = c(100, 0.03)&lt;/code&gt;調整P value顯示位置&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;增加信賴區間&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;增加信賴區間&lt;/h2&gt;
+&lt;p&gt;若生存曲線圖形要加上信賴區間的話，可設定&lt;code&gt;conf.int = TRUE&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+           conf.int = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;增加number-of-risk-表格&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;增加number of risk 表格&lt;/h2&gt;
+&lt;p&gt;將&lt;code&gt;ggsurvplot()&lt;/code&gt;函數的&lt;code&gt;risk.table&lt;/code&gt;參數設定為&lt;code&gt;TRUE&lt;/code&gt;，即可在圖中加上number of risk 表格&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+           conf.int = TRUE,
+           risk.table = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;若不想要number of risk 表格Y軸文字的顏色，可將&lt;code&gt;risk.table.y.text.col&lt;/code&gt;參數設成FALSE&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+           conf.int = TRUE,
+           risk.table = TRUE, risk.table.y.text.col = F)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;格式微調&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;格式微調&lt;/h2&gt;
+&lt;p&gt;可分為存活曲線調整與number at risk表格調整，調整參數如下&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;font.main = 12&lt;/code&gt; 圖表標題字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;font.x =  12&lt;/code&gt; 圖表X軸字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;font.y = 12&lt;/code&gt; 圖表Y軸字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fontsize = 3&lt;/code&gt; Number at risk內文字型大小&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;break.time.by = 100&lt;/code&gt; 每100天設一個標記&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;font.tickslab = 10&lt;/code&gt; 標記字型大小(100, 200, …等)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;legend.labs = c(&#34;Men&#34;, &#34;Women&#34;)&lt;/code&gt; 將圖示文字改為Men或是Women&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;title=&#34;Format setting&#34;&lt;/code&gt; 加上圖形標題&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;xlab=&#34;&#34;, ylab=&#34;&#34;&lt;/code&gt; X軸Y軸標題設定&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;legend =  &#34;none&#34;&lt;/code&gt; 不要圖示&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tables.theme = clean_theme()&lt;/code&gt; 設定Number at risk表格樣式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;若想改Number at risk表格的標題，只能用額外的程式碼&lt;code&gt;theme(plot.title = element_text(size = 10))&lt;/code&gt;設定&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;res&amp;lt;-ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
+                conf.int = TRUE,
+                risk.table = TRUE, 
+                font.main = 12,
+                font.x =  12,
+                font.y = 12,
+                font.tickslab = 10,
+                fontsize = 3, 
+                break.time.by = 100,
+                legend.labs = c(&amp;quot;Men&amp;quot;, &amp;quot;Women&amp;quot;),
+                title=&amp;quot;Format setting&amp;quot;,
+                xlab=&amp;quot;X Test&amp;quot;, ylab=&amp;quot;Y Test&amp;quot;, legend =  &amp;quot;none&amp;quot;,
+                tables.theme = clean_theme())
+res$table &amp;lt;- res$table + theme(plot.title = element_text(size = 10))
+res&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;客製化p-value顯示方式&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;客製化P value顯示方式&lt;/h2&gt;
+&lt;p&gt;預設的P value是四位小數點，有時不太需要這麼多資訊，只需把小於0.01的值用&lt;strong&gt;&amp;lt;0.01&lt;/strong&gt;來表示 (通常是&amp;lt;0.001才轉換，但這邊為了呈現效果改為&amp;lt;0.01)，那就需要在畫圖前先處理。這邊使用&lt;code&gt;surv_pvalue(fit)$pval&lt;/code&gt;來取得P value &lt;code&gt;p&lt;/code&gt;後，更進一步用&lt;code&gt;if else&lt;/code&gt;來將數值轉成文字，最後在&lt;code&gt;ggsurvplot()&lt;/code&gt;函數中，將&lt;code&gt;pval = p&lt;/code&gt;參數設定為&lt;code&gt;p&lt;/code&gt;，就能調整P value的顯示方法&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;p&amp;lt;-surv_pvalue(fit)$pval
+if(p&amp;lt;0.01){
+  p&amp;lt;-&amp;quot;p&amp;lt;0.01&amp;quot;
+}else{
+  p&amp;lt;-paste0(&amp;quot;p=&amp;quot;,round(p,3))
+}
+
+resP&amp;lt;-ggsurvplot(fit, pval = p, pval.coord = c(100, 0.03), 
+                 conf.int = TRUE,
+                 risk.table = TRUE, risk.table.y.text.col = F,
+                 font.main = 12,
+                 font.x =  12,
+                 font.y = 12,
+                 font.tickslab = 10,
+                 fontsize = 3, 
+                 break.time.by = 100,
+                 legend.labs = c(&amp;quot;Men&amp;quot;, &amp;quot;Women&amp;quot;),
+                 title=&amp;quot;Customize P value&amp;quot;,
+                 xlab=&amp;quot;X Test&amp;quot;, ylab=&amp;quot;Y Test&amp;quot;, legend =  &amp;quot;none&amp;quot;,
+                 tables.theme = clean_theme())
+resP$table &amp;lt;- resP$table + theme(plot.title = element_text(size = 10))
+resP&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;合併多張存活曲線圖形&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;合併多張存活曲線圖形&lt;/h2&gt;
+&lt;p&gt;因&lt;code&gt;ggsurvplot()&lt;/code&gt;畫出的圖形無法使用常見的&lt;code&gt;grid.arrange()&lt;/code&gt;函數排序，&lt;code&gt;survminer&lt;/code&gt;套件另有排列多圖的方法&lt;code&gt;arrange_ggsurvplots()&lt;/code&gt;，使用方法是將多個&lt;code&gt;ggsurvplot&lt;/code&gt;圖形放入&lt;code&gt;list&lt;/code&gt;，作為&lt;code&gt;arrange_ggsurvplots()&lt;/code&gt;的第一個參數，之後利用&lt;code&gt;ncol&lt;/code&gt;設定Column數，&lt;code&gt;nrow&lt;/code&gt;設定Row數，&lt;code&gt;risk.table.height&lt;/code&gt;設定Number at risk表格高度&lt;/p&gt;
+&lt;p&gt;以下是橫放範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;arrange_ggsurvplots(list(res, resP),
+                    ncol=2, nrow=1, 
+                    risk.table.height = 0.22)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;直放範例&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;arrange_ggsurvplots(list(res, resP),
+                    ncol=1, nrow=2, 
+                    risk.table.height = 0.22)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;2020-05-13-survival-curve_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;參考資料&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;參考資料&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization&#34;&gt;survminer R package: Survival Data Analysis and Visualization&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://rpkgs.datanovia.com/survminer/index.html&#34;&gt;survminer套件官方說明文件&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+</description>
+      
+            <category>R</category>
+      
+            <category>Visualization</category>
+      
+    </item>
+    
+  </channel>
+</rss>

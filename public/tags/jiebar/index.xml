@@ -1,54 +1,35 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Jiebar on 有完沒完RRR</title>
-    <link>https://blog.yjtseng.info/tags/jiebar/</link>
-    <description>Recent content in Jiebar on 有完沒完RRR</description>
+    <title>jiebaR on 有完沒完RRR</title>
+    <link>/tags/jiebar/</link>
+    <description>Recent content in jiebaR on 有完沒完RRR</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
     <lastBuildDate>Mon, 21 Aug 2017 00:00:00 +0000</lastBuildDate>
     
-        <atom:link href="https://blog.yjtseng.info/tags/jiebar/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="/tags/jiebar/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>在R中使用結巴分詞</title>
-      <link>https://blog.yjtseng.info/post/jiebar/</link>
+      <link>/post/jiebar/</link>
       <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.yjtseng.info/post/jiebar/</guid>
-      <description>
-
-&lt;h2 id=&#34;有關結巴&#34;&gt;有關結巴&lt;/h2&gt;
-
+      <guid>/post/jiebar/</guid>
+      <description>&lt;h2 id=&#34;有關結巴&#34;&gt;有關結巴&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/fxsjy/jieba&#34;&gt;“结巴”中文分词：做最好的 Python 中文分词组件&lt;/a&gt;&lt;/p&gt;
-
 &lt;h2 id=&#34;在r內使用結巴分詞&#34;&gt;在R內使用結巴分詞&lt;/h2&gt;
-
 &lt;h3 id=&#34;安裝載入套件&#34;&gt;安裝載入套件&lt;/h3&gt;
-
 &lt;p&gt;安裝套件&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;install.packages(&amp;quot;jiebaR&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;載入套件&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(jiebaR) #載入jiebaR package
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## Loading required package: jiebaRD
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;斷詞&#34;&gt;斷詞&lt;/h3&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install.packages&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jiebaR&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;載入套件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(jiebaR) &lt;span style=&#34;color:#75715e&#34;&gt;#載入jiebaR package&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Loading required package: jiebaRD
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;斷詞&#34;&gt;斷詞&lt;/h3&gt;
 &lt;p&gt;新增斷詞工具&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter &amp;lt;- worker()
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;()
 cutter 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## Worker Type:  Jieba Segment
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Worker Type:  Jieba Segment
 ## 
 ## Default Method  :  mix
 ## Detect Encoding :  TRUE
@@ -81,28 +62,18 @@ cutter
 ## [1] 1544777122
 ## 
 ## $default $detect $encoding $symbol $output $write $lines $bylines can be reset.
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;斷詞實作&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&amp;quot;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;    &amp;quot;9019&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;662&amp;quot;  &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E00&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;   
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;斷詞實作&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;這是一段測試用文字，請不要再戰長庚資管了&amp;#34;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;    &amp;quot;9019&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;662&amp;quot;  &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E00&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;   
 ## [11] &amp;quot;BB5&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;    &amp;quot;E2C&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;A66&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;7528&amp;quot; &amp;quot;U&amp;quot;   
 ## [21] &amp;quot;6587&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;    &amp;quot;B57&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;FF0C&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;ACB&amp;quot;  &amp;quot;U&amp;quot;   
 ## [31] &amp;quot;4&amp;quot;    &amp;quot;E0D&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8981&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;518&amp;quot;  &amp;quot;D&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;6230&amp;quot; &amp;quot;U&amp;quot;   
 ## [41] &amp;quot;9577&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;    &amp;quot;E9A&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;CC7&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;7&amp;quot;    &amp;quot;BA1&amp;quot; 
 ## [51] &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E86&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;詞性判別&#34;&gt;詞性判別&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;tagger &amp;lt;- worker(&amp;quot;tag&amp;quot;)
-tagger[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&amp;quot;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##      x      m      x      m      x      x      x    eng      x      x 
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;詞性判別&#34;&gt;詞性判別&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;tagger &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;tag&amp;#34;&lt;/span&gt;)
+tagger[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;這是一段測試用文字，請不要再戰長庚資管了&amp;#34;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##      x      m      x      m      x      x      x    eng      x      x 
 ##    &amp;quot;U&amp;quot; &amp;quot;9019&amp;quot;    &amp;quot;U&amp;quot;  &amp;quot;662&amp;quot;    &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;  &amp;quot;E00&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot; 
 ##    eng      x      x    eng      x      x    eng      x      m      x 
 ##  &amp;quot;BB5&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;  &amp;quot;E2C&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;  &amp;quot;A66&amp;quot;    &amp;quot;U&amp;quot; &amp;quot;7528&amp;quot;    &amp;quot;U&amp;quot; 
@@ -114,20 +85,11 @@ tagger[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&am
 ## &amp;quot;9577&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;  &amp;quot;E9A&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;  &amp;quot;CC7&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;7&amp;quot;  &amp;quot;BA1&amp;quot; 
 ##      x      x    eng 
 ##    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;  &amp;quot;E86&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;新增自訂詞彙&#34;&gt;新增自訂詞彙&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;new_user_word(cutter,&#39;長庚資管&#39;,&amp;quot;n&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [1] TRUE
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&amp;quot;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;                                &amp;quot;9019&amp;quot;                            
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;新增自訂詞彙&#34;&gt;新增自訂詞彙&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;new_user_word&lt;/span&gt;(cutter,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;長庚資管&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;n&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] TRUE
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;這是一段測試用文字，請不要再戰長庚資管了&amp;#34;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;                                &amp;quot;9019&amp;quot;                            
 ##  [3] &amp;quot;U&amp;quot;                                &amp;quot;662&amp;quot;                             
 ##  [5] &amp;quot;F&amp;quot;                                &amp;quot;U&amp;quot;                               
 ##  [7] &amp;quot;4&amp;quot;                                &amp;quot;E00&amp;quot;                             
@@ -149,41 +111,25 @@ tagger[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&am
 ## [39] &amp;quot;6230&amp;quot;                             &amp;quot;&amp;lt;U+9577&amp;gt;&amp;lt;U+5E9A&amp;gt;&amp;lt;U+8CC7&amp;gt;&amp;lt;U+7BA1&amp;gt;&amp;quot;
 ## [41] &amp;quot;U&amp;quot;                                &amp;quot;4&amp;quot;                               
 ## [43] &amp;quot;E86&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;自訂停止詞&#34;&gt;自訂停止詞&lt;/h3&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;自訂停止詞&#34;&gt;自訂停止詞&lt;/h3&gt;
 &lt;p&gt;&lt;a href=&#34;https://blog.yjtseng.info/file/stop.txt&#34;&gt;停止詞範例檔下載&lt;/a&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter = worker(stop_word =&amp;quot;stop.txt&amp;quot;)
-cutter[&amp;quot;這是一段測試用文字，請不要再戰長庚資管了&amp;quot;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;    &amp;quot;9019&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;662&amp;quot;  &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E00&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;   
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;(stop_word &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;stop.txt&amp;#34;&lt;/span&gt;)
+cutter[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;這是一段測試用文字，請不要再戰長庚資管了&amp;#34;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;U&amp;quot;    &amp;quot;9019&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;662&amp;quot;  &amp;quot;F&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E00&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;   
 ## [11] &amp;quot;BB5&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;6&amp;quot;    &amp;quot;E2C&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;A66&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;7528&amp;quot; &amp;quot;U&amp;quot;   
 ## [21] &amp;quot;6587&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;    &amp;quot;B57&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;FF0C&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;ACB&amp;quot;  &amp;quot;U&amp;quot;   
 ## [31] &amp;quot;4&amp;quot;    &amp;quot;E0D&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8981&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;518&amp;quot;  &amp;quot;D&amp;quot;    &amp;quot;U&amp;quot;    &amp;quot;6230&amp;quot; &amp;quot;U&amp;quot;   
 ## [41] &amp;quot;9577&amp;quot; &amp;quot;U&amp;quot;    &amp;quot;5&amp;quot;    &amp;quot;E9A&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;8&amp;quot;    &amp;quot;CC7&amp;quot;  &amp;quot;U&amp;quot;    &amp;quot;7&amp;quot;    &amp;quot;BA1&amp;quot; 
 ## [51] &amp;quot;U&amp;quot;    &amp;quot;4&amp;quot;    &amp;quot;E86&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;操作範例&#34;&gt;操作範例&lt;/h2&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;操作範例&#34;&gt;操作範例&lt;/h2&gt;
 &lt;h3 id=&#34;載入需要做分詞的資料&#34;&gt;載入需要做分詞的資料&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(rvest)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## Loading required package: xml2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;PTTNBA &amp;lt;- &amp;quot;https://www.ptt.cc/bbs/NBA/index.html&amp;quot;
-pttContent &amp;lt;- read_html(PTTNBA)
-post_title &amp;lt;- pttContent %&amp;gt;% html_nodes(&amp;quot;.title&amp;quot;) %&amp;gt;% html_text()
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(rvest)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Loading required package: xml2
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;PTTNBA &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://www.ptt.cc/bbs/NBA/index.html&amp;#34;&lt;/span&gt;
+pttContent &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;read_html&lt;/span&gt;(PTTNBA)
+post_title &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; pttContent &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;html_nodes&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;.title&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;html_text&lt;/span&gt;()
 post_title
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;\n\t\t\t\n\t\t\t\t[BOX ] Bulls 91:97 Magic &amp;lt;U+6578&amp;gt;&amp;lt;U+64DA&amp;gt;\n\t\t\t\n\t\t\t&amp;quot;                                                                                                                         
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;\n\t\t\t\n\t\t\t\t[BOX ] Bulls 91:97 Magic &amp;lt;U+6578&amp;gt;&amp;lt;U+64DA&amp;gt;\n\t\t\t\n\t\t\t&amp;quot;                                                                                                                         
 ##  [2] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+5916&amp;gt;&amp;lt;U+7D6E&amp;gt;] LBJ&amp;lt;U+5FD8&amp;gt;&amp;lt;U+4E0D&amp;gt;&amp;lt;U+4E86&amp;gt;2010&amp;lt;U+5E74&amp;gt;&amp;lt;U+96FB&amp;gt;&amp;lt;U+68AF&amp;gt;&amp;lt;U+9047&amp;gt;&amp;lt;U+5230&amp;gt;&amp;lt;U+7684&amp;gt;&amp;lt;U+4E00&amp;gt;&amp;lt;U+5E55&amp;gt;(&amp;lt;U+7B2C&amp;gt;&amp;lt;U+4E00&amp;gt;&amp;lt;U+6B21&amp;gt;&amp;lt;U+7A7F&amp;gt;&amp;lt;U+71B1&amp;gt;&amp;lt;U+706B&amp;gt;&amp;lt;U+7403&amp;gt;&amp;lt;U+8863&amp;gt;&amp;lt;U+56DE&amp;gt;&amp;lt;U+5230&amp;gt;&amp;lt;U+514B&amp;gt;&amp;lt;U+57CE&amp;gt;)\n\t\t\t\n\t\t\t&amp;quot;
 ##  [3] &amp;quot;\n\t\t\t\n\t\t\t\t(&amp;lt;U+5DF2&amp;gt;&amp;lt;U+88AB&amp;gt;namie810303&amp;lt;U+522A&amp;gt;&amp;lt;U+9664&amp;gt;) &amp;lt;cool34&amp;gt;1-5\n\t\t\t\n\t\t\t&amp;quot;                                                                                                         
 ##  [4] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+60C5&amp;gt;&amp;lt;U+5831&amp;gt;] James:&amp;lt;U+548C&amp;gt;&amp;lt;U+706B&amp;gt;&amp;lt;U+7BAD&amp;gt;&amp;lt;U+4EA4&amp;gt;&amp;lt;U+624B&amp;gt;&amp;lt;U+8981&amp;gt;&amp;lt;U+7279&amp;gt;&amp;lt;U+5225&amp;gt;&amp;lt;U+6CE8&amp;gt;&amp;lt;U+610F&amp;gt;&amp;lt;U+9632&amp;gt;&amp;lt;U+5B88&amp;gt;&amp;lt;U+6642&amp;gt;&amp;lt;U+5225&amp;gt;&amp;lt;U+72AF&amp;gt;&amp;lt;U+898F&amp;gt;\n\t\t\t\n\t\t\t&amp;quot;         
@@ -206,15 +152,10 @@ post_title
 ## [21] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+516C&amp;gt;&amp;lt;U+544A&amp;gt;] &amp;lt;U+677F&amp;gt;&amp;lt;U+898F&amp;gt;v6.2\n\t\t\t\n\t\t\t&amp;quot;                                                                                                                           
 ## [22] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+60C5&amp;gt;&amp;lt;U+5831&amp;gt;] SEASON Schedule &amp;lt;U+8CFD&amp;gt;&amp;lt;U+7A0B&amp;gt; December 18&amp;lt;U+2013&amp;gt;19\n\t\t\t\n\t\t\t&amp;quot;                                                                                         
 ## [23] &amp;quot;\n\t\t\t\n\t\t\t\t[&amp;lt;U+60C5&amp;gt;&amp;lt;U+5831&amp;gt;] NBA Standings (2018.12.12)\n\t\t\t\n\t\t\t&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;斷詞-1&#34;&gt;斷詞&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter &amp;lt;- worker()
-cutter[post_title] ## 不分行輸出
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;##   [1] &amp;quot;BOX&amp;quot;                                             
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;斷詞-1&#34;&gt;斷詞&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;()
+cutter[post_title] &lt;span style=&#34;color:#75715e&#34;&gt;## 不分行輸出&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##   [1] &amp;quot;BOX&amp;quot;                                             
 ##   [2] &amp;quot;Bulls&amp;quot;                                           
 ##   [3] &amp;quot;91&amp;quot;                                              
 ##   [4] &amp;quot;97&amp;quot;                                              
@@ -419,13 +360,9 @@ cutter[post_title] ## 不分行輸出
 ## [203] &amp;quot;NBA&amp;quot;                                             
 ## [204] &amp;quot;Standings&amp;quot;                                       
 ## [205] &amp;quot;2018.12.12&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter$bylines&amp;lt;-T
-cutter[post_title] ## 分行輸出
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## [[1]]
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;bylines&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt;T
+cutter[post_title] &lt;span style=&#34;color:#75715e&#34;&gt;## 分行輸出&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [[1]]
 ## [1] &amp;quot;BOX&amp;quot;                      &amp;quot;Bulls&amp;quot;                   
 ## [3] &amp;quot;91&amp;quot;                       &amp;quot;97&amp;quot;                      
 ## [5] &amp;quot;Magic&amp;quot;                    &amp;quot;\346\225\270\346\223\232&amp;quot;
@@ -608,15 +545,10 @@ cutter[post_title] ## 分行輸出
 ## [[23]]
 ## [1] &amp;quot;\346\203\205\345\240\261&amp;quot; &amp;quot;NBA&amp;quot;                     
 ## [3] &amp;quot;Standings&amp;quot;                &amp;quot;2018.12.12&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;分析斷詞後最常出現的詞彙&#34;&gt;分析斷詞後最常出現的詞彙&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cutter &amp;lt;- worker()
-sort(table(cutter[post_title]),decreasing = T)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;## 
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;分析斷詞後最常出現的詞彙&#34;&gt;分析斷詞後最常出現的詞彙&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cutter &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;worker&lt;/span&gt;()
+&lt;span style=&#34;color:#a6e22e&#34;&gt;sort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;table&lt;/span&gt;(cutter[post_title]),decreasing &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; T)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
 ##                         \346\203\205\345\240\261 
 ##                                                5 
 ##                                     \357\274\232 
@@ -961,10 +893,7 @@ sort(table(cutter[post_title]),decreasing = T)
 ##                                                1 
 ##                                     \357\274\214 
 ##                                                1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;參考資料&#34;&gt;參考資料&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/qinwf/jiebaR&#34;&gt;jiebaR GitHub&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://qinwenfeng.com/jiebaR/&#34;&gt;jiebaR 使用指南&lt;/a&gt;&lt;/li&gt;
