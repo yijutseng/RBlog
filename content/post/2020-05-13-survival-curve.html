@@ -2,7 +2,6 @@
 title: 用R畫存活曲線Survival curve
 author: Yi-Ju Tseng
 date: '2020-05-13'
-slug: survival-curve
 categories:
   - R language
 tags:
@@ -164,27 +163,27 @@ library(survminer)</code></pre>
 <p>以最簡單的單一族群存活區限為例，想要畫這個資料集中<strong>所有病人</strong>的存活曲線，其實就是不分組的意思，可將<strong>分組依據</strong>設定成單一數字<strong>1</strong>，如下列範例</p>
 <pre class="r"><code>fit&lt;- survfit(Surv(time, status) ~ 1, data = lung)
 ggsurvplot(fit)</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>以此類推，若想用性別做分組，也就是男生畫一條存活曲線，女生也畫一條，並放在同一張圖上，此時就將性別<code>sex</code>做為<strong>分組依據</strong>，如下範例</p>
 <pre class="r"><code>fit&lt;- survfit(Surv(time, status) ~ sex, data = lung)
 ggsurvplot(fit)</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="增加p-value" class="section level2">
 <h2>增加P value</h2>
 <p>將<code>ggsurvplot()</code>函數的<code>pval</code>參數設定為<code>TRUE</code>，即可在圖中加上兩組檢定的P value，這個P value也可以用<code>surv_pvalue()</code>函數取得，預設的檢定方法為<strong>log-rank test</strong>，若想要修改，也可以透過設定<code>pval.method</code>參數修改。</p>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE)</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>可進一步用<code>pval.coord = c(100, 0.03)</code>調整P value顯示位置</p>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03))</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="增加信賴區間" class="section level2">
 <h2>增加信賴區間</h2>
 <p>若生存曲線圖形要加上信賴區間的話，可設定<code>conf.int = TRUE</code></p>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
            conf.int = TRUE)</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="增加number-of-risk-表格" class="section level2">
 <h2>增加number of risk 表格</h2>
@@ -192,12 +191,12 @@ ggsurvplot(fit)</code></pre>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
            conf.int = TRUE,
            risk.table = TRUE)</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>若不想要number of risk 表格Y軸文字的顏色，可將<code>risk.table.y.text.col</code>參數設成FALSE</p>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
            conf.int = TRUE,
            risk.table = TRUE, risk.table.y.text.col = F)</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="格式微調" class="section level2">
 <h2>格式微調</h2>
@@ -231,7 +230,7 @@ ggsurvplot(fit)</code></pre>
                 tables.theme = clean_theme())
 res$table &lt;- res$table + theme(plot.title = element_text(size = 10))
 res</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="客製化p-value顯示方式" class="section level2">
 <h2>客製化P value顯示方式</h2>
@@ -258,7 +257,7 @@ resP&lt;-ggsurvplot(fit, pval = p, pval.coord = c(100, 0.03),
                  tables.theme = clean_theme())
 resP$table &lt;- resP$table + theme(plot.title = element_text(size = 10))
 resP</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="合併多張存活曲線圖形" class="section level2">
 <h2>合併多張存活曲線圖形</h2>
@@ -267,12 +266,12 @@ resP</code></pre>
 <pre class="r"><code>arrange_ggsurvplots(list(res, resP),
                     ncol=2, nrow=1, 
                     risk.table.height = 0.22)</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-12-1.png" width="960" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-12-1.png" width="960" /></p>
 <p>直放範例</p>
 <pre class="r"><code>arrange_ggsurvplots(list(res, resP),
                     ncol=1, nrow=2, 
                     risk.table.height = 0.22)</code></pre>
-<p><img src="2020-05-13-survival-curve_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="參考資料" class="section level2">
 <h2>參考資料</h2>

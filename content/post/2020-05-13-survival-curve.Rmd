@@ -2,7 +2,6 @@
 title: 用R畫存活曲線Survival curve
 author: Yi-Ju Tseng
 date: '2020-05-13'
-slug: survival-curve
 categories:
   - R language
 tags:
