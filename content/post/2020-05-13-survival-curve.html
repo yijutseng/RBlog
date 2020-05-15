@@ -19,7 +19,7 @@ tags:
 </div>
 <div id="用r畫存活曲線所需套件" class="section level2">
 <h2>用R畫存活曲線所需套件</h2>
-<p>在R中有蠻多畫存活曲線相關的套件，我的初版程式是使用<code>ggfortify</code>套件，但後來Editor要求要在圖上加<strong>Number at risk</strong>的資訊，查了一下發現<code>ggfortify</code>套件沒有這個功能，又不想手動加，就重新搜尋了資源，找到一篇介紹<code>survminer</code>套件的<a href="http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization">文章</a>，並完成完整的survival plot。</p>
+<p>在R中有蠻多畫存活曲線相關的套件，我的初版程式是使用<code>ggfortify</code>套件，但後來Editor要求要在圖上加<strong>Number at risk</strong>的資訊，查了一下發現<code>ggfortify</code>套件沒有這個功能，又不想手動加，就重新搜尋了資源，找到一篇介紹<code>survminer</code>套件的<a href="http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization">文章</a>，也是以<code>ggplot</code>套件為做圖基礎，方便之後調整格式，最後成功完成完整的survival plot。</p>
 <p>本介紹文以<a href="http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization">survminer R package: Survival Data Analysis and Visualization</a>為基礎，並衍伸其他條件設定的教學。</p>
 <p>以下介紹用<code>survminer</code>套件 (<a href="https://rpkgs.datanovia.com/survminer/index.html">官方說明文件</a>) 畫存活曲線的步驟</p>
 <p>首先載入<code>survminer</code>套件以及處理資料必須的<code>survival</code>套件 (需要套件中的<code>Surv()</code>函數)</p>
@@ -62,7 +62,7 @@ library(survminer)</code></pre>
 <li>meal.cal: 卡路里攝取量</li>
 <li>wt.loss: 過去六個月體重下降多少</li>
 </ul>
-<pre class="r"><code>knitr::kable(lung %&gt;% head())</code></pre>
+<pre class="r"><code>lung %&gt;% head()</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -164,27 +164,27 @@ library(survminer)</code></pre>
 <p>以最簡單的單一族群存活區限為例，想要畫這個資料集中<strong>所有病人</strong>的存活曲線，其實就是不分組的意思，可將<strong>分組依據</strong>設定成單一數字<strong>1</strong>，如下列範例</p>
 <pre class="r"><code>fit&lt;- survfit(Surv(time, status) ~ 1, data = lung)
 ggsurvplot(fit)</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>以此類推，若想用性別做分組，也就是男生畫一條存活曲線，女生也畫一條，並放在同一張圖上，此時就將性別<code>sex</code>做為<strong>分組依據</strong>，如下範例</p>
 <pre class="r"><code>fit&lt;- survfit(Surv(time, status) ~ sex, data = lung)
 ggsurvplot(fit)</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="增加p-value" class="section level2">
 <h2>增加P value</h2>
 <p>將<code>ggsurvplot()</code>函數的<code>pval</code>參數設定為<code>TRUE</code>，即可在圖中加上兩組檢定的P value，這個P value也可以用<code>surv_pvalue()</code>函數取得，預設的檢定方法為<strong>log-rank test</strong>，若想要修改，也可以透過設定<code>pval.method</code>參數修改。</p>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE)</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>可進一步用<code>pval.coord = c(100, 0.03)</code>調整P value顯示位置</p>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03))</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="增加信賴區間" class="section level2">
 <h2>增加信賴區間</h2>
 <p>若生存曲線圖形要加上信賴區間的話，可設定<code>conf.int = TRUE</code></p>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
            conf.int = TRUE)</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="增加number-of-risk-表格" class="section level2">
 <h2>增加number of risk 表格</h2>
@@ -192,27 +192,29 @@ ggsurvplot(fit)</code></pre>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
            conf.int = TRUE,
            risk.table = TRUE)</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>若不想要number of risk 表格Y軸文字的顏色，可將<code>risk.table.y.text.col</code>參數設成FALSE</p>
 <pre class="r"><code>ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03), 
            conf.int = TRUE,
            risk.table = TRUE, risk.table.y.text.col = F)</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="格式微調" class="section level2">
 <h2>格式微調</h2>
 <p>可分為存活曲線調整與number at risk表格調整，調整參數如下</p>
 <ul>
-<li><code>font.main = 12</code> 圖表標題字型大小</li>
+<li><code>font.main = 12</code> 圖表標題字型大小，也可進一步設定字型樣式，如<code>c(12,"bold.italic", "red")</code></li>
 <li><code>font.x =  12</code> 圖表X軸字型大小</li>
 <li><code>font.y = 12</code> 圖表Y軸字型大小</li>
 <li><code>fontsize = 3</code> Number at risk內文字型大小</li>
+<li><code>linetype = "strata"</code> 改變線條樣式，一個類別一種樣式，適合製作黑白圖形時，可搭配<code>palette = "grey"</code>參數</li>
 <li><code>break.time.by = 100</code> 每100天設一個標記</li>
 <li><code>font.tickslab = 10</code> 標記字型大小(100, 200, …等)</li>
+<li><code>legend.title = "Sex"</code> 將圖示標題改成大寫開頭的Sex</li>
 <li><code>legend.labs = c("Men", "Women")</code> 將圖示文字改為Men或是Women</li>
 <li><code>title="Format setting"</code> 加上圖形標題</li>
 <li><code>xlab="", ylab=""</code> X軸Y軸標題設定</li>
-<li><code>legend =  "none"</code> 不要圖示</li>
+<li><code>legend =  "none"</code> 不要圖示，因為Number at risk表格有了或是也可設定位置，如<code>legend = c(0.2, 0.2)</code></li>
 <li><code>tables.theme = clean_theme()</code> 設定Number at risk表格樣式</li>
 </ul>
 <p>若想改Number at risk表格的標題，只能用額外的程式碼<code>theme(plot.title = element_text(size = 10))</code>設定</p>
@@ -224,14 +226,18 @@ ggsurvplot(fit)</code></pre>
                 font.y = 12,
                 font.tickslab = 10,
                 fontsize = 3, 
+                linetype = &quot;strata&quot;,
                 break.time.by = 100,
+                legend.title = &quot;Sex&quot;,
                 legend.labs = c(&quot;Men&quot;, &quot;Women&quot;),
                 title=&quot;Format setting&quot;,
-                xlab=&quot;X Test&quot;, ylab=&quot;Y Test&quot;, legend =  &quot;none&quot;,
+                xlab=&quot;X Test&quot;, ylab=&quot;Y Test&quot;, 
+                legend =  &quot;none&quot;,
                 tables.theme = clean_theme())
-res$table &lt;- res$table + theme(plot.title = element_text(size = 10))
+res$table &lt;- res$table + 
+  theme(plot.title = element_text(size = 10))
 res</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="客製化p-value顯示方式" class="section level2">
 <h2>客製化P value顯示方式</h2>
@@ -244,21 +250,25 @@ if(p&lt;0.01){
 }
 
 resP&lt;-ggsurvplot(fit, pval = p, pval.coord = c(100, 0.03), 
-                 conf.int = TRUE,
-                 risk.table = TRUE, risk.table.y.text.col = F,
-                 font.main = 12,
-                 font.x =  12,
-                 font.y = 12,
-                 font.tickslab = 10,
-                 fontsize = 3, 
-                 break.time.by = 100,
-                 legend.labs = c(&quot;Men&quot;, &quot;Women&quot;),
-                 title=&quot;Customize P value&quot;,
-                 xlab=&quot;X Test&quot;, ylab=&quot;Y Test&quot;, legend =  &quot;none&quot;,
-                 tables.theme = clean_theme())
-resP$table &lt;- resP$table + theme(plot.title = element_text(size = 10))
+                conf.int = TRUE,
+                risk.table = TRUE, 
+                font.main = 12,
+                font.x =  12,
+                font.y = 12,
+                font.tickslab = 10,
+                fontsize = 3, 
+                linetype = &quot;strata&quot;,
+                break.time.by = 100,
+                legend.title = &quot;Sex&quot;,
+                legend.labs = c(&quot;Men&quot;, &quot;Women&quot;),
+                title=&quot;Format setting&quot;,
+                xlab=&quot;X Test&quot;, ylab=&quot;Y Test&quot;, 
+                legend =  &quot;none&quot;,
+                tables.theme = clean_theme())
+resP$table &lt;- resP$table + 
+  theme(plot.title = element_text(size = 10))
 resP</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="合併多張存活曲線圖形" class="section level2">
 <h2>合併多張存活曲線圖形</h2>
@@ -267,12 +277,12 @@ resP</code></pre>
 <pre class="r"><code>arrange_ggsurvplots(list(res, resP),
                     ncol=2, nrow=1, 
                     risk.table.height = 0.22)</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-12-1.png" width="960" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-13-1.png" width="960" /></p>
 <p>直放範例</p>
 <pre class="r"><code>arrange_ggsurvplots(list(res, resP),
                     ncol=1, nrow=2, 
                     risk.table.height = 0.22)</code></pre>
-<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="/post/2020-05-13-survival-curve_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="參考資料" class="section level2">
 <h2>參考資料</h2>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>使用tidymodels架構建立預測模型 // 有完沒完RRR</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="author" content="Yi-Ju Tseng">
+    
+    
+
+        <meta property="og:title" content="使用tidymodels架構建立預測模型" />
+    <meta property="og:description" content="" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en" />
+    <meta property="og:url" content="/post/tidymodel/" />
+    
+
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <link href="/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+    <link href="/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+    <meta name="generator" content="Hugo 0.70.0" />
+</head>
+
+
+<body>
+<div id="container">
+    <header id="header">
+    <div id="header-outer" class="outer">
+        <div id="header-inner" class="inner">
+            <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
+            <a id="logo" class="logo-text" href="/">有完沒完RRR</a>
+            <nav id="main-nav">
+                
+                <a class="main-nav-link" href="/categories/index.html">Categories</a>
+                
+                <a class="main-nav-link" href="/tags/index.html">Tags</a>
+                
+                <a class="main-nav-link" href="https://yjtseng.info/">About</a>
+                
+            </nav>
+            <nav id="sub-nav">
+                <div id="search-form-wrap">
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+
+    <section id="main" class="outer">
+        <article class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        <header class="article-header">
+            <h1 class="article-title" itemprop="name">使用tidymodels架構建立預測模型</h1>
+        </header>
+        
+        <div class="article-meta">
+            <a href="/post/tidymodel/" class="article-date">
+                <time datetime='2020-05-14T00:00:00.000&#43;00:00' itemprop="datePublished">2020-05-14</time>
+            </a>
+            
+            
+            <div class="post-categories">
+                <div class="article-category">
+                    
+                    
+                    <a class="article-category-link" href="//categories/r-language">R language</a>
+                    
+                </div>
+            </div>
+            
+            
+        </div>
+        <div class="article-entry" itemprop="articleBody">
+            
+
+
+<p>人工智慧/機器學習/資料探勘正夯，剛好<code>tidymodels</code>套件組的<a href="https://www.tidymodels.org/">官網</a>上線了，順勢介紹由<code>caret</code>套件的開發者<a href="https://twitter.com/topepos">Max Kuhn</a>所帶領開發的全新建模架構<code>tidymodels</code>。如同套件名稱，<code>tidymodels</code>套件組的撰寫邏輯和方法與<code>tidyverse</code>套件組合相同，若熟悉<code>dplyr</code>、<code>ggplot</code>等套件應該蠻好上手</p>
+<p>第一次使用前一樣要先安裝</p>
+<pre class="r"><code>install.packages(&quot;tidymodels&quot;)</code></pre>
+<p>安裝後即可載入</p>
+<pre class="r"><code>library(tidymodels)</code></pre>
+<p>載入建模過程需要的其他套件，<code>themis</code>套件是做unser sampling或over sampling前處理會用到，<code>vip</code>套件則是用在輸出隨機森林Random Forest模型中各變數的重要性。</p>
+<pre class="r"><code>library(themis) 
+library(vip)    </code></pre>
+<div id="建模範例資料以及刪除遺漏值" class="section level1">
+<h1>建模範例資料以及刪除遺漏值</h1>
+<p>這邊使用<code>mlbench</code>套件中的<code>PimaIndiansDiabetes2</code>資料集，該資料集的Outcome為是否有糖尿病diabetes，變數我就不一一介紹了，可輸入<code>?PimaIndiansDiabetes2</code>查看。</p>
+<pre class="r"><code>library(mlbench)
+data(&quot;PimaIndiansDiabetes2&quot;)</code></pre>
+<p>資料載入後，習慣先看一下各資料的型態跟資料筆數，可以發現有不少NA值</p>
+<pre class="r"><code>glimpse(PimaIndiansDiabetes2)</code></pre>
+<pre><code>## Rows: 768
+## Columns: 9
+## $ pregnant &lt;dbl&gt; 6, 1, 8, 1, 0, 5, 3, 10, 2, 8, 4, 10, 10, 1, 5, 7, 0, 7, 1...
+## $ glucose  &lt;dbl&gt; 148, 85, 183, 89, 137, 116, 78, 115, 197, 125, 110, 168, 1...
+## $ pressure &lt;dbl&gt; 72, 66, 64, 66, 40, 74, 50, NA, 70, 96, 92, 74, 80, 60, 72...
+## $ triceps  &lt;dbl&gt; 35, 29, NA, 23, 35, NA, 32, NA, 45, NA, NA, NA, NA, 23, 19...
+## $ insulin  &lt;dbl&gt; NA, NA, NA, 94, 168, NA, 88, NA, 543, NA, NA, NA, NA, 846,...
+## $ mass     &lt;dbl&gt; 33.6, 26.6, 23.3, 28.1, 43.1, 25.6, 31.0, 35.3, 30.5, NA, ...
+## $ pedigree &lt;dbl&gt; 0.627, 0.351, 0.672, 0.167, 2.288, 0.201, 0.248, 0.134, 0....
+## $ age      &lt;dbl&gt; 50, 31, 32, 21, 33, 30, 26, 29, 53, 54, 30, 34, 57, 59, 51...
+## $ diabetes &lt;fct&gt; pos, neg, pos, neg, pos, neg, pos, neg, pos, pos, neg, pos...</code></pre>
+<p>在刪除不全的資料前，先看一下有糖尿病diabetes跟沒有糖尿病的人數與比例，大概是65:35，有些不平均不過還行。</p>
+<pre class="r"><code>PimaIndiansDiabetes2 %&gt;% 
+  count(diabetes) %&gt;% 
+  mutate(prop = n/sum(n))</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   diabetes     n  prop
+##   &lt;fct&gt;    &lt;int&gt; &lt;dbl&gt;
+## 1 neg        500 0.651
+## 2 pos        268 0.349</code></pre>
+<p>通常有NA的資料不太會留，因為某些演算法不能用有NA的資料建模，雖然<code>tidymodels</code>有其他方法可以將NA資料去除，但為了後續基礎統計方便，如果要刪NA我還是習慣先全數刪除。</p>
+<pre class="r"><code>PimaIndiansDiabetes2&lt;-
+  PimaIndiansDiabetes2 %&gt;% 
+  filter(complete.cases(PimaIndiansDiabetes2))</code></pre>
+<p>刪除NA後資料筆數有些微改變，但大概還是6x:3x的比例</p>
+<pre class="r"><code>PimaIndiansDiabetes2 %&gt;% 
+  count(diabetes) %&gt;% 
+  mutate(prop = n/sum(n))</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   diabetes     n  prop
+##   &lt;fct&gt;    &lt;int&gt; &lt;dbl&gt;
+## 1 neg        262 0.668
+## 2 pos        130 0.332</code></pre>
+<p>完成初步資料排除後，就可以開始基礎統計分析與建模，基礎統計分析可看其他文章，這篇著重在建模。</p>
+</div>
+<div id="訓練調整與驗證模型效能策略" class="section level1">
+<h1>訓練/調整與驗證模型效能策略</h1>
+<p>JAMA在2019年刊登一篇有趣的文章，名稱為How to Read Articles That Use Machine Learning - Users’ Guides to the Medical Literature <a href="https://jamanetwork.com/journals/jama/fullarticle/2754798">下載</a>，內文中有提到在機器學習時代，如何建立與預測模型，跟之前又有什麼不同，並用下圖來解釋差異</p>
+<p><img src="https://cdn.jamanetwork.com/ama/content_public/journal/jama/938259/jug190001f2.png?Expires=2147483647&amp;Signature=cU6lP2ZYSdn9MyOakMWobXQF2h6LSPCExTP1q7x74zRH7gDgkRSqshXWADmcQUz0XJVK~aVPK3cb-~shWQ6vd6EF4FwIcR8NBXMlGq1sLDR5dXLwpb~qoEYzXvg03zCz2l0AHmdlFxy4IGYGG3ilBfuPh1SCweskxtaUfsWqGsUcwc6FNo3KjaR9j58eJeZOnBEr6a2OF2m~XlEOnT1W3vaYn2-fuGZLAQR88XcUGWp1LYgc6GnDTO1s7zj5m9mYhlL-CeOaLXQNGrSl6fAvw6LisZW-f2tChvIaDfCd4vuuNw-Q1V6sjm-jgUehMt8wjrc61YW6WqyIC9mF6VGzzg__&amp;Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" /><!-- -->
+<a href="https://jamanetwork.com/journals/jama/fullarticle/2754798">圖片來源</a></p>
+<p>在所謂的“非”機器學習模型(圖上半部)，通常可分訓練組與測試組，在作者定義為Development set和Validation set，重要的概念是訓練模型時，一定要記得先把測試組資料分出來，不可以用到這部分資料來訓練模型，最後才能得到真實的預測結果 (完全沒偷看答案的意思)。</p>
+<p>在圖下半部，作者將此法命名為<strong>3-step process</strong>，主要差異是在訓練模型時多了一組<strong>參數調整資料集</strong>，原因是因為在多種機器學習模型中，有可調整的參數，在圖中稱為Hyperparameters，為了讓調整效果更好，會將訓練組再切分成小組，用來決定<strong>最佳參數</strong>，決定好以後，才用所有訓練組資料搭配最佳參數訓練模型，最後再用測試組做測試。</p>
+<p>以下用邏輯迴歸歸Logistic Regression示範此圖上半部<strong>不調參數</strong>的作法，以及用隨機森林Random Forest示範此圖下半部<strong>需要調整參數</strong>的作法。</p>
+</div>
+<div id="訓練組測試組資料分割" class="section level1">
+<h1>訓練組、測試組資料分割</h1>
+<p>不管要不要調參數，都需要分割訓練組與測試組，因此在進入兩個範例前，先將訓練組與測試組切好。</p>
+<p>用<code>initial_split()</code>函數將資料分成訓練組與測試組，第一個參數放資料，第二個參數<code>prop</code>放訓練組測試組比例，第三個參數<code>strata</code>放分組抽樣依據。需要設定分組抽樣依據是因為若是整批資料隨機抽樣，很有可能在測試組或是訓練組會少一整個組別的資料(剛好都沒抽到的意思)，所以就分組，個別抽某個比例的人當訓練組，剩下的就當測試組。切割完後，用<code>training()</code>和<code>testing()</code>函數將訓練組測試組正式分開。</p>
+<p>這邊要特別注意的是，因為<code>initial_split()</code>函數有隨機的概念，為了讓每次的實驗結果相同，我們會在有隨機事件前設定seed，作為隨機的依據，讓隨機每次都一樣，才不會每次跑都是不一樣的結果，這樣就無法產生可重複的實驗結果。</p>
+<pre class="r"><code>set.seed(123)
+splits&lt;- initial_split(PimaIndiansDiabetes2, 
+                       prop=(3/4),
+                       strata = diabetes)
+DM_train&lt;- training(splits)
+DM_test&lt;- testing(splits)</code></pre>
+<p>分組完後，查看訓練組的生病比例</p>
+<pre class="r"><code>DM_train %&gt;% 
+  count(diabetes) %&gt;% 
+  mutate(prop = n/sum(n))</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   diabetes     n  prop
+##   &lt;fct&gt;    &lt;int&gt; &lt;dbl&gt;
+## 1 neg        197 0.668
+## 2 pos         98 0.332</code></pre>
+<p>查看測試組的生病比例</p>
+<pre class="r"><code>DM_test %&gt;% 
+  count(diabetes) %&gt;% 
+  mutate(prop = n/sum(n))</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   diabetes     n  prop
+##   &lt;fct&gt;    &lt;int&gt; &lt;dbl&gt;
+## 1 neg         65 0.670
+## 2 pos         32 0.330</code></pre>
+</div>
+<div id="建立資料前處理食譜" class="section level1">
+<h1>建立資料前處理“食譜”</h1>
+<p>資料前處理也是建立兩種模型都必須經歷的方法，因此提到最前方說明，前處理有很多方法，包括將類別變項轉為虛擬變項(dummy variables)，數值變項取log，數值變項正規化，以及日期資料處理等。</p>
+<p>首先使用<code>recipe()</code>函數，設定模型訓練公式<code>diabetes ~ .</code>以及訓練用資料<code>DM_train</code>，要注意這邊只能用<strong>訓練組資料</strong>，不能用全部的資料。公式的意思是用<code>~</code>前方的<code>diabetes</code>當成outcome (想要預測的值)，<code>~</code>後方的<code>.</code>代表其他所有剩下的欄位都當成predictors (又稱variables 或是 features，為預測基礎)。</p>
+<p>完成模型公式與資料設定後，就開始逐一加上想要做的資料前處理方法，在這邊列舉幾項我認為以此案例可能需要做的前處理</p>
+<ul>
+<li><code>step_naomit(everything(), skip = TRUE)</code> 如果沒有在一開始將NA資料刪掉，通常要去除NA值</li>
+<li><code>step_rose(diabetes)</code> 其實這個資料有病沒病的人沒差太多，只是呈現一下可以在此步驟設定oversampleing或是undersampling，這邊是指使用ROSE作為oversampling的演算法</li>
+<li><code>step_dummy(all_nominal(), -all_outcomes())</code> 將所有的類別變項轉成虛擬變項，除了Outcome以外</li>
+<li><code>step_zv(all_predictors())</code> 若有變項都是一樣的值，刪掉。舉例來說，若是整個資料都是女性，那性別欄位就不用拿來當作features了</li>
+<li><code>step_normalize(all_predictors())</code> 將所有數值變項正規化</li>
+</ul>
+<p>還有很多其他的前處理方法，可以參考<code>recipe()</code>函數的<a href="https://recipes.tidymodels.org/reference/recipe.html">說明文件</a></p>
+<pre class="r"><code>gen_recipe &lt;- 
+  recipe(diabetes ~ ., data = DM_train) %&gt;% 
+  step_dummy(all_nominal(), -all_outcomes()) %&gt;% 
+  step_zv(all_predictors()) %&gt;% 
+  step_normalize(all_predictors())
+summary(gen_recipe)</code></pre>
+<pre><code>## # A tibble: 9 x 4
+##   variable type    role      source  
+##   &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;   
+## 1 pregnant numeric predictor original
+## 2 glucose  numeric predictor original
+## 3 pressure numeric predictor original
+## 4 triceps  numeric predictor original
+## 5 insulin  numeric predictor original
+## 6 mass     numeric predictor original
+## 7 pedigree numeric predictor original
+## 8 age      numeric predictor original
+## 9 diabetes nominal outcome   original</code></pre>
+</div>
+<div id="邏輯迴歸logistic-regression模型建立與效能評估範例" class="section level1">
+<h1>邏輯迴歸Logistic Regression模型建立與效能評估範例</h1>
+<div id="step-1-設定用邏輯迴建立模型" class="section level2">
+<h2>Step 1 設定用邏輯迴建立模型</h2>
+<p>這邊以邏輯迴歸為例，用<code>logistic_reg()</code>函數與<code>set_engine("glm")</code>設定模型建立演算法為邏輯迴歸</p>
+<pre class="r"><code>lr_mod &lt;- 
+  logistic_reg() %&gt;% 
+  set_engine(&quot;glm&quot;)</code></pre>
+</div>
+<div id="step-2-設定建模流程workflow" class="section level2">
+<h2>Step 2 設定建模流程workflow</h2>
+<p>workflow將建模 (model)與資料前處理方法 (recipe)串成單一工作流程workflow</p>
+<pre class="r"><code>lr_wflow &lt;- 
+  workflow() %&gt;% 
+  add_model(lr_mod) %&gt;% 
+  add_recipe(gen_recipe)
+lr_wflow</code></pre>
+<pre><code>## == Workflow =======================================================================================
+## Preprocessor: Recipe
+## Model: logistic_reg()
+## 
+## -- Preprocessor -----------------------------------------------------------------------------------
+## 3 Recipe Steps
+## 
+## * step_dummy()
+## * step_zv()
+## * step_normalize()
+## 
+## -- Model ------------------------------------------------------------------------------------------
+## Logistic Regression Model Specification (classification)
+## 
+## Computational engine: glm</code></pre>
+</div>
+<div id="step-3-訓練模型" class="section level2">
+<h2>Step 3 訓練模型</h2>
+<p>使用剛剛串起來的工作流程，加上<code>fit()</code>函數，完成建模，並用<code>pull_workflow_fit()</code>與<code>tidy()</code>呈現建模結果，注意這裡也是只能用<strong>訓練組資料</strong><code>DM_train</code></p>
+<pre class="r"><code>lr_fit &lt;- 
+  lr_wflow %&gt;% 
+  fit(data=DM_train)
+
+lr_fit %&gt;% 
+  pull_workflow_fit() %&gt;% 
+  tidy()</code></pre>
+<pre><code>## # A tibble: 9 x 5
+##   term        estimate std.error statistic       p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+## 1 (Intercept)  -0.940      0.158   -5.97   0.00000000244
+## 2 pregnant      0.223      0.197    1.13   0.257        
+## 3 glucose       1.07       0.195    5.49   0.0000000405 
+## 4 pressure     -0.116      0.162   -0.715  0.474        
+## 5 triceps      -0.0127     0.202   -0.0629 0.950        
+## 6 insulin      -0.0926     0.175   -0.530  0.596        
+## 7 mass          0.500      0.211    2.37   0.0179       
+## 8 pedigree      0.309      0.166    1.86   0.0631       
+## 9 age           0.392      0.208    1.88   0.0601</code></pre>
+</div>
+<div id="step-4-使用模型與測試組資料驗證模型效能" class="section level2">
+<h2>Step 4 使用模型與測試組資料驗證模型效能</h2>
+<p>使用<code>predict()</code>函數，用剛剛訓練出來的模型<code>lr_fit</code>以及一開始分出的測試組<code>DM_test</code>產生預測結果，注意這邊要用測試組資料</p>
+<pre class="r"><code>lr_pred &lt;- lr_fit %&gt;% 
+  predict(DM_test)
+lr_pred</code></pre>
+<pre><code>## # A tibble: 97 x 1
+##    .pred_class
+##    &lt;fct&gt;      
+##  1 pos        
+##  2 neg        
+##  3 neg        
+##  4 pos        
+##  5 pos        
+##  6 pos        
+##  7 neg        
+##  8 neg        
+##  9 neg        
+## 10 neg        
+## # ... with 87 more rows</code></pre>
+<p>將預測結果與答案結合</p>
+<pre class="r"><code>lr_pred &lt;- lr_fit %&gt;%
+  predict(DM_test) %&gt;% 
+  bind_cols(DM_test %&gt;% select(diabetes)) 
+lr_pred</code></pre>
+<pre><code>## # A tibble: 97 x 2
+##    .pred_class diabetes
+##    &lt;fct&gt;       &lt;fct&gt;   
+##  1 pos         pos     
+##  2 neg         pos     
+##  3 neg         neg     
+##  4 pos         pos     
+##  5 pos         pos     
+##  6 pos         pos     
+##  7 neg         neg     
+##  8 neg         neg     
+##  9 neg         neg     
+## 10 neg         neg     
+## # ... with 87 more rows</code></pre>
+<p>使用<code>accuracy()</code>函數，輸入預測結果與真實答案計算正確率</p>
+<pre class="r"><code>lr_pred %&gt;% 
+  accuracy(truth = diabetes, 
+          .pred_class)</code></pre>
+<pre><code>## # A tibble: 1 x 3
+##   .metric  .estimator .estimate
+##   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+## 1 accuracy binary         0.814</code></pre>
+<p>但很多時候我們需要Area under the ROC curve，此時我們需要的不是直接pos或neg的結果，我們需要的是連續性的預測數值，這邊可將<code>predict()</code>函數的<code>type</code>參數設定為prob，即回傳各組預測值</p>
+<pre class="r"><code>lr_pred &lt;- lr_fit %&gt;%
+  predict(DM_test,
+          type = &quot;prob&quot;)%&gt;% 
+  bind_cols(DM_test %&gt;% select(diabetes)) 
+lr_pred</code></pre>
+<pre><code>## # A tibble: 97 x 3
+##    .pred_neg .pred_pos diabetes
+##        &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;   
+##  1    0.180     0.820  pos     
+##  2    0.648     0.352  pos     
+##  3    0.850     0.150  neg     
+##  4    0.0683    0.932  pos     
+##  5    0.125     0.875  pos     
+##  6    0.126     0.874  pos     
+##  7    0.854     0.146  neg     
+##  8    0.963     0.0366 neg     
+##  9    0.824     0.176  neg     
+## 10    0.733     0.267  neg     
+## # ... with 87 more rows</code></pre>
+<p>得到各組預測值後，可用<code>roc_curve()</code>畫ROC curve</p>
+<pre class="r"><code>lr_pred %&gt;% 
+  roc_curve(truth = diabetes, 
+            .pred_pos) %&gt;% 
+  autoplot()</code></pre>
+<p><img src="/post/2020-05-14-tidymodel_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>當然也能用<code>roc_auc()</code>算Area under the ROC curve</p>
+<pre class="r"><code>lr_pred %&gt;% 
+  roc_auc(truth = diabetes, 
+          .pred_pos)</code></pre>
+<pre><code>## # A tibble: 1 x 3
+##   .metric .estimator .estimate
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+## 1 roc_auc binary         0.921</code></pre>
+<p>以上就是使用邏輯迴歸建立模型與效能測試流程，可以發現完全沒有調整任何參數，因基本邏輯迴歸不用調參數。</p>
+</div>
+</div>
+<div id="隨機森林random-forest模型建立參數調整與效能評估範例" class="section level1">
+<h1>隨機森林Random Forest模型建立、參數調整與效能評估範例</h1>
+<div id="step-1-設定平行處理" class="section level2">
+<h2>Step 1 設定平行處理</h2>
+<p>因為模型參數調整需要一直不斷建立模型與測試，所以設定平行處理會快一些，<code>tidymodels</code>套組支援平行處理，細節可參考<a href="https://tune.tidymodels.org/articles/extras/optimizations.html">官方文件</a></p>
+<pre class="r"><code>all_cores &lt;- parallel::detectCores(logical = FALSE)
+library(doParallel)
+cl &lt;- makePSOCKcluster(all_cores)
+registerDoParallel(cl)</code></pre>
+</div>
+<div id="step-2-設定用隨機森林建立模型以及要調整的參數" class="section level2">
+<h2>Step 2 設定用隨機森林建立模型以及要調整的參數</h2>
+<p>這邊以隨機森林為例，用<code>rand_forest()</code>函數與<code>set_engine("ranger")</code>設定模型建立演算法為基於<code>ranger</code>套件的隨機森林演算法，因為隨機森林有迴歸版與分類版，因此使用<code>set_mode("classification")</code>設定我們要用分類演算法。</p>
+<p>在隨機森林<code>rand_forest()</code>函數中，可設定幾個參數，說明如下:</p>
+<ul>
+<li>mtry: 在切割節點時，隨機抽取n個特徵，並從中選最適合的特徵當作節點</li>
+<li>min_n: 每個節點的最小資料數，如果設為10，當該節點的資料剩十筆或更少時，就不會再切割</li>
+<li>trees: 建模要用幾棵樹</li>
+</ul>
+<p>在這個範例中，我將要建幾棵樹設定為1000，其他兩個參數則是想用交叉驗證法(Cross Validation)來調整，因此將想調的參數值設為<code>tune()</code>，表示這些參數要調，不想在現階段指定。</p>
+<pre class="r"><code>rf_mod &lt;- 
+  rand_forest(mtry = tune(), min_n = tune(), 
+              trees = 1000) %&gt;% 
+  set_engine(&quot;ranger&quot;) %&gt;% 
+  set_mode(&quot;classification&quot;)
+
+rf_mod</code></pre>
+<pre><code>## Random Forest Model Specification (classification)
+## 
+## Main Arguments:
+##   mtry = tune()
+##   trees = 1000
+##   min_n = tune()
+## 
+## Computational engine: ranger</code></pre>
+</div>
+<div id="step-3-設定建模流程workflow" class="section level2">
+<h2>Step 3 設定建模流程workflow</h2>
+<p>建模流程同邏輯迴歸，將模型與資料前處理方法串接成一個工作流程</p>
+<pre class="r"><code>rf_wflow &lt;- workflow() %&gt;%
+  add_model(rf_mod) %&gt;%
+  add_recipe(gen_recipe)</code></pre>
+</div>
+<div id="step-4-參數調整組資料分割" class="section level2">
+<h2>Step 4 參數調整組資料分割</h2>
+<p>剛剛有提到我想要調整的參數為mtry以及min_n，調整的方法為交叉驗證法(Cross Validation)，這邊用<code>tidymodels</code>官網的圖來說明架構</p>
+<p><img src="https://www.tidymodels.org/start/resampling/img/resampling.svg" /><!-- -->
+<a href="https://www.tidymodels.org/start/resampling/">圖片來源</a></p>
+<p>在圖中，首先將所有資料分成測試組訓練組，也就是本篇文章一開始做的切割，為了調整參數，我們會再切訓練組的資料，做為測試各參數效能的<strong>調整訓練</strong>以及<strong>調整測試</strong>。</p>
+<p>切割<strong>參數調整組</strong>有很多種方法，可以用<strong>bootstrap</strong>法隨機抽，也可使用這邊的<strong>交叉驗證</strong>範例，交叉驗證的概念如下圖的下半部</p>
+<p><img src="https://www.frontiersin.org/files/Articles/411217/fmicb-09-02393-HTML/image_m/fmicb-09-02393-g002.jpg" /><!-- -->
+<a href="https://doi.org/10.3389/fmicb.2018.02393">圖片來源</a></p>
+<p>圖片下半部為5-fold Cross Validation的示意圖，可以看到每份資料都會被拿來當作<strong>調整訓練</strong>以及<strong>調整測試</strong>組，經過幾次測試後，用<strong>調整測試</strong>組的效能來決定一組最佳參數。</p>
+<p>這邊我們使用10-fold Cross Validation為例，先用<code>vfold_cv()</code>函數，設定分割基準為<strong>訓練組</strong>，要分10份<code>v=10</code>，分割時一樣要注意糖尿病的比例不能差太多</p>
+<pre class="r"><code>set.seed(345)
+folds &lt;- vfold_cv(DM_train, v = 10,
+                  strata = diabetes)
+folds</code></pre>
+<pre><code>## #  10-fold cross-validation using stratification 
+## # A tibble: 10 x 2
+##    splits           id    
+##    &lt;named list&gt;     &lt;chr&gt; 
+##  1 &lt;split [265/30]&gt; Fold01
+##  2 &lt;split [265/30]&gt; Fold02
+##  3 &lt;split [265/30]&gt; Fold03
+##  4 &lt;split [265/30]&gt; Fold04
+##  5 &lt;split [265/30]&gt; Fold05
+##  6 &lt;split [265/30]&gt; Fold06
+##  7 &lt;split [265/30]&gt; Fold07
+##  8 &lt;split [266/29]&gt; Fold08
+##  9 &lt;split [267/28]&gt; Fold09
+## 10 &lt;split [267/28]&gt; Fold10</code></pre>
+</div>
+<div id="step-5-調整參數" class="section level2">
+<h2>Step 5 調整參數</h2>
+<p>完成分割後，可將之前的建模流程串接至<code>tune_grid()</code>函數，這個函數可以設定參數調整的方法，首先是調整要用的<strong>參數調整組資料</strong><code>resamples = folds</code>，要測試幾組參數<code>grid = 50</code>，測試時要用什麼效能評估方式，這邊設定為Area under the ROC curve <code>metrics = metric_set(roc_auc)</code>。因為要重複訓練測試多次，因此這程式碼執行會需要一些時間。</p>
+<pre class="r"><code>rf_res &lt;- 
+  rf_wflow %&gt;% 
+  tune_grid(
+    resamples = folds,
+    grid = 50,
+    metrics = metric_set(roc_auc),
+    control=control_resamples(save_pred = TRUE)
+    )</code></pre>
+<p>執行完後，可用<code>collect_metrics()</code>查看各參數效能</p>
+<pre class="r"><code>rf_res %&gt;%
+  collect_metrics()</code></pre>
+<pre><code>## # A tibble: 49 x 7
+##     mtry min_n .metric .estimator  mean     n std_err
+##    &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+##  1     1     5 roc_auc binary     0.799    10  0.0247
+##  2     1    15 roc_auc binary     0.805    10  0.0249
+##  3     1    27 roc_auc binary     0.806    10  0.0258
+##  4     2    11 roc_auc binary     0.803    10  0.0219
+##  5     2    21 roc_auc binary     0.809    10  0.0232
+##  6     2    23 roc_auc binary     0.806    10  0.0239
+##  7     2    29 roc_auc binary     0.812    10  0.0236
+##  8     2    32 roc_auc binary     0.813    10  0.0246
+##  9     2    35 roc_auc binary     0.811    10  0.0243
+## 10     2    36 roc_auc binary     0.810    10  0.0254
+## # ... with 39 more rows</code></pre>
+<p>也可畫個圖呈現參數調整對效能的影響，由圖可知在這個範例中min_n越大效能越好</p>
+<pre class="r"><code>rf_res %&gt;%
+  collect_metrics() %&gt;%
+  mutate(mtry = factor(mtry)) %&gt;%
+  ggplot(aes(min_n, mean, color = mtry)) + 
+  geom_line(size=1) +
+  scale_x_log10(labels = scales::label_number()) </code></pre>
+<p><img src="/post/2020-05-14-tidymodel_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p>搭配<code>show_best()</code>函數可呈現Area under the ROC curve最優的幾組參數</p>
+<pre class="r"><code>rf_res %&gt;%
+  show_best(&quot;roc_auc&quot;)</code></pre>
+<pre><code>## # A tibble: 5 x 7
+##    mtry min_n .metric .estimator  mean     n std_err
+##   &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+## 1     3    37 roc_auc binary     0.821    10  0.0228
+## 2     3    33 roc_auc binary     0.817    10  0.0221
+## 3     4    33 roc_auc binary     0.813    10  0.0215
+## 4     2    32 roc_auc binary     0.813    10  0.0246
+## 5     2    29 roc_auc binary     0.812    10  0.0236</code></pre>
+</div>
+<div id="step-6-使用最佳參數與訓練組資料建立最終模型" class="section level2">
+<h2>Step 6 使用最佳參數與訓練組資料建立最終模型</h2>
+<p>在完成參數調整後，我們會使用最佳參數(意即Area under the ROC curve最高的一組參數)來建立最終模型，用<code>select_best()</code>函數可選出最好的一組參數<code>best_rf</code></p>
+<pre class="r"><code>best_rf &lt;- rf_res %&gt;%
+  select_best(&quot;roc_auc&quot;)
+best_rf</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##    mtry min_n
+##   &lt;int&gt; &lt;int&gt;
+## 1     3    37</code></pre>
+<p>為了將參數節合至原有的建模流程，可用<code>finalize_workflow()</code>函數輸入剛剛選出的最佳參數<code>best_rf</code>，建立一個<strong>最終建模流程</strong></p>
+<pre class="r"><code>final_wflow &lt;- 
+  rf_wflow %&gt;% 
+  finalize_workflow(best_rf)
+
+final_wflow</code></pre>
+<pre><code>## == Workflow =======================================================================================
+## Preprocessor: Recipe
+## Model: rand_forest()
+## 
+## -- Preprocessor -----------------------------------------------------------------------------------
+## 3 Recipe Steps
+## 
+## * step_dummy()
+## * step_zv()
+## * step_normalize()
+## 
+## -- Model ------------------------------------------------------------------------------------------
+## Random Forest Model Specification (classification)
+## 
+## Main Arguments:
+##   mtry = 3
+##   trees = 1000
+##   min_n = 37
+## 
+## Computational engine: ranger</code></pre>
+<p><strong>最終建模流程</strong>建立後，即可用<code>fit()</code>建模，注意這邊用的是完整的訓練資料<code>DM_train</code></p>
+<pre class="r"><code>final_rf_model &lt;- 
+  final_wflow %&gt;%
+  fit(data = DM_train) 
+
+final_rf_model</code></pre>
+<pre><code>## == Workflow [trained] =============================================================================
+## Preprocessor: Recipe
+## Model: rand_forest()
+## 
+## -- Preprocessor -----------------------------------------------------------------------------------
+## 3 Recipe Steps
+## 
+## * step_dummy()
+## * step_zv()
+## * step_normalize()
+## 
+## -- Model ------------------------------------------------------------------------------------------
+## Ranger result
+## 
+## Call:
+##  ranger::ranger(formula = formula, data = data, mtry = ~3L, num.trees = ~1000,      min.node.size = ~37L, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
+## 
+## Type:                             Probability estimation 
+## Number of trees:                  1000 
+## Sample size:                      295 
+## Number of independent variables:  8 
+## Mtry:                             3 
+## Target node size:                 37 
+## Variable importance mode:         none 
+## Splitrule:                        gini 
+## OOB prediction error (Brier s.):  0.1563103</code></pre>
+</div>
+<div id="step-7-用測試組資料驗證最終模型效能" class="section level2">
+<h2>Step 7 用測試組資料驗證最終模型效能</h2>
+<p>使用<code>predict()</code>函數，用剛剛訓練出來的模型<code>final_rf_model</code>以及一開始分出的測試組<code>DM_test</code>產生預測結果，注意這邊要用測試組資料</p>
+<pre class="r"><code>rf_pred &lt;- final_rf_model %&gt;% 
+  predict(DM_test)
+rf_pred</code></pre>
+<pre><code>## # A tibble: 97 x 1
+##    .pred_class
+##    &lt;fct&gt;      
+##  1 pos        
+##  2 neg        
+##  3 neg        
+##  4 pos        
+##  5 pos        
+##  6 pos        
+##  7 neg        
+##  8 neg        
+##  9 neg        
+## 10 neg        
+## # ... with 87 more rows</code></pre>
+<p>將預測結果與答案結合</p>
+<pre class="r"><code>rf_pred &lt;- final_rf_model %&gt;%
+  predict(DM_test) %&gt;% 
+  bind_cols(DM_test %&gt;% select(diabetes)) 
+rf_pred</code></pre>
+<pre><code>## # A tibble: 97 x 2
+##    .pred_class diabetes
+##    &lt;fct&gt;       &lt;fct&gt;   
+##  1 pos         pos     
+##  2 neg         pos     
+##  3 neg         neg     
+##  4 pos         pos     
+##  5 pos         pos     
+##  6 pos         pos     
+##  7 neg         neg     
+##  8 neg         neg     
+##  9 neg         neg     
+## 10 neg         neg     
+## # ... with 87 more rows</code></pre>
+<p>使用預測結果與真實答案計算正確率</p>
+<pre class="r"><code>rf_pred %&gt;% 
+  accuracy(truth = diabetes, 
+          .pred_class)</code></pre>
+<pre><code>## # A tibble: 1 x 3
+##   .metric  .estimator .estimate
+##   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+## 1 accuracy binary         0.804</code></pre>
+<p>但很多時候我們需要Area under the ROC curve，此時我們需要的不是直接pos或neg的結果，我們需要的是連續性的預測數值，這邊可將<code>predict()</code>函數的<code>type</code>參數設定為prob，即回傳各組預測值</p>
+<pre class="r"><code>rf_pred &lt;- final_rf_model %&gt;%
+  predict(DM_test,
+          type = &quot;prob&quot;)%&gt;% 
+  bind_cols(DM_test %&gt;% select(diabetes)) 
+rf_pred</code></pre>
+<pre><code>## # A tibble: 97 x 3
+##    .pred_neg .pred_pos diabetes
+##        &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;   
+##  1     0.339    0.661  pos     
+##  2     0.514    0.486  pos     
+##  3     0.653    0.347  neg     
+##  4     0.148    0.852  pos     
+##  5     0.117    0.883  pos     
+##  6     0.194    0.806  pos     
+##  7     0.851    0.149  neg     
+##  8     0.955    0.0446 neg     
+##  9     0.802    0.198  neg     
+## 10     0.632    0.368  neg     
+## # ... with 87 more rows</code></pre>
+<p>得到各組預測值後，可用<code>roc_curve()</code>畫ROC curve</p>
+<pre class="r"><code>rf_pred %&gt;% 
+  roc_curve(truth = diabetes, 
+            .pred_pos) %&gt;% 
+  autoplot()</code></pre>
+<p><img src="/post/2020-05-14-tidymodel_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<p>當然也能用<code>roc_auc()</code>算Area under the ROC curve</p>
+<pre class="r"><code>rf_pred %&gt;% 
+  roc_auc(truth = diabetes, 
+          .pred_pos)</code></pre>
+<pre><code>## # A tibble: 1 x 3
+##   .metric .estimator .estimate
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+## 1 roc_auc binary         0.913</code></pre>
+<p>以上就是使用隨機森林建立模型、調整參數以及與效能測試流程，多了使用交叉驗證法調整參數的步驟。</p>
+</div>
+</div>
+
+        </div>
+
+        
+        
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+        <script>
+            (function() {
+                var $toc = $('#TableOfContents');
+                if ($toc.length > 0) {
+                    var $window = $(window);
+
+                    function onScroll(){
+                        var currentScroll = $window.scrollTop();
+                        var h = $('.article-entry h1, .article-entry h2, .article-entry h3, .article-entry h4, .article-entry h5, .article-entry h6');
+                        var id = "";
+                        h.each(function (i, e) {
+                            e = $(e);
+                            if (e.offset().top - 10 <= currentScroll) {
+                                id = e.attr('id');
+                            }
+                        });
+                        var active = $toc.find('a.active');
+                        if (active.length == 1 && active.eq(0).attr('href') == '#' + id) return true;
+
+                        active.each(function (i, e) {
+                            $(e).removeClass('active').siblings('ul').hide();
+                        });
+                        $toc.find('a[href="#' + id + '"]').parentsUntil('#TableOfContents').each(function (i, e) {
+                            $(e).children('a').addClass('active').siblings('ul').show();
+                        });
+                    }
+
+                    $window.on('scroll', onScroll);
+                    $(document).ready(function() {
+                        $toc.find('a').parent('li').find('ul').hide();
+                        onScroll();
+                        document.getElementsByClassName('article-toc')[0].style.display = '';
+                    });
+                }
+            })();
+        </script>
+        
+
+
+        
+        <footer class="article-footer">
+            <ul class="article-tag-list">
+                
+                <li class="article-tag-list-item">
+                    <a class="article-tag-list-link" href="//tags/r">R
+                    </a>
+                </li>
+                
+                <li class="article-tag-list-item">
+                    <a class="article-tag-list-link" href="//tags/data-mining">Data Mining
+                    </a>
+                </li>
+                
+            </ul>
+        </footer>
+        
+    </div>
+    
+<nav id="article-nav">
+    
+    
+    <a href="/post/2020-05-13-survival-curve/" id="article-nav-older" class="article-nav-link-wrap">
+        <div class="article-nav-title">用R畫存活曲線Survival curve&nbsp;<span>&gt;</span></div>
+    </a>
+    
+</nav>
+
+
+</article>
+
+        
+    </section>
+    <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2020 有完沒完RRR
+            <br />
+            Powered by <a href="https://gohugo.io" target="_blank">Hugo</a> with theme <a href="https://github.com/carsonip/hugo-theme-minos" target="_blank">Minos</a>
+        </div>
+    </div>
+    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/tomorrow-night.min.css" integrity="sha256-2wL88NKUqvJi/ExflDzkzUumjUM73mcK2gBvBBeLvTk=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js" integrity="sha256-KbfTjB0WZ8vvXngdpJGY3Yp3xKk+tttbqClO11anCIU=" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    <script>
+        document.getElementById('main-nav-toggle').addEventListener('click', function () {
+            var header = document.getElementById('header');
+            if (header.classList.contains('mobile-on')) {
+                header.classList.remove('mobile-on');
+            } else {
+                header.classList.add('mobile-on');
+            }
+        });
+    </script>
+</footer>
+
+</div>
+</body>
+</html>

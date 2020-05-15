@@ -22,7 +22,7 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 
 ## 用R畫存活曲線所需套件
 
-在R中有蠻多畫存活曲線相關的套件，我的初版程式是使用`ggfortify`套件，但後來Editor要求要在圖上加**Number at risk**的資訊，查了一下發現`ggfortify`套件沒有這個功能，又不想手動加，就重新搜尋了資源，找到一篇介紹`survminer`套件的[文章](http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization)，並完成完整的survival plot。
+在R中有蠻多畫存活曲線相關的套件，我的初版程式是使用`ggfortify`套件，但後來Editor要求要在圖上加**Number at risk**的資訊，查了一下發現`ggfortify`套件沒有這個功能，又不想手動加，就重新搜尋了資源，找到一篇介紹`survminer`套件的[文章](http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization)，也是以`ggplot`套件為做圖基礎，方便之後調整格式，最後成功完成完整的survival plot。
 
 本介紹文以[survminer R package: Survival Data Analysis and Visualization](http://www.sthda.com/english/wiki/ggfortify-extension-to-ggplot2-to-handle-some-popular-packages-r-software-and-data-visualization)為基礎，並衍伸其他條件設定的教學。
 
@@ -62,7 +62,10 @@ library(survminer)
 - meal.cal: 卡路里攝取量
 - wt.loss: 過去六個月體重下降多少
 
-```{r}
+```{r eval=F}
+lung %>% head()
+```
+```{r echo=F}
 knitr::kable(lung %>% head())
 ```
 
@@ -137,16 +140,18 @@ ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03),
 
 可分為存活曲線調整與number at risk表格調整，調整參數如下
 
-- `font.main = 12` 圖表標題字型大小
+- `font.main = 12` 圖表標題字型大小，也可進一步設定字型樣式，如`c(12,"bold.italic", "red")`
 - `font.x =  12` 圖表X軸字型大小
 - `font.y = 12` 圖表Y軸字型大小
 - `fontsize = 3` Number at risk內文字型大小
+- `linetype = "strata"` 改變線條樣式，一個類別一種樣式，適合製作黑白圖形時，可搭配`palette = "grey"`參數
 - `break.time.by = 100` 每100天設一個標記
 - `font.tickslab = 10` 標記字型大小(100, 200, ...等)
+- `legend.title = "Sex"` 將圖示標題改成大寫開頭的Sex
 - `legend.labs = c("Men", "Women")` 將圖示文字改為Men或是Women
 - `title="Format setting"` 加上圖形標題
 - `xlab="", ylab=""` X軸Y軸標題設定
-- `legend =  "none"` 不要圖示
+- `legend =  "none"` 不要圖示，因為Number at risk表格有了或是也可設定位置，如`legend = c(0.2, 0.2)`
 - `tables.theme = clean_theme()` 設定Number at risk表格樣式
 
 若想改Number at risk表格的標題，只能用額外的程式碼`theme(plot.title = element_text(size = 10))`設定
@@ -160,12 +165,16 @@ res<-ggsurvplot(fit, pval = TRUE, pval.coord = c(100, 0.03),
                 font.y = 12,
                 font.tickslab = 10,
                 fontsize = 3, 
+                linetype = "strata",
                 break.time.by = 100,
+                legend.title = "Sex",
                 legend.labs = c("Men", "Women"),
                 title="Format setting",
-                xlab="X Test", ylab="Y Test", legend =  "none",
+                xlab="X Test", ylab="Y Test", 
+                legend =  "none",
                 tables.theme = clean_theme())
-res$table <- res$table + theme(plot.title = element_text(size = 10))
+res$table <- res$table + 
+  theme(plot.title = element_text(size = 10))
 res
 ```
 
@@ -182,19 +191,23 @@ if(p<0.01){
 }
 
 resP<-ggsurvplot(fit, pval = p, pval.coord = c(100, 0.03), 
-                 conf.int = TRUE,
-                 risk.table = TRUE, risk.table.y.text.col = F,
-                 font.main = 12,
-                 font.x =  12,
-                 font.y = 12,
-                 font.tickslab = 10,
-                 fontsize = 3, 
-                 break.time.by = 100,
-                 legend.labs = c("Men", "Women"),
-                 title="Customize P value",
-                 xlab="X Test", ylab="Y Test", legend =  "none",
-                 tables.theme = clean_theme())
-resP$table <- resP$table + theme(plot.title = element_text(size = 10))
+                conf.int = TRUE,
+                risk.table = TRUE, 
+                font.main = 12,
+                font.x =  12,
+                font.y = 12,
+                font.tickslab = 10,
+                fontsize = 3, 
+                linetype = "strata",
+                break.time.by = 100,
+                legend.title = "Sex",
+                legend.labs = c("Men", "Women"),
+                title="Format setting",
+                xlab="X Test", ylab="Y Test", 
+                legend =  "none",
+                tables.theme = clean_theme())
+resP$table <- resP$table + 
+  theme(plot.title = element_text(size = 10))
 resP
 
 ```

@@ -1,5 +1,5 @@
 ---
-title: 使用tidymodel建立預測模型
+title: 使用tidymodels架構建立預測模型
 author: Yi-Ju Tseng
 date: '2020-05-14'
 slug: tidymodel
@@ -10,12 +10,11 @@ tags:
   - Data Mining
 ---
 
-
 ```{r global options, include = FALSE}
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 ```
 
-人工智慧/機器學習/資料探勘正夯，剛好`tidymodels`套件的[官網](https://www.tidymodels.org/)上線了，順勢介紹由`caret`套件的開發者[Max Kuhn](https://twitter.com/topepos)開發的全新建模架構。如同套件名稱，`tidymodels`套件的撰寫邏輯和方法與`tidyverse`套件組合相同，若熟悉`dplyr`、`ggplot`等套件應該蠻好上手
+人工智慧/機器學習/資料探勘正夯，剛好`tidymodels`套件組的[官網](https://www.tidymodels.org/)上線了，順勢介紹由`caret`套件的開發者[Max Kuhn](https://twitter.com/topepos)所帶領開發的全新建模架構`tidymodels`。如同套件名稱，`tidymodels`套件組的撰寫邏輯和方法與`tidyverse`套件組合相同，若熟悉`dplyr`、`ggplot`等套件應該蠻好上手
 
 第一次使用前一樣要先安裝
 ```{r eval=F}
@@ -27,150 +26,421 @@ install.packages("tidymodels")
 library(tidymodels)
 ```
 
-## 建模範例資料
+載入建模過程需要的其他套件，`themis`套件是做unser sampling或over sampling前處理會用到，`vip`套件則是用在輸出隨機森林Random Forest模型中各變數的重要性。
+
+```{r}
+library(themis) 
+library(vip)    
+```
+
+# 建模範例資料以及刪除遺漏值
+
+這邊使用`mlbench`套件中的`PimaIndiansDiabetes2`資料集，該資料集的Outcome為是否有糖尿病diabetes，變數我就不一一介紹了，可輸入`?PimaIndiansDiabetes2`查看。
+
 ```{r}
 library(mlbench)
-data("BostonHousing")
 data("PimaIndiansDiabetes2")
 ```
 
-## 訓練組與測試組資料分割
+資料載入後，習慣先看一下各資料的型態跟資料筆數，可以發現有不少NA值
+
+```{r}
+glimpse(PimaIndiansDiabetes2)
+```
+
+在刪除不全的資料前，先看一下有糖尿病diabetes跟沒有糖尿病的人數與比例，大概是65:35，有些不平均不過還行。
+
+```{r}
+PimaIndiansDiabetes2 %>% 
+  count(diabetes) %>% 
+  mutate(prop = n/sum(n))
+```
+
+通常有NA的資料不太會留，因為某些演算法不能用有NA的資料建模，雖然`tidymodels`有其他方法可以將NA資料去除，但為了後續基礎統計方便，如果要刪NA我還是習慣先全數刪除。
+
+```{r}
+PimaIndiansDiabetes2<-
+  PimaIndiansDiabetes2 %>% 
+  filter(complete.cases(PimaIndiansDiabetes2))
+```
+
+刪除NA後資料筆數有些微改變，但大概還是6x:3x的比例
+
+```{r}
+PimaIndiansDiabetes2 %>% 
+  count(diabetes) %>% 
+  mutate(prop = n/sum(n))
+```
+
+完成初步資料排除後，就可以開始基礎統計分析與建模，基礎統計分析可看其他文章，這篇著重在建模。
+
+# 訓練/調整與驗證模型效能策略
+
+JAMA在2019年刊登一篇有趣的文章，名稱為How to Read Articles That Use Machine Learning - Users’ Guides to the Medical Literature [下載](https://jamanetwork.com/journals/jama/fullarticle/2754798)，內文中有提到在機器學習時代，如何建立與預測模型，跟之前又有什麼不同，並用下圖來解釋差異
+
+```{r echo=F}
+knitr::include_graphics("https://cdn.jamanetwork.com/ama/content_public/journal/jama/938259/jug190001f2.png?Expires=2147483647&Signature=cU6lP2ZYSdn9MyOakMWobXQF2h6LSPCExTP1q7x74zRH7gDgkRSqshXWADmcQUz0XJVK~aVPK3cb-~shWQ6vd6EF4FwIcR8NBXMlGq1sLDR5dXLwpb~qoEYzXvg03zCz2l0AHmdlFxy4IGYGG3ilBfuPh1SCweskxtaUfsWqGsUcwc6FNo3KjaR9j58eJeZOnBEr6a2OF2m~XlEOnT1W3vaYn2-fuGZLAQR88XcUGWp1LYgc6GnDTO1s7zj5m9mYhlL-CeOaLXQNGrSl6fAvw6LisZW-f2tChvIaDfCd4vuuNw-Q1V6sjm-jgUehMt8wjrc61YW6WqyIC9mF6VGzzg__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA")
+```
+[圖片來源](https://jamanetwork.com/journals/jama/fullarticle/2754798)
+
+
+在所謂的"非"機器學習模型(圖上半部)，通常可分訓練組與測試組，在作者定義為Development set和Validation set，重要的概念是訓練模型時，一定要記得先把測試組資料分出來，不可以用到這部分資料來訓練模型，最後才能得到真實的預測結果 (完全沒偷看答案的意思)。
+
+在圖下半部，作者將此法命名為**3-step process**，主要差異是在訓練模型時多了一組**參數調整資料集**，原因是因為在多種機器學習模型中，有可調整的參數，在圖中稱為Hyperparameters，為了讓調整效果更好，會將訓練組再切分成小組，用來決定**最佳參數**，決定好以後，才用所有訓練組資料搭配最佳參數訓練模型，最後再用測試組做測試。
+
+以下用邏輯迴歸歸Logistic Regression示範此圖上半部**不調參數**的作法，以及用隨機森林Random Forest示範此圖下半部**需要調整參數**的作法。
+
+# 訓練組、測試組資料分割
+
+不管要不要調參數，都需要分割訓練組與測試組，因此在進入兩個範例前，先將訓練組與測試組切好。
+
+用`initial_split()`函數將資料分成訓練組與測試組，第一個參數放資料，第二個參數`prop`放訓練組測試組比例，第三個參數`strata`放分組抽樣依據。需要設定分組抽樣依據是因為若是整批資料隨機抽樣，很有可能在測試組或是訓練組會少一整個組別的資料(剛好都沒抽到的意思)，所以就分組，個別抽某個比例的人當訓練組，剩下的就當測試組。切割完後，用`training()`和`testing()`函數將訓練組測試組正式分開。
+
+這邊要特別注意的是，因為`initial_split()`函數有隨機的概念，為了讓每次的實驗結果相同，我們會在有隨機事件前設定seed，作為隨機的依據，讓隨機每次都一樣，才不會每次跑都是不一樣的結果，這樣就無法產生可重複的實驗結果。
 
 ```{r}
 set.seed(123)
 splits<- initial_split(PimaIndiansDiabetes2, 
+                       prop=(3/4),
                        strata = diabetes)
 DM_train<- training(splits)
 DM_test<- testing(splits)
 ```
 
+分組完後，查看訓練組的生病比例
 ```{r}
-set.seed(234)
-val_set <- validation_split(DM_train, 
-                            strata = diabetes, 
-                            prop = 0.75)
-val_set
+DM_train %>% 
+  count(diabetes) %>% 
+  mutate(prop = n/sum(n))
 ```
 
-## 建立資料前處理“食譜”
+查看測試組的生病比例
+```{r}
+DM_test %>% 
+  count(diabetes) %>% 
+  mutate(prop = n/sum(n))
+```
+
+# 建立資料前處理“食譜”
+
+資料前處理也是建立兩種模型都必須經歷的方法，因此提到最前方說明，前處理有很多方法，包括將類別變項轉為虛擬變項(dummy variables)，數值變項取log，數值變項正規化，以及日期資料處理等。
+
+首先使用`recipe()`函數，設定模型訓練公式`diabetes ~ .`以及訓練用資料`DM_train`，要注意這邊只能用**訓練組資料**，不能用全部的資料。公式的意思是用`~`前方的`diabetes`當成outcome (想要預測的值)，`~`後方的`.`代表其他所有剩下的欄位都當成predictors (又稱variables 或是 features，為預測基礎)。
+
+完成模型公式與資料設定後，就開始逐一加上想要做的資料前處理方法，在這邊列舉幾項我認為以此案例可能需要做的前處理
+
+- `step_naomit(everything(), skip = TRUE)` 如果沒有在一開始將NA資料刪掉，通常要去除NA值
+- `step_rose(diabetes)` 其實這個資料有病沒病的人沒差太多，只是呈現一下可以在此步驟設定oversampleing或是undersampling，這邊是指使用ROSE作為oversampling的演算法
+- `step_dummy(all_nominal(), -all_outcomes())` 將所有的類別變項轉成虛擬變項，除了Outcome以外
+- `step_zv(all_predictors())` 若有變項都是一樣的值，刪掉。舉例來說，若是整個資料都是女性，那性別欄位就不用拿來當作features了
+- `step_normalize(all_predictors())` 將所有數值變項正規化
+
+還有很多其他的前處理方法，可以參考`recipe()`函數的[說明文件](https://recipes.tidymodels.org/reference/recipe.html)
 
 ```{r}
-lr_recipe <- 
+gen_recipe <- 
   recipe(diabetes ~ ., data = DM_train) %>% 
-  step_naomit(everything(), skip = TRUE) %>%
   step_dummy(all_nominal(), -all_outcomes()) %>% 
   step_zv(all_predictors()) %>% 
   step_normalize(all_predictors())
+summary(gen_recipe)
 ```
 
-## 決定要用什麼演算法建立模型
+# 邏輯迴歸Logistic Regression模型建立與效能評估範例
+
+## Step 1 設定用邏輯迴建立模型
+
+這邊以邏輯迴歸為例，用`logistic_reg()`函數與`set_engine("glm")`設定模型建立演算法為邏輯迴歸
 
 ```{r}
 lr_mod <- 
-  logistic_reg(penalty = tune(), mixture = 0.5) %>% 
-  set_engine("glmnet")
+  logistic_reg() %>% 
+  set_engine("glm")
 ```
 
+## Step 2 設定建模流程workflow
 
-## 決定參數調整數列
-
-```{r}
-lr_reg_grid <- 
-  tibble(penalty = 10^seq(-4, -1, length.out = 50))
-lr_reg_grid %>% head()
-```
-
-## 決定
+workflow將建模 (model)與資料前處理方法 (recipe)串成單一工作流程workflow
 
 ```{r}
-lr_workflow <- 
+lr_wflow <- 
   workflow() %>% 
   add_model(lr_mod) %>% 
-  add_recipe(lr_recipe)
-
-lr_res <- 
-  lr_workflow %>% 
-  tune_grid(val_set,
-            grid = lr_reg_grid,
-            control = control_grid(save_pred = TRUE),
-            metrics = metric_set(roc_auc))
+  add_recipe(gen_recipe)
+lr_wflow
 ```
 
+## Step 3 訓練模型
+
+使用剛剛串起來的工作流程，加上`fit()`函數，完成建模，並用`pull_workflow_fit()`與`tidy()`呈現建模結果，注意這裡也是只能用**訓練組資料**`DM_train`
 
 ```{r}
-lr_plot <- 
-  lr_res %>% 
-  collect_metrics() %>% 
-  ggplot(aes(x = penalty, y = mean)) + 
-  geom_point() + 
-  geom_line() + 
-  ylab("Area under the ROC Curve") +
-  scale_x_log10(labels = scales::label_number())
+lr_fit <- 
+  lr_wflow %>% 
+  fit(data=DM_train)
 
-lr_plot 
+lr_fit %>% 
+  pull_workflow_fit() %>% 
+  tidy()
 ```
+
+## Step 4 使用模型與測試組資料驗證模型效能
+
+使用`predict()`函數，用剛剛訓練出來的模型`lr_fit`以及一開始分出的測試組`DM_test`產生預測結果，注意這邊要用測試組資料
 
 ```{r}
-top_models <-
-  lr_res %>% 
-  show_best("roc_auc", n = 15) %>% 
-  arrange(penalty) 
-top_models
+lr_pred <- lr_fit %>% 
+  predict(DM_test)
+lr_pred
 ```
+
+將預測結果與答案結合
 
 ```{r}
-lr_best <- lr_res %>% 
-  show_best("roc_auc", n = 1)
-lr_best
+lr_pred <- lr_fit %>%
+  predict(DM_test) %>% 
+  bind_cols(DM_test %>% select(diabetes)) 
+lr_pred
 ```
+
+使用`accuracy()`函數，輸入預測結果與真實答案計算正確率
 
 ```{r}
-lr_res %>% 
-  collect_predictions()
+lr_pred %>% 
+  accuracy(truth = diabetes, 
+          .pred_class)
 ```
+
+但很多時候我們需要Area under the ROC curve，此時我們需要的不是直接pos或neg的結果，我們需要的是連續性的預測數值，這邊可將`predict()`函數的`type`參數設定為prob，即回傳各組預測值
 
 ```{r}
-lr_res %>% 
-  collect_predictions(parameters = lr_best) %>% 
-  roc_auc(diabetes, .pred_pos)
+lr_pred <- lr_fit %>%
+  predict(DM_test,
+          type = "prob")%>% 
+  bind_cols(DM_test %>% select(diabetes)) 
+lr_pred
 ```
+
+
+得到各組預測值後，可用`roc_curve()`畫ROC curve
+```{r}
+lr_pred %>% 
+  roc_curve(truth = diabetes, 
+            .pred_pos) %>% 
+  autoplot()
+```
+
+當然也能用`roc_auc()`算Area under the ROC curve
 
 ```{r}
-lr_auc <- 
-  lr_res %>% 
-  collect_predictions(parameters = lr_best) %>% 
-  roc_curve(diabetes, .pred_pos) %>% 
-  mutate(model = "Logistic Regression")
-
-autoplot(lr_auc)
-lr_auc
+lr_pred %>% 
+  roc_auc(truth = diabetes, 
+          .pred_pos)
 ```
 
-## Evaluation
+
+以上就是使用邏輯迴歸建立模型與效能測試流程，可以發現完全沒有調整任何參數，因基本邏輯迴歸不用調參數。
+
+# 隨機森林Random Forest模型建立、參數調整與效能評估範例
+
+
+## Step 1 設定平行處理
+
+因為模型參數調整需要一直不斷建立模型與測試，所以設定平行處理會快一些，`tidymodels`套組支援平行處理，細節可參考[官方文件](https://tune.tidymodels.org/articles/extras/optimizations.html)
+
+```{r}
+all_cores <- parallel::detectCores(logical = FALSE)
+library(doParallel)
+cl <- makePSOCKcluster(all_cores)
+registerDoParallel(cl)
+```
+
+## Step 2 設定用隨機森林建立模型以及要調整的參數
+
+這邊以隨機森林為例，用`rand_forest()`函數與`set_engine("ranger")`設定模型建立演算法為基於`ranger`套件的隨機森林演算法，因為隨機森林有迴歸版與分類版，因此使用`set_mode("classification")`設定我們要用分類演算法。
+
+在隨機森林`rand_forest()`函數中，可設定幾個參數，說明如下:
+
+- mtry: 在切割節點時，隨機抽取n個特徵，並從中選最適合的特徵當作節點
+- min_n: 每個節點的最小資料數，如果設為10，當該節點的資料剩十筆或更少時，就不會再切割
+- trees: 建模要用幾棵樹
+
+在這個範例中，我將要建幾棵樹設定為1000，其他兩個參數則是想用交叉驗證法(Cross Validation)來調整，因此將想調的參數值設為`tune()`，表示這些參數要調，不想在現階段指定。
+
+```{r}
+rf_mod <- 
+  rand_forest(mtry = tune(), min_n = tune(), 
+              trees = 1000) %>% 
+  set_engine("ranger") %>% 
+  set_mode("classification")
+
+rf_mod
+```
+
+## Step 3 設定建模流程workflow
+
+建模流程同邏輯迴歸，將模型與資料前處理方法串接成一個工作流程
+
+```{r}
+rf_wflow <- workflow() %>%
+  add_model(rf_mod) %>%
+  add_recipe(gen_recipe)
+```
+
+## Step 4 參數調整組資料分割
+
+剛剛有提到我想要調整的參數為mtry以及min_n，調整的方法為交叉驗證法(Cross Validation)，這邊用`tidymodels`官網的圖來說明架構
+
+```{r echo=F}
+knitr::include_graphics("https://www.tidymodels.org/start/resampling/img/resampling.svg")
+```
+[圖片來源](https://www.tidymodels.org/start/resampling/)
+
+在圖中，首先將所有資料分成測試組訓練組，也就是本篇文章一開始做的切割，為了調整參數，我們會再切訓練組的資料，做為測試各參數效能的**調整訓練**以及**調整測試**。
+
+切割**參數調整組**有很多種方法，可以用**bootstrap**法隨機抽，也可使用這邊的**交叉驗證**範例，交叉驗證的概念如下圖的下半部
+
+```{r echo=F}
+knitr::include_graphics("https://www.frontiersin.org/files/Articles/411217/fmicb-09-02393-HTML/image_m/fmicb-09-02393-g002.jpg")
+```
+[圖片來源](https://doi.org/10.3389/fmicb.2018.02393)
+
+圖片下半部為5-fold Cross Validation的示意圖，可以看到每份資料都會被拿來當作**調整訓練**以及**調整測試**組，經過幾次測試後，用**調整測試**組的效能來決定一組最佳參數。
+
+這邊我們使用10-fold Cross Validation為例，先用`vfold_cv()`函數，設定分割基準為**訓練組**，要分10份`v=10`，分割時一樣要注意糖尿病的比例不能差太多
 
 ```{r}
 set.seed(345)
-folds <- vfold_cv(DM_train, 
-                  v = 5)
+folds <- vfold_cv(DM_train, v = 10,
+                  strata = diabetes)
 folds
 ```
 
+## Step 5 調整參數
+
+完成分割後，可將之前的建模流程串接至`tune_grid()`函數，這個函數可以設定參數調整的方法，首先是調整要用的**參數調整組資料**`resamples = folds`，要測試幾組參數` grid = 50`，測試時要用什麼效能評估方式，這邊設定為Area under the ROC curve `metrics = metric_set(roc_auc)`。因為要重複訓練測試多次，因此這程式碼執行會需要一些時間。
+
 ```{r}
-lr_recipe_evl <- 
-  recipe(diabetes ~ ., data = PimaIndiansDiabetes2) %>% 
-  step_naomit(everything(), skip = TRUE) %>%
-  step_dummy(all_nominal(), -all_outcomes()) %>% 
-  step_zv(all_predictors()) %>% 
-  step_normalize(all_predictors())
-
-lr_mod_evl <- 
-  logistic_reg(penalty = 0.01, mixture = 0.5) %>% 
-  set_engine("glmnet")
-
-control <- control_resamples(save_pred = TRUE)
-set.seed(456)
-spline_res <- fit_resamples(lr_mod_evl, lr_recipe_evl, folds, control = control)
-spline_res %>% 
-  collect_metrics(summarize = TRUE)
+rf_res <- 
+  rf_wflow %>% 
+  tune_grid(
+    resamples = folds,
+    grid = 50,
+    metrics = metric_set(roc_auc),
+    control=control_resamples(save_pred = TRUE)
+    )
 
 ```
+
+
+執行完後，可用`collect_metrics()`查看各參數效能
+
+```{r}
+rf_res %>%
+  collect_metrics()
+```
+
+也可畫個圖呈現參數調整對效能的影響，由圖可知在這個範例中min_n越大效能越好
+
+```{r}
+rf_res %>%
+  collect_metrics() %>%
+  mutate(mtry = factor(mtry)) %>%
+  ggplot(aes(min_n, mean, color = mtry)) + 
+  geom_line(size=1) +
+  scale_x_log10(labels = scales::label_number()) 
+```
+
+搭配`show_best()`函數可呈現Area under the ROC curve最優的幾組參數
+
+```{r}
+rf_res %>%
+  show_best("roc_auc")
+```
+
+
+
+## Step 6 使用最佳參數與訓練組資料建立最終模型
+
+在完成參數調整後，我們會使用最佳參數(意即Area under the ROC curve最高的一組參數)來建立最終模型，用`select_best()`函數可選出最好的一組參數`best_rf`
+
+```{r}
+best_rf <- rf_res %>%
+  select_best("roc_auc")
+best_rf
+```
+
+為了將參數節合至原有的建模流程，可用`finalize_workflow()`函數輸入剛剛選出的最佳參數`best_rf`，建立一個**最終建模流程**
+
+```{r}
+final_wflow <- 
+  rf_wflow %>% 
+  finalize_workflow(best_rf)
+
+final_wflow
+```
+
+**最終建模流程**建立後，即可用`fit()`建模，注意這邊用的是完整的訓練資料`DM_train`
+
+```{r}
+final_rf_model <- 
+  final_wflow %>%
+  fit(data = DM_train) 
+
+final_rf_model
+```
+
+
+## Step 7 用測試組資料驗證最終模型效能
+
+使用`predict()`函數，用剛剛訓練出來的模型`final_rf_model`以及一開始分出的測試組`DM_test`產生預測結果，注意這邊要用測試組資料
+
+```{r}
+rf_pred <- final_rf_model %>% 
+  predict(DM_test)
+rf_pred
+```
+
+將預測結果與答案結合
+```{r}
+rf_pred <- final_rf_model %>%
+  predict(DM_test) %>% 
+  bind_cols(DM_test %>% select(diabetes)) 
+rf_pred
+```
+
+使用預測結果與真實答案計算正確率
+```{r}
+rf_pred %>% 
+  accuracy(truth = diabetes, 
+          .pred_class)
+```
+
+但很多時候我們需要Area under the ROC curve，此時我們需要的不是直接pos或neg的結果，我們需要的是連續性的預測數值，這邊可將`predict()`函數的`type`參數設定為prob，即回傳各組預測值
+
+```{r}
+rf_pred <- final_rf_model %>%
+  predict(DM_test,
+          type = "prob")%>% 
+  bind_cols(DM_test %>% select(diabetes)) 
+rf_pred
+```
+
+
+得到各組預測值後，可用`roc_curve()`畫ROC curve
+```{r}
+rf_pred %>% 
+  roc_curve(truth = diabetes, 
+            .pred_pos) %>% 
+  autoplot()
+```
+
+當然也能用`roc_auc()`算Area under the ROC curve
+```{r}
+rf_pred %>% 
+  roc_auc(truth = diabetes, 
+          .pred_pos)
+```
+
+
+以上就是使用隨機森林建立模型、調整參數以及與效能測試流程，多了使用交叉驗證法調整參數的步驟。

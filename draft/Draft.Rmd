@@ -1,0 +1,187 @@
+## Step 
+
+```{r}
+
+```
+
+```{r}
+lr_mod <- 
+  logistic_reg(penalty = tune(), 
+               mixture = 0.5) %>% 
+  set_engine("glmnet")
+```
+
+
+## 決定參數調整數列
+
+```{r}
+lr_reg_grid <- 
+  tibble(penalty = 10^seq(-4, -1, length.out = 50))
+```
+```{r eval=F}
+lr_reg_grid %>% head()
+```
+```{r echo=F}
+knitr::kable(lr_reg_grid %>% head())
+```
+
+## 決定
+
+```{r}
+lr_workflow <- 
+  workflow() %>% 
+  add_model(lr_mod) %>% 
+  add_recipe(gen_recipe)
+
+
+set.seed(234)
+tune_set <- validation_split(DM_train, 
+                            strata = diabetes, 
+                            prop = 0.80)
+tune_set
+
+lr_res <- 
+  lr_workflow %>% 
+  tune_grid(tune_set,
+            grid = lr_reg_grid,
+            control = control_grid(save_pred = TRUE),
+            metrics = metric_set(roc_auc))
+```
+
+
+```{r}
+lr_plot <- 
+  lr_res %>% 
+  collect_metrics() %>% 
+  ggplot(aes(x = penalty, y = mean)) + 
+  geom_point() + 
+  geom_line() + 
+  ylab("Area under the ROC Curve") +
+  scale_x_log10(labels = scales::label_number())
+
+lr_plot 
+```
+
+```{r}
+top_models <-
+  lr_res %>% 
+  show_best("roc_auc", n = 15) %>% 
+  arrange(penalty) 
+```
+
+```{r eval=F}
+top_models
+```
+```{r echo=F}
+knitr::kable(
+  top_models
+  )
+```
+
+```{r}
+lr_best <- lr_res %>% 
+  show_best("roc_auc", n = 1)
+```
+
+```{r eval=F}
+lr_best
+```
+```{r echo=F}
+knitr::kable(
+  lr_best
+  )
+```
+
+```{r eval=F}
+lr_res %>% 
+  collect_predictions()
+```
+```{r echo=F}
+knitr::kable(
+  lr_res %>% 
+  collect_predictions() %>% 
+    head()
+  )
+```
+
+
+```{r eval=F}
+lr_res %>% 
+  collect_predictions(parameters = lr_best) %>% 
+  roc_auc(diabetes, .pred_pos)
+```
+
+```{r echo=F}
+knitr::kable(
+  lr_res %>% 
+  collect_predictions(parameters = lr_best) %>% 
+  roc_auc(diabetes, .pred_pos)
+)
+```
+
+
+```{r}
+lr_auc <- 
+  lr_res %>% 
+  collect_predictions(parameters = lr_best) %>% 
+  roc_curve(diabetes, .pred_pos) %>% 
+  mutate(model = "Logistic Regression")
+
+autoplot(lr_auc)
+```
+
+```{r eval=F}
+lr_auc
+```
+```{r echo=F}
+knitr::kable(lr_auc %>% head())
+```
+
+
+## Nested
+
+
+
+
+## Evaluation
+
+```{r}
+set.seed(345)
+folds <- vfold_cv(DM_train, 
+                  v = 5)
+folds
+```
+
+```{r}
+lr_recipe_evl <- 
+  recipe(diabetes ~ ., data = PimaIndiansDiabetes2) %>% 
+  step_naomit(everything(), skip = TRUE) %>%
+  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_zv(all_predictors()) %>% 
+  step_normalize(all_predictors())
+
+lr_mod_evl <- 
+  logistic_reg(penalty = 0.01, mixture = 0.5) %>% 
+  set_engine("glmnet")
+
+control <- control_resamples(save_pred = TRUE)
+set.seed(456)
+spline_res <- fit_resamples(lr_mod_evl, 
+                            lr_recipe_evl, 
+                            folds, 
+                            control = control)
+
+
+```
+
+```{r eval=F}
+spline_res %>% 
+  collect_metrics(summarize = TRUE)
+```
+
+```{r echo=F}
+knitr::kable(
+  spline_res %>% 
+  collect_metrics(summarize = TRUE)
+  )
+```
