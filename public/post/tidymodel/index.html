@@ -77,6 +77,10 @@
             </div>
             
             
+            <div class="article-comment-link-wrap">
+                <a href="/post/tidymodel/#disqus_thread" class="article-comment-link">Comments</a>
+            </div>
+            
         </div>
         <div class="article-entry" itemprop="articleBody">
             
@@ -220,18 +224,18 @@ summary(gen_recipe)</code></pre>
   add_model(lr_mod) %&gt;% 
   add_recipe(gen_recipe)
 lr_wflow</code></pre>
-<pre><code>## == Workflow =======================================================================================
+<pre><code>## == Workflow =====================================================================
 ## Preprocessor: Recipe
 ## Model: logistic_reg()
 ## 
-## -- Preprocessor -----------------------------------------------------------------------------------
+## -- Preprocessor -----------------------------------------------------------------
 ## 3 Recipe Steps
 ## 
 ## * step_dummy()
 ## * step_zv()
 ## * step_normalize()
 ## 
-## -- Model ------------------------------------------------------------------------------------------
+## -- Model ------------------------------------------------------------------------
 ## Logistic Regression Model Specification (classification)
 ## 
 ## Computational engine: glm</code></pre>
@@ -433,16 +437,16 @@ folds</code></pre>
 <pre><code>## # A tibble: 49 x 7
 ##     mtry min_n .metric .estimator  mean     n std_err
 ##    &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-##  1     1     5 roc_auc binary     0.799    10  0.0247
-##  2     1    15 roc_auc binary     0.805    10  0.0249
-##  3     1    27 roc_auc binary     0.806    10  0.0258
-##  4     2    11 roc_auc binary     0.803    10  0.0219
-##  5     2    21 roc_auc binary     0.809    10  0.0232
-##  6     2    23 roc_auc binary     0.806    10  0.0239
-##  7     2    29 roc_auc binary     0.812    10  0.0236
-##  8     2    32 roc_auc binary     0.813    10  0.0246
-##  9     2    35 roc_auc binary     0.811    10  0.0243
-## 10     2    36 roc_auc binary     0.810    10  0.0254
+##  1     1     5 roc_auc binary     0.803    10  0.0242
+##  2     1    15 roc_auc binary     0.805    10  0.0254
+##  3     1    27 roc_auc binary     0.808    10  0.0253
+##  4     2    11 roc_auc binary     0.806    10  0.0238
+##  5     2    21 roc_auc binary     0.809    10  0.0225
+##  6     2    23 roc_auc binary     0.805    10  0.0236
+##  7     2    29 roc_auc binary     0.810    10  0.0233
+##  8     2    32 roc_auc binary     0.810    10  0.0232
+##  9     2    35 roc_auc binary     0.814    10  0.0240
+## 10     2    36 roc_auc binary     0.812    10  0.0244
 ## # ... with 39 more rows</code></pre>
 <p>也可畫個圖呈現參數調整對效能的影響，由圖可知在這個範例中min_n越大效能越好</p>
 <pre class="r"><code>rf_res %&gt;%
@@ -458,11 +462,11 @@ folds</code></pre>
 <pre><code>## # A tibble: 5 x 7
 ##    mtry min_n .metric .estimator  mean     n std_err
 ##   &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-## 1     3    37 roc_auc binary     0.821    10  0.0228
-## 2     3    33 roc_auc binary     0.817    10  0.0221
-## 3     4    33 roc_auc binary     0.813    10  0.0215
-## 4     2    32 roc_auc binary     0.813    10  0.0246
-## 5     2    29 roc_auc binary     0.812    10  0.0236</code></pre>
+## 1     3    33 roc_auc binary     0.816    10  0.0222
+## 2     3    30 roc_auc binary     0.815    10  0.0218
+## 3     2    40 roc_auc binary     0.814    10  0.0248
+## 4     2    35 roc_auc binary     0.814    10  0.0240
+## 5     3    37 roc_auc binary     0.813    10  0.0239</code></pre>
 </div>
 <div id="step-6-使用最佳參數與訓練組資料建立最終模型" class="section level2">
 <h2>Step 6 使用最佳參數與訓練組資料建立最終模型</h2>
@@ -473,31 +477,31 @@ best_rf</code></pre>
 <pre><code>## # A tibble: 1 x 2
 ##    mtry min_n
 ##   &lt;int&gt; &lt;int&gt;
-## 1     3    37</code></pre>
+## 1     3    33</code></pre>
 <p>為了將參數節合至原有的建模流程，可用<code>finalize_workflow()</code>函數輸入剛剛選出的最佳參數<code>best_rf</code>，建立一個<strong>最終建模流程</strong></p>
 <pre class="r"><code>final_wflow &lt;- 
   rf_wflow %&gt;% 
   finalize_workflow(best_rf)
 
 final_wflow</code></pre>
-<pre><code>## == Workflow =======================================================================================
+<pre><code>## == Workflow =====================================================================
 ## Preprocessor: Recipe
 ## Model: rand_forest()
 ## 
-## -- Preprocessor -----------------------------------------------------------------------------------
+## -- Preprocessor -----------------------------------------------------------------
 ## 3 Recipe Steps
 ## 
 ## * step_dummy()
 ## * step_zv()
 ## * step_normalize()
 ## 
-## -- Model ------------------------------------------------------------------------------------------
+## -- Model ------------------------------------------------------------------------
 ## Random Forest Model Specification (classification)
 ## 
 ## Main Arguments:
 ##   mtry = 3
 ##   trees = 1000
-##   min_n = 37
+##   min_n = 33
 ## 
 ## Computational engine: ranger</code></pre>
 <p><strong>最終建模流程</strong>建立後，即可用<code>fit()</code>建模，注意這邊用的是完整的訓練資料<code>DM_train</code></p>
@@ -506,32 +510,32 @@ final_wflow</code></pre>
   fit(data = DM_train) 
 
 final_rf_model</code></pre>
-<pre><code>## == Workflow [trained] =============================================================================
+<pre><code>## == Workflow [trained] ===========================================================
 ## Preprocessor: Recipe
 ## Model: rand_forest()
 ## 
-## -- Preprocessor -----------------------------------------------------------------------------------
+## -- Preprocessor -----------------------------------------------------------------
 ## 3 Recipe Steps
 ## 
 ## * step_dummy()
 ## * step_zv()
 ## * step_normalize()
 ## 
-## -- Model ------------------------------------------------------------------------------------------
+## -- Model ------------------------------------------------------------------------
 ## Ranger result
 ## 
 ## Call:
-##  ranger::ranger(formula = formula, data = data, mtry = ~3L, num.trees = ~1000,      min.node.size = ~37L, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
+##  ranger::ranger(formula = formula, data = data, mtry = ~3L, num.trees = ~1000,      min.node.size = ~33L, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
 ## 
 ## Type:                             Probability estimation 
 ## Number of trees:                  1000 
 ## Sample size:                      295 
 ## Number of independent variables:  8 
 ## Mtry:                             3 
-## Target node size:                 37 
+## Target node size:                 33 
 ## Variable importance mode:         none 
 ## Splitrule:                        gini 
-## OOB prediction error (Brier s.):  0.1563103</code></pre>
+## OOB prediction error (Brier s.):  0.1564792</code></pre>
 </div>
 <div id="step-7-用測試組資料驗證最終模型效能" class="section level2">
 <h2>Step 7 用測試組資料驗證最終模型效能</h2>
@@ -589,16 +593,16 @@ rf_pred</code></pre>
 <pre><code>## # A tibble: 97 x 3
 ##    .pred_neg .pred_pos diabetes
 ##        &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;   
-##  1     0.339    0.661  pos     
-##  2     0.514    0.486  pos     
-##  3     0.653    0.347  neg     
-##  4     0.148    0.852  pos     
-##  5     0.117    0.883  pos     
-##  6     0.194    0.806  pos     
-##  7     0.851    0.149  neg     
-##  8     0.955    0.0446 neg     
-##  9     0.802    0.198  neg     
-## 10     0.632    0.368  neg     
+##  1     0.359    0.641  pos     
+##  2     0.520    0.480  pos     
+##  3     0.657    0.343  neg     
+##  4     0.147    0.853  pos     
+##  5     0.108    0.892  pos     
+##  6     0.184    0.816  pos     
+##  7     0.861    0.139  neg     
+##  8     0.954    0.0464 neg     
+##  9     0.799    0.201  neg     
+## 10     0.627    0.373  neg     
 ## # ... with 87 more rows</code></pre>
 <p>得到各組預測值後，可用<code>roc_curve()</code>畫ROC curve</p>
 <pre class="r"><code>rf_pred %&gt;% 
@@ -696,6 +700,27 @@ rf_pred</code></pre>
 
 </article>
 
+        
+            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "rrrblog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
         
         <div id="disqus_thread"></div>
 <script>

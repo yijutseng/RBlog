@@ -7,6 +7,8 @@ title = "有完沒完RRR"
 enableEmoji = true
 hasCJKLanguage = true
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+SmartToc = true
+disqusShortname = "rrrblog"
 
 [[menu.main]]
     name = "Categories"
@@ -16,6 +18,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     name = "Tags"
     url="/Tags/index.html"
     weight = 2
+    
 [[menu.main]]
     name = "About"
     url = "https://yjtseng.info/"
@@ -23,8 +26,8 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     
 [params]
     smartToc = true
+    SmartToc = true
     author = "Yi-Ju Tseng"
-    disqusShortname = "rrrblog"
     googleAnalytics = "UA-2407708-4"
 
 [taxonomies]
