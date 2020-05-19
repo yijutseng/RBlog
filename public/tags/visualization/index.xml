@@ -6,10 +6,19 @@
     <description>Recent content in Visualization on 有完沒完RRR</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
-    <lastBuildDate>Wed, 13 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 20 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/visualization/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>解決在OSX (Mac) 環境中作圖無法顯示中文的問題</title>
+      <link>/post/osx-chinese/</link>
+      <pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/osx-chinese/</guid>
+      <description>本文以行政院農委會動物認領養資料為例，說明在Mac上如何成功畫出有中文字的圖型。 首先用jsonlite套件的fromJSON()函數將API</description>
+    </item>
     
     <item>
       <title>用R畫存活曲線Survival curve</title>

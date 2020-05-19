@@ -1,0 +1,97 @@
+---
+title: 解決在OSX (Mac) 環境中作圖無法顯示中文的問題
+author: Yi-Ju Tseng
+date: '2020-05-20'
+slug: osx-chinese
+categories:
+  - R language
+tags:
+  - R
+  - Visualization
+---
+
+
+
+<p>本文以<a href="https://data.coa.gov.tw/Query/ServiceTransDetail.aspx?id=QcbUEzN6E6DL">行政院農委會動物認領養</a>資料為例，說明在Mac上如何成功畫出有中文字的圖型。</p>
+<p>首先用<code>jsonlite</code>套件的<code>fromJSON()</code>函數將API資料載入，本文的數據為2020/05/20的即時數據</p>
+<pre class="r"><code>library(jsonlite)
+PetAPI&lt;-fromJSON(&quot;https://data.coa.gov.tw/Service/OpenData/TransService.aspx?UnitId=QcbUEzN6E6DL&quot;)</code></pre>
+<p>載入後發現直接就是data.frame格式，以下呈現部分資料</p>
+<pre class="r"><code>library(dplyr)
+PetAPI %&gt;% 
+  select(animal_place,animal_kind,animal_sex,
+         animal_age,animal_colour) %&gt;% head()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">animal_place</th>
+<th align="left">animal_kind</th>
+<th align="left">animal_sex</th>
+<th align="left">animal_age</th>
+<th align="left">animal_colour</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">苗栗縣生態保育教育中心(動物收容所)</td>
+<td align="left">狗</td>
+<td align="left">F</td>
+<td align="left">ADULT</td>
+<td align="left">黃色</td>
+</tr>
+<tr class="even">
+<td align="left">苗栗縣生態保育教育中心(動物收容所)</td>
+<td align="left">狗</td>
+<td align="left">F</td>
+<td align="left">ADULT</td>
+<td align="left">白色</td>
+</tr>
+<tr class="odd">
+<td align="left">新北市中和區公立動物之家</td>
+<td align="left">貓</td>
+<td align="left">M</td>
+<td align="left">CHILD</td>
+<td align="left">黃虎斑色</td>
+</tr>
+<tr class="even">
+<td align="left">新北市中和區公立動物之家</td>
+<td align="left">貓</td>
+<td align="left">F</td>
+<td align="left">ADULT</td>
+<td align="left">虎斑白色</td>
+</tr>
+<tr class="odd">
+<td align="left">新北市中和區公立動物之家</td>
+<td align="left">貓</td>
+<td align="left">F</td>
+<td align="left">CHILD</td>
+<td align="left">黑色</td>
+</tr>
+<tr class="even">
+<td align="left">新北市中和區公立動物之家</td>
+<td align="left">貓</td>
+<td align="left">F</td>
+<td align="left">CHILD</td>
+<td align="left">虎斑色</td>
+</tr>
+</tbody>
+</table>
+<p>接下來希望呈現各收容所所收容的各品種動物數量，用<code>ggplot</code>快速做長條圖，可發現一樣的程式碼在Windows系統可順利呈現中文字，但在Mac上全部變豆腐文</p>
+<pre class="r"><code>library(ggplot2)
+ggplot(PetAPI,aes(shelter_name)) +
+  geom_bar()+
+  facet_grid(.~animal_kind,
+             scales=&quot;free&quot;,space=&quot;free&quot;) +
+  coord_flip()</code></pre>
+<p><img src="/post/2020-05-20-osx-mac_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><strong>在<code>theme()</code>中設定字型即可解決此問題</strong>，設定方法為將<code>text</code>參數指定為<code>element_text(family = &quot;指定字型名稱&quot;)</code>，以OSX內建的<strong>黑體-繁 中黑</strong>為例</p>
+<pre class="r"><code>library(ggplot2)
+ggplot(PetAPI,aes(shelter_name)) +
+  geom_bar()+
+  facet_grid(.~animal_kind,
+             scales=&quot;free&quot;,space=&quot;free&quot;) +
+  coord_flip()+
+  theme(text=element_text(family = &quot;黑體-繁 中黑&quot;)) #&lt;&lt;</code></pre>
+<p><img src="/post/2020-05-20-osx-mac_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>設定完字型後，就可在Mac上無痛畫有中文的圖形了。</p>
+<p><del><strong>以認養代替購買，以結紮代替撲殺</strong></del></p>

@@ -1,0 +1,63 @@
+---
+title: 解決在OSX (Mac) 環境中作圖無法顯示中文的問題
+author: Yi-Ju Tseng
+date: '2020-05-20'
+slug: osx-chinese
+categories:
+  - R language
+tags:
+  - R
+  - Visualization
+---
+
+本文以[行政院農委會動物認領養](https://data.coa.gov.tw/Query/ServiceTransDetail.aspx?id=QcbUEzN6E6DL)資料為例，說明在Mac上如何成功畫出有中文字的圖型。
+
+首先用`jsonlite`套件的`fromJSON()`函數將API資料載入，本文的數據為2020/05/20的即時數據
+```{r}
+library(jsonlite)
+PetAPI<-fromJSON("https://data.coa.gov.tw/Service/OpenData/TransService.aspx?UnitId=QcbUEzN6E6DL")
+```
+
+載入後發現直接就是data.frame格式，以下呈現部分資料
+```{r eval=F}
+library(dplyr)
+PetAPI %>% 
+  select(animal_place,animal_kind,animal_sex,
+         animal_age,animal_colour) %>% head()
+```
+
+```{r echo=F,warning=F,message=F}
+library(dplyr)
+knitr::kable(
+  PetAPI %>% 
+  select(animal_place,animal_kind,animal_sex,
+         animal_age,animal_colour) %>% head()
+) 
+```
+
+接下來希望呈現各收容所所收容的各品種動物數量，用`ggplot`快速做長條圖，可發現一樣的程式碼在Windows系統可順利呈現中文字，但在Mac上全部變豆腐文
+
+```{r}
+library(ggplot2)
+ggplot(PetAPI,aes(shelter_name)) +
+  geom_bar()+
+  facet_grid(.~animal_kind,
+             scales="free",space="free") +
+  coord_flip()
+```
+
+**在`theme()`中設定字型即可解決此問題**，設定方法為將`text`參數指定為`element_text(family = "指定字型名稱")`，以OSX內建的**黑體-繁 中黑**為例
+
+```{r}
+library(ggplot2)
+ggplot(PetAPI,aes(shelter_name)) +
+  geom_bar()+
+  facet_grid(.~animal_kind,
+             scales="free",space="free") +
+  coord_flip()+
+  theme(text=element_text(family = "黑體-繁 中黑")) #<<
+```
+
+設定完字型後，就可在Mac上無痛畫有中文的圖形了。
+
+~~**以認養代替購買，以結紮代替撲殺**~~
