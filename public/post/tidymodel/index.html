@@ -224,18 +224,18 @@ summary(gen_recipe)</code></pre>
   add_model(lr_mod) %&gt;% 
   add_recipe(gen_recipe)
 lr_wflow</code></pre>
-<pre><code>## == Workflow ======================================
+<pre><code>## == Workflow ==============================================================================================
 ## Preprocessor: Recipe
 ## Model: logistic_reg()
 ## 
-## -- Preprocessor ----------------------------------
+## -- Preprocessor ------------------------------------------------------------------------------------------
 ## 3 Recipe Steps
 ## 
 ## * step_dummy()
 ## * step_zv()
 ## * step_normalize()
 ## 
-## -- Model -----------------------------------------
+## -- Model -------------------------------------------------------------------------------------------------
 ## Logistic Regression Model Specification (classification)
 ## 
 ## Computational engine: glm</code></pre>
@@ -422,8 +422,9 @@ folds</code></pre>
 </div>
 <div id="step-5-調整參數" class="section level2">
 <h2>Step 5 調整參數</h2>
-<p>完成分割後，可將之前的建模流程串接至<code>tune_grid()</code>函數，這個函數可以設定參數調整的方法，首先是調整要用的<strong>參數調整組資料</strong><code>resamples = folds</code>，要測試幾組參數<code>grid = 50</code>，測試時要用什麼效能評估方式，這邊設定為Area under the ROC curve <code>metrics = metric_set(roc_auc)</code>。因為要重複訓練測試多次，因此這程式碼執行會需要一些時間。</p>
-<pre class="r"><code>rf_res &lt;- 
+<p>完成分割後，可將之前的建模流程串接至<code>tune_grid()</code>函數，這個函數可以設定參數調整的方法，首先是調整要用的<strong>參數調整組資料</strong><code>resamples = folds</code>，要測試幾組參數<code>grid = 50</code>，測試時要用什麼效能評估方式，這邊設定為Area under the ROC curve <code>metrics = metric_set(roc_auc)</code>。另外參數的產生也有隨機的成分，需要<code>set.seed()</code>。因為要重複訓練測試多次，因此這程式碼執行會需要一些時間。</p>
+<pre class="r"><code>set.seed(345)
+rf_res &lt;- 
   rf_wflow %&gt;% 
   tune_grid(
     resamples = folds,
@@ -437,16 +438,16 @@ folds</code></pre>
 <pre><code>## # A tibble: 49 x 7
 ##     mtry min_n .metric .estimator  mean     n std_err
 ##    &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-##  1     1     5 roc_auc binary     0.803    10  0.0253
-##  2     1    15 roc_auc binary     0.806    10  0.0238
-##  3     1    27 roc_auc binary     0.808    10  0.0248
-##  4     2    11 roc_auc binary     0.806    10  0.0245
-##  5     2    21 roc_auc binary     0.809    10  0.0226
-##  6     2    23 roc_auc binary     0.809    10  0.0233
-##  7     2    29 roc_auc binary     0.810    10  0.0230
-##  8     2    32 roc_auc binary     0.811    10  0.0249
-##  9     2    35 roc_auc binary     0.810    10  0.0242
-## 10     2    36 roc_auc binary     0.815    10  0.0239
+##  1     1    15 roc_auc binary     0.800    10  0.0246
+##  2     1    24 roc_auc binary     0.804    10  0.0270
+##  3     1    31 roc_auc binary     0.809    10  0.0258
+##  4     1    35 roc_auc binary     0.808    10  0.0258
+##  5     2     2 roc_auc binary     0.800    10  0.0231
+##  6     2     8 roc_auc binary     0.803    10  0.0229
+##  7     2    12 roc_auc binary     0.804    10  0.0224
+##  8     2    19 roc_auc binary     0.807    10  0.0228
+##  9     2    24 roc_auc binary     0.809    10  0.0228
+## 10     2    33 roc_auc binary     0.810    10  0.0243
 ## # ... with 39 more rows</code></pre>
 <p>也可畫個圖呈現參數調整對效能的影響，由圖可知在這個範例中min_n越大效能越好</p>
 <pre class="r"><code>rf_res %&gt;%
@@ -462,11 +463,11 @@ folds</code></pre>
 <pre><code>## # A tibble: 5 x 7
 ##    mtry min_n .metric .estimator  mean     n std_err
 ##   &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-## 1     3    28 roc_auc binary     0.817    10  0.0207
-## 2     3    37 roc_auc binary     0.816    10  0.0223
-## 3     2    36 roc_auc binary     0.815    10  0.0239
-## 4     3    33 roc_auc binary     0.815    10  0.0238
-## 5     3    31 roc_auc binary     0.814    10  0.0215</code></pre>
+## 1     3    30 roc_auc binary     0.816    10  0.0223
+## 2     4    34 roc_auc binary     0.814    10  0.0227
+## 3     5    32 roc_auc binary     0.812    10  0.0208
+## 4     3    21 roc_auc binary     0.812    10  0.0205
+## 5     4    27 roc_auc binary     0.812    10  0.0222</code></pre>
 </div>
 <div id="step-6-使用最佳參數與訓練組資料建立最終模型" class="section level2">
 <h2>Step 6 使用最佳參數與訓練組資料建立最終模型</h2>
@@ -477,31 +478,31 @@ best_rf</code></pre>
 <pre><code>## # A tibble: 1 x 2
 ##    mtry min_n
 ##   &lt;int&gt; &lt;int&gt;
-## 1     3    28</code></pre>
+## 1     3    30</code></pre>
 <p>為了將參數節合至原有的建模流程，可用<code>finalize_workflow()</code>函數輸入剛剛選出的最佳參數<code>best_rf</code>，建立一個<strong>最終建模流程</strong></p>
 <pre class="r"><code>final_wflow &lt;- 
   rf_wflow %&gt;% 
   finalize_workflow(best_rf)
 
 final_wflow</code></pre>
-<pre><code>## == Workflow ======================================
+<pre><code>## == Workflow ==============================================================================================
 ## Preprocessor: Recipe
 ## Model: rand_forest()
 ## 
-## -- Preprocessor ----------------------------------
+## -- Preprocessor ------------------------------------------------------------------------------------------
 ## 3 Recipe Steps
 ## 
 ## * step_dummy()
 ## * step_zv()
 ## * step_normalize()
 ## 
-## -- Model -----------------------------------------
+## -- Model -------------------------------------------------------------------------------------------------
 ## Random Forest Model Specification (classification)
 ## 
 ## Main Arguments:
 ##   mtry = 3
 ##   trees = 1000
-##   min_n = 28
+##   min_n = 30
 ## 
 ## Computational engine: ranger</code></pre>
 <p><strong>最終建模流程</strong>建立後，即可用<code>fit()</code>建模，注意這邊用的是完整的訓練資料<code>DM_train</code></p>
@@ -510,32 +511,32 @@ final_wflow</code></pre>
   fit(data = DM_train) 
 
 final_rf_model</code></pre>
-<pre><code>## == Workflow [trained] ============================
+<pre><code>## == Workflow [trained] ====================================================================================
 ## Preprocessor: Recipe
 ## Model: rand_forest()
 ## 
-## -- Preprocessor ----------------------------------
+## -- Preprocessor ------------------------------------------------------------------------------------------
 ## 3 Recipe Steps
 ## 
 ## * step_dummy()
 ## * step_zv()
 ## * step_normalize()
 ## 
-## -- Model -----------------------------------------
+## -- Model -------------------------------------------------------------------------------------------------
 ## Ranger result
 ## 
 ## Call:
-##  ranger::ranger(formula = formula, data = data, mtry = ~3L, num.trees = ~1000,      min.node.size = ~28L, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
+##  ranger::ranger(formula = formula, data = data, mtry = ~3L, num.trees = ~1000,      min.node.size = ~30L, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
 ## 
 ## Type:                             Probability estimation 
 ## Number of trees:                  1000 
 ## Sample size:                      295 
 ## Number of independent variables:  8 
 ## Mtry:                             3 
-## Target node size:                 28 
+## Target node size:                 30 
 ## Variable importance mode:         none 
 ## Splitrule:                        gini 
-## OOB prediction error (Brier s.):  0.1561583</code></pre>
+## OOB prediction error (Brier s.):  0.1573813</code></pre>
 </div>
 <div id="step-7-用測試組資料驗證最終模型效能" class="section level2">
 <h2>Step 7 用測試組資料驗證最終模型效能</h2>
@@ -593,16 +594,16 @@ rf_pred</code></pre>
 <pre><code>## # A tibble: 97 x 3
 ##    .pred_neg .pred_pos diabetes
 ##        &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;   
-##  1     0.377    0.623  pos     
-##  2     0.507    0.493  pos     
-##  3     0.657    0.343  neg     
-##  4     0.153    0.847  pos     
-##  5     0.102    0.898  pos     
-##  6     0.181    0.819  pos     
-##  7     0.867    0.133  neg     
-##  8     0.953    0.0471 neg     
-##  9     0.797    0.203  neg     
-## 10     0.634    0.366  neg     
+##  1     0.361    0.639  pos     
+##  2     0.526    0.474  pos     
+##  3     0.662    0.338  neg     
+##  4     0.177    0.823  pos     
+##  5     0.130    0.870  pos     
+##  6     0.191    0.809  pos     
+##  7     0.860    0.140  neg     
+##  8     0.956    0.0441 neg     
+##  9     0.793    0.207  neg     
+## 10     0.638    0.362  neg     
 ## # ... with 87 more rows</code></pre>
 <p>得到各組預測值後，可用<code>roc_curve()</code>畫ROC curve</p>
 <pre class="r"><code>rf_pred %&gt;% 

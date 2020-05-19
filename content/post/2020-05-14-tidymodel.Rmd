@@ -318,9 +318,10 @@ folds
 
 ## Step 5 調整參數
 
-完成分割後，可將之前的建模流程串接至`tune_grid()`函數，這個函數可以設定參數調整的方法，首先是調整要用的**參數調整組資料**`resamples = folds`，要測試幾組參數` grid = 50`，測試時要用什麼效能評估方式，這邊設定為Area under the ROC curve `metrics = metric_set(roc_auc)`。因為要重複訓練測試多次，因此這程式碼執行會需要一些時間。
+完成分割後，可將之前的建模流程串接至`tune_grid()`函數，這個函數可以設定參數調整的方法，首先是調整要用的**參數調整組資料**`resamples = folds`，要測試幾組參數` grid = 50`，測試時要用什麼效能評估方式，這邊設定為Area under the ROC curve `metrics = metric_set(roc_auc)`。另外參數的產生也有隨機的成分，需要`set.seed()`。因為要重複訓練測試多次，因此這程式碼執行會需要一些時間。
 
 ```{r}
+set.seed(345)
 rf_res <- 
   rf_wflow %>% 
   tune_grid(
