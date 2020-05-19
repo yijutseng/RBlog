@@ -14,7 +14,7 @@ tags:
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 ```
 
-人工智慧/機器學習/資料探勘正夯，剛好`tidymodels`套件組的[官網](https://www.tidymodels.org/)上線了，順勢介紹由`caret`套件的開發者[Max Kuhn](https://twitter.com/topepos)所帶領開發的全新建模架構`tidymodels`。如同套件名稱，`tidymodels`套件組的撰寫邏輯和方法與`tidyverse`套件組合相同，若熟悉`dplyr`、`ggplot`等套件應該蠻好上手
+人工智慧/機器學習/資料探勘正夯，剛好`tidymodels`套件組的[官網](https://www.tidymodels.org/)上線了，順勢介紹由`caret`套件的開發者[Max Kuhn](https://twitter.com/topepos)所帶領開發的全新建模架構`tidymodels`並完成此篇教學文章。如同套件名稱，`tidymodels`套件組的撰寫邏輯和方法與`tidyverse`套件組合相同，若熟悉`dplyr`、`ggplot`等套件應該蠻好上手
 
 第一次使用前一樣要先安裝
 ```{r eval=F}
