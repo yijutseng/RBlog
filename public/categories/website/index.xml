@@ -6,10 +6,19 @@
     <description>Recent content in Website on 有完沒完RRR</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-tw</language>
-    <lastBuildDate>Mon, 21 Aug 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 20 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/website/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>COVID-19 Shiny Dashboard</title>
+      <link>/post/covid-19-shiny-dashboard/</link>
+      <pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/covid-19-shiny-dashboard/</guid>
+      <description>用Shiny開發了一個簡單的COVID-19儀表板作為教學範例，包括三個主要分頁，流行地圖、案例數、死亡數較多的的國家圖表以及所選國家圖表，</description>
+    </item>
     
     <item>
       <title>用blogdown建立個人網頁</title>

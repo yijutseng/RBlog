@@ -1,0 +1,30 @@
+---
+title: COVID-19 Shiny Dashboard
+author: Yi-Ju Tseng
+date: '2020-05-20'
+slug: covid-19-shiny-dashboard
+categories:
+  - R language
+  - Website
+tags:
+  - R
+  - Visualization
+---
+
+用Shiny開發了一個簡單的COVID-19儀表板作為教學範例，包括三個主要分頁，流行地圖、案例數、死亡數較多的的國家圖表以及所選國家圖表，樣式還很陽春，有任何建議歡迎留言討論！😀
+
+地圖：
+```{r echo=F}
+knitr::include_graphics("https://yjtseng.info/shinybook/figure/covid19map.png")
+```
+
+排名前N名的國家圖表：
+```{r echo=F}
+knitr::include_graphics("https://yjtseng.info/shinybook/figure/covid19map.png")
+```
+
+
+詳細教學：[https://yjtseng.info/shinybook/covid19](https://yjtseng.info/shinybook/covid19)
+
+儀表板Demo網址: [http://shiny.yjtseng.info/content/18/](http://shiny.yjtseng.info/content/18/)
+

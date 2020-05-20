@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>解決在OSX (Mac) 環境中作圖無法顯示中文的問題 // 有完沒完RRR</title>
+    <title>COVID-19 Shiny Dashboard // 有完沒完RRR</title>
 
     <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -10,11 +10,11 @@
     
     
 
-        <meta property="og:title" content="解決在OSX (Mac) 環境中作圖無法顯示中文的問題" />
+        <meta property="og:title" content="COVID-19 Shiny Dashboard" />
     <meta property="og:description" content="" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en" />
-    <meta property="og:url" content="/post/osx-chinese/" />
+    <meta property="og:url" content="/post/covid-19-shiny-dashboard/" />
     
 
     <link rel="shortcut icon" href="/favicon.ico">
@@ -58,11 +58,11 @@
     <div class="article-inner">
         
         <header class="article-header">
-            <h1 class="article-title" itemprop="name">解決在OSX (Mac) 環境中作圖無法顯示中文的問題</h1>
+            <h1 class="article-title" itemprop="name">COVID-19 Shiny Dashboard</h1>
         </header>
         
         <div class="article-meta">
-            <a href="/post/osx-chinese/" class="article-date">
+            <a href="/post/covid-19-shiny-dashboard/" class="article-date">
                 <time datetime='2020-05-20T00:00:00.000&#43;00:00' itemprop="datePublished">2020-05-20</time>
             </a>
             
@@ -73,12 +73,17 @@
                     
                     <a class="article-category-link" href="//categories/r-language">R language</a>
                     
+                    
+                    <span>&gt;</span>
+                    
+                    <a class="article-category-link" href="//categories/website">Website</a>
+                    
                 </div>
             </div>
             
             
             <div class="article-comment-link-wrap">
-                <a href="/post/osx-chinese/#disqus_thread" class="article-comment-link">Comments</a>
+                <a href="/post/covid-19-shiny-dashboard/#disqus_thread" class="article-comment-link">Comments</a>
             </div>
             
         </div>
@@ -86,89 +91,13 @@
             
 
 
-<p>本文以<a href="https://data.coa.gov.tw/Query/ServiceTransDetail.aspx?id=QcbUEzN6E6DL">行政院農委會動物認領養</a>資料為例，說明在Mac上如何成功畫出有中文字的圖型。</p>
-<p>首先用<code>jsonlite</code>套件的<code>fromJSON()</code>函數將API資料載入，本文的數據為2020/05/20的即時數據</p>
-<pre class="r"><code>library(jsonlite)
-PetAPI&lt;-fromJSON(&quot;https://data.coa.gov.tw/Service/OpenData/TransService.aspx?UnitId=QcbUEzN6E6DL&quot;)</code></pre>
-<p>載入後發現直接就是data.frame格式，以下呈現部分資料</p>
-<pre class="r"><code>library(dplyr)
-PetAPI %&gt;% 
-  select(animal_place,animal_kind,animal_sex,
-         animal_age,animal_colour) %&gt;% head()</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">animal_place</th>
-<th align="left">animal_kind</th>
-<th align="left">animal_sex</th>
-<th align="left">animal_age</th>
-<th align="left">animal_colour</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">苗栗縣生態保育教育中心(動物收容所)</td>
-<td align="left">狗</td>
-<td align="left">F</td>
-<td align="left">ADULT</td>
-<td align="left">黃色</td>
-</tr>
-<tr class="even">
-<td align="left">苗栗縣生態保育教育中心(動物收容所)</td>
-<td align="left">狗</td>
-<td align="left">F</td>
-<td align="left">ADULT</td>
-<td align="left">白色</td>
-</tr>
-<tr class="odd">
-<td align="left">新北市中和區公立動物之家</td>
-<td align="left">貓</td>
-<td align="left">M</td>
-<td align="left">CHILD</td>
-<td align="left">黃虎斑色</td>
-</tr>
-<tr class="even">
-<td align="left">新北市中和區公立動物之家</td>
-<td align="left">貓</td>
-<td align="left">F</td>
-<td align="left">ADULT</td>
-<td align="left">虎斑白色</td>
-</tr>
-<tr class="odd">
-<td align="left">新北市中和區公立動物之家</td>
-<td align="left">貓</td>
-<td align="left">F</td>
-<td align="left">CHILD</td>
-<td align="left">黑色</td>
-</tr>
-<tr class="even">
-<td align="left">新北市中和區公立動物之家</td>
-<td align="left">貓</td>
-<td align="left">F</td>
-<td align="left">CHILD</td>
-<td align="left">虎斑色</td>
-</tr>
-</tbody>
-</table>
-<p>接下來希望呈現各收容所所收容的各品種動物數量，用<code>ggplot</code>快速做長條圖，可發現一樣的程式碼在Windows系統可順利呈現中文字，但在Mac上全部變豆腐文</p>
-<pre class="r"><code>library(ggplot2)
-ggplot(PetAPI,aes(shelter_name)) +
-  geom_bar()+
-  facet_grid(.~animal_kind,
-             scales=&quot;free&quot;,space=&quot;free&quot;) +
-  coord_flip()</code></pre>
-<p><img src="/post/2020-05-20-osx-mac_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p><strong>在<code>theme()</code>中設定字型即可解決此問題</strong>，設定方法為將<code>text</code>參數指定為<code>element_text(family = &quot;指定字型名稱&quot;)</code>，以OSX內建的<strong>黑體-繁 中黑</strong>為例</p>
-<pre class="r"><code>library(ggplot2)
-ggplot(PetAPI,aes(shelter_name)) +
-  geom_bar()+
-  facet_grid(.~animal_kind,
-             scales=&quot;free&quot;,space=&quot;free&quot;) +
-  coord_flip()+
-  theme(text=element_text(family = &quot;黑體-繁 中黑&quot;)) #&lt;&lt;</code></pre>
-<p><img src="/post/2020-05-20-osx-mac_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>設定完字型後，就可在Mac上無痛畫有中文的圖形了。</p>
-<p><strong>以認養代替購買，以結紮代替撲殺</strong></p>
+<p>用Shiny開發了一個簡單的COVID-19儀表板作為教學範例，包括三個主要分頁，流行地圖、案例數、死亡數較多的的國家圖表以及所選國家圖表，樣式還很陽春，有任何建議歡迎留言討論！😀</p>
+<p>地圖：
+<img src="https://yjtseng.info/shinybook/figure/covid19map.png" /><!-- --></p>
+<p>排名前N名的國家圖表：
+<img src="https://yjtseng.info/shinybook/figure/covid19map.png" /><!-- --></p>
+<p>詳細教學：<a href="https://yjtseng.info/shinybook/covid19">https://yjtseng.info/shinybook/covid19</a></p>
+<p>儀表板Demo網址: <a href="http://shiny.yjtseng.info/content/18/">http://shiny.yjtseng.info/content/18/</a></p>
 
         </div>
 
@@ -238,15 +167,9 @@ ggplot(PetAPI,aes(shelter_name)) +
     
 <nav id="article-nav">
     
-    <a href="/post/covid-19-shiny-dashboard/" id="article-nav-newer" class="article-nav-link-wrap">
-        <div class="article-nav-title"><span>&lt;</span>&nbsp;
-            COVID-19 Shiny Dashboard
-        </div>
-    </a>
     
-    
-    <a href="/post/tidymodel/" id="article-nav-older" class="article-nav-link-wrap">
-        <div class="article-nav-title">使用tidymodels架構建立預測模型&nbsp;<span>&gt;</span></div>
+    <a href="/post/osx-chinese/" id="article-nav-older" class="article-nav-link-wrap">
+        <div class="article-nav-title">解決在OSX (Mac) 環境中作圖無法顯示中文的問題&nbsp;<span>&gt;</span></div>
     </a>
     
 </nav>

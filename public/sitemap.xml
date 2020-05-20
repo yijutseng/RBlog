@@ -8,6 +8,11 @@
   </url>
   
   <url>
+    <loc>/post/covid-19-shiny-dashboard/</loc>
+    <lastmod>2020-05-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/post/</loc>
     <lastmod>2020-05-20T00:00:00+00:00</lastmod>
   </url>
@@ -29,6 +34,11 @@
   
   <url>
     <loc>/tags/visualization/</loc>
+    <lastmod>2020-05-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/website/</loc>
     <lastmod>2020-05-20T00:00:00+00:00</lastmod>
   </url>
   
@@ -104,11 +114,6 @@
   
   <url>
     <loc>/categories/text-mining/</loc>
-    <lastmod>2017-08-21T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/website/</loc>
     <lastmod>2017-08-21T00:00:00+00:00</lastmod>
   </url>
   
