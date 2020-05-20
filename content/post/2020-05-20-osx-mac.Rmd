@@ -1,5 +1,5 @@
 ---
-title: 解決在OSX (Mac) 環境中作圖無法顯示中文的問題
+title: 解決在macOS環境中作圖無法顯示中文的問題
 author: Yi-Ju Tseng
 date: '2020-05-20'
 slug: osx-chinese
@@ -46,7 +46,7 @@ ggplot(PetAPI,aes(shelter_name)) +
   coord_flip()
 ```
 
-**在`theme()`中設定字型即可解決此問題**，設定方法為將`text`參數指定為`element_text(family = "指定字型名稱")`，以OSX內建的**黑體-繁 中黑**為例
+**在`theme()`中設定字型即可解決此問題**，設定方法為將`text`參數指定為`element_text(family = "指定字型名稱")`，以macOS內建的**黑體-繁 中黑**為例
 
 ```{r}
 library(ggplot2)
